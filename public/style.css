@@ -1,0 +1,9 @@
+body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+.dashboard { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: left; }
+.up { color: #28a745; font-weight: bold; }
+.down { color: #dc3545; }
+.progress-bar { background: #e9ecef; border-radius: 5px; height: 10px; width: 100px; overflow: hidden; }
+.fill { background: #007bff; height: 100%; }
+.meta-input { width: 80px; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }

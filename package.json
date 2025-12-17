@@ -1,0 +1,14 @@
+{
+  "name": "meu-jogo-brawl",
+  "version": "1.0.0",
+  "description": "Arena Shooter com Integração API Brawl Stars",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.22.1",
+    "node-fetch": "^2.7.0",
+    "ws": "^8.18.3"
+  }
+}
