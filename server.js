@@ -6,7 +6,7 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json());
 
-const BRAWL_API_KEY = "SUA_CHAVE_AQUI"; // Lembre-se de atualizar sempre que mudar o IP
+const BRAWL_API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6IjBkYjg2OWMwLTI5ZTUtNDc1OC1hYmVhLTI5MDlkODk0MDdiOCIsImlhdCI6MTc2NjAwNzA1OCwic3ViIjoiZGV2ZWxvcGVyLzE5ODI2ODBkLTJhZDQtYWFmYi0yNmUwLTAzNTFkMjkzY2MwMiIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiNzQuMjIwLjQ4LjI0MiJdLCJ0eXBlIjoiY2xpZW50In1dfQ.vEGhvoXjoaKlzmlGd6a7ZPIBU4jTIuN2mE96tfGpbnM91XDULxXbxUYC7Jubtce9ZzoW72l1nyie07rDMLlRxg"; // Lembre-se de atualizar sempre que mudar o IP
 const CLUB_TAG = "%23JJY0QU0P"; 
 const METAS_FILE = './metas.json';
 
