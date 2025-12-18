@@ -1,20 +1,23 @@
 let currentTag = "";
 
 async function carregarClube() {
+    const statusText = document.getElementById('clubName');
     try {
         const res = await fetch('/api/stats');
         const data = await res.json();
         
-        if(data.error) {
-            document.getElementById('clubName').innerText = "⚠️ ERRO DE IP NA API KEY";
+        if (data.error) {
+            statusText.style.color = "#ff4655";
+            statusText.innerHTML = `⚠️ ERRO: ${data.detalhes || data.error} (Status: ${data.status})`;
             return;
         }
 
         const club = data.club;
-        const metas = data.metas;
-        const members = club.members.sort((a,b) => b.trophies - a.trophies);
+        const metas = data.metas || {};
+        const members = club.members.sort((a, b) => b.trophies - a.trophies);
 
-        document.getElementById('clubName').innerText = `${club.name} • ${members.length}/30 MEMBROS`;
+        statusText.style.color = "#64748b";
+        statusText.innerText = `${club.name} • ${members.length}/30 MEMBROS`;
         
         // Stats do Topo
         document.getElementById('globalStats').innerHTML = `
@@ -23,7 +26,6 @@ async function carregarClube() {
             <div class="stat-box"><small>Status</small><div>${club.type.toUpperCase()}</div></div>
         `;
 
-        // Lista de Cards
         const list = document.getElementById('memberList');
         list.innerHTML = '';
 
@@ -48,17 +50,17 @@ async function carregarClube() {
                             <div class="progress-bar" style="width: ${porc}%"></div>
                         </div>
                     </div>
-                </div>
-            `;
+                </div>`;
         });
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        statusText.innerText = "❌ ERRO DE CONEXÃO COM O SERVIDOR";
+        console.error(e); 
+    }
 }
 
 async function verDetalhes(tag, metaAtual) {
     currentTag = tag;
-    const modal = document.getElementById('playerModal');
-    modal.style.display = 'flex';
-    
+    document.getElementById('playerModal').style.display = 'flex';
     document.getElementById('det-name').innerText = "Carregando...";
     document.getElementById('inputMeta').value = metaAtual;
 
@@ -68,10 +70,10 @@ async function verDetalhes(tag, metaAtual) {
 
         document.getElementById('det-name').innerText = p.name;
         document.getElementById('det-tag').innerText = p.tag;
-        document.getElementById('det-high').innerText = p.highestTrophies.toLocaleString();
-        document.getElementById('det-3v3').innerText = p['3vs3Victories'].toLocaleString();
-        document.getElementById('det-solo').innerText = p.soloVictories.toLocaleString();
-        document.getElementById('det-level').innerText = p.expLevel;
+        document.getElementById('det-high').innerText = (p.highestTrophies || 0).toLocaleString();
+        document.getElementById('det-3v3').innerText = (p['3vs3Victories'] || 0).toLocaleString();
+        document.getElementById('det-solo').innerText = (p.soloVictories || 0).toLocaleString();
+        document.getElementById('det-level').innerText = p.expLevel || 0;
     } catch (e) { console.log(e); }
 }
 
@@ -88,6 +90,4 @@ async function salvarMeta() {
     carregarClube();
 }
 
-// Inicia
 carregarClube();
-setInterval(carregarClube, 60000); // Atualiza a cada 1 min
