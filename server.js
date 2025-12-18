@@ -6,7 +6,7 @@ const app = express();
 app.use(express.static('public'));
 app.use(express.json());
 
-const BRAWL_API_KEY = "SUA_CHAVE_AQUI"; // Mantenha sua chave ativa
+const BRAWL_API_KEY = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9.eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImQ0ZTFlY2UzLTQ5ODctNGYyZi1hNWRkLTM0YzM4MmZlNGMxOSIsImlhdCI6MTc2NjA5MTM0MCwic3ViIjoiZGV2ZWxvcGVyLzE5ODI2ODBkLTJhZDQtYWFmYi0yNmUwLTAzNTFkMjkzY2MwMiIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGllciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiNzQuMjIwLjQ4LjI0MiJdLCJ0eXBlIjoiY2xpZW50In1dfQ.ZigmeaTF0mDMgT7rpWuey9XG_5oETr4E-NJwFBw6SC0MXGyNqSPKAOCuRV9eGyRM5hoi0zGK2QhwNmSEcuVRkQ"; // Mantenha sua chave ativa
 const CLUB_TAG = "%23JJY0QU0P"; 
 const METAS_FILE = './metas.json';
 
