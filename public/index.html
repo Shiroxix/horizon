@@ -3,109 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Pro Hub | Gerenciamento</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Horizon Pro Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00f2ff; --accent: #bc13fe; --bg: #05070a;
-            --card: #11161d; --text: #f0f0f0; --gold: #ffd700; --red: #ff4655;
-        }
+        :root { --primary: #00f2ff; --accent: #bc13fe; --bg: #05070a; --card: #11161d; --text: #f0f0f0; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
-            background-image: radial-gradient(circle at 50% -20%, #1a2333 0%, #05070a 100%);
-            min-height: 100vh;
-        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
         .container { max-width: 1200px; margin: auto; padding: 20px; }
+        header { text-align: center; padding: 40px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .logo { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--primary); text-shadow: 0 0 15px rgba(0,242,255,0.4); }
         
-        .header { text-align: center; padding: 40px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .logo { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--primary); text-shadow: 0 0 20px rgba(0,242,255,0.4); }
-        
-        /* Dashboard Stats */
         .top-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 30px 0; }
         .stat-box { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
-        .stat-box small { color: #64748b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-box div { font-size: 1.5rem; font-weight: 900; color: var(--primary); margin-top: 5px; }
-
-        /* Lista de Jogadores */
+        
         .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .p-card { 
-            background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s; cursor: pointer; position: relative; overflow: hidden;
-        }
-        .p-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .p-card::after { content: ''; position: absolute; left: 0; top: 0; width: 5px; height: 100%; background: var(--accent); }
-        
-        /* Cores de Cargos */
-        .role-president::after { background: var(--red); }
-        .role-vicePresident::after { background: var(--gold); }
+        .p-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; cursor: pointer; position: relative; }
+        .p-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .p-card::after { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: var(--accent); border-radius: 10px 0 0 10px; }
+        .role-president::after { background: #ff4655; }
+        .role-vicePresident::after { background: #ffd700; }
 
-        .p-info h3 { font-weight: 900; font-size: 1.2rem; }
-        .p-info span { font-size: 0.7rem; color: #64748b; font-weight: 700; }
-        .p-trophies { font-size: 1.3rem; font-weight: 900; color: #fff; margin: 10px 0; display: flex; align-items: center; gap: 5px; }
-        
-        /* Barra de Progresso */
-        .progress-container { margin-top: 15px; }
-        .progress-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: #94a3b8; margin-bottom: 5px; font-weight: 800; }
-        .progress-bg { background: rgba(255,255,255,0.05); height: 8px; border-radius: 10px; overflow: hidden; }
-        .progress-bar { background: linear-gradient(90deg, var(--accent), var(--primary)); height: 100%; transition: 1s; }
+        .progress-bar { background: rgba(255,255,255,0.05); height: 8px; border-radius: 10px; margin-top: 15px; overflow: hidden; }
+        .progress-fill { background: linear-gradient(90deg, var(--accent), var(--primary)); height: 100%; transition: 1s; }
 
-        /* Modal / Pop-up */
-        .modal { 
-            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
-            z-index: 1000; backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal-content { 
-            background: #11161d; width: 100%; max-width: 450px; border-radius: 30px; 
-            padding: 40px; border: 1px solid var(--primary); box-shadow: 0 0 50px rgba(0,242,255,0.2);
-        }
-        .detail-row { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .detail-row span { color: #64748b; font-weight: 700; }
-        .detail-row b { color: #fff; }
-
-        .btn-save { 
-            width: 100%; padding: 18px; margin-top: 25px; border-radius: 15px; border: none;
-            background: var(--primary); color: #000; font-weight: 900; cursor: pointer;
-            transition: 0.3s;
-        }
-        .btn-save:hover { background: #fff; transform: scale(1.02); }
+        /* Pop-up */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--card); width: 100%; max-width: 450px; border-radius: 30px; padding: 40px; border: 1px solid var(--primary); position: relative; }
+        .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .btn-save { width: 100%; padding: 18px; margin-top: 25px; border-radius: 15px; border: none; background: var(--primary); color: #000; font-weight: 900; cursor: pointer; }
+        .delta-badge { padding: 4px 10px; border-radius: 8px; font-weight: 900; font-size: 0.9rem; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
+        <header>
             <h1 class="logo">HORIZON PRO HUB</h1>
-            <p id="clubName" style="color: #64748b; font-weight: 800; margin-top: 10px;">CONECTANDO À API...</p>
-        </div>
-
+            <p id="clubStatus">CONECTANDO À API...</p>
+        </header>
         <div class="top-stats" id="globalStats"></div>
-
-        <div class="member-grid" id="memberList">
-            </div>
+        <div class="member-grid" id="memberList"></div>
     </div>
 
     <div id="playerModal" class="modal">
         <div class="modal-content">
-            <h2 id="det-name" style="font-size: 2rem; font-weight: 900;">Nome</h2>
-            <p id="det-tag" style="color: var(--primary); font-weight: 700; margin-bottom: 20px;">#TAG</p>
-            
-            <div id="det-stats">
-                <div class="detail-row"><span>Recorde de Troféus</span><b id="det-high">0</b></div>
-                <div class="detail-row"><span>Vitórias 3v3</span><b id="det-3v3">0</b></div>
-                <div class="detail-row"><span>Vitórias Solo</span><b id="det-solo">0</b></div>
-                <div class="detail-row"><span>Nível XP</span><b id="det-level">0</b></div>
+            <h2 id="m-name" style="font-size: 2rem; font-weight: 900;">Nome</h2>
+            <p id="m-tag" style="color: var(--primary); font-weight: 700; margin-bottom: 25px;">#TAG</p>
+            <div class="detail-row"><span>Ganhos (24h)</span><b id="m-24h" class="delta-badge">0</b></div>
+            <div class="detail-row"><span>Recorde</span><b id="m-high">0</b></div>
+            <div class="detail-row"><span>Vitórias 3v3</span><b id="m-3v3">0</b></div>
+            <div class="detail-row"><span>Vitórias Solo</span><b id="m-solo">0</b></div>
+            <div style="margin-top: 20px;">
+                <label style="font-size: 0.7rem; color: #64748b; font-weight: 900;">META DE TROFÉUS</label>
+                <input type="number" id="inputMeta" style="width:100%; padding:15px; border-radius:12px; background:#05070a; border:1px solid #333; color:#fff; margin-top:10px;">
             </div>
-
-            <div style="margin-top: 25px;">
-                <label style="font-size: 0.7rem; color: #64748b; font-weight: 900;">DEFINIR META DO ADM</label>
-                <input type="number" id="inputMeta" style="width:100%; padding:15px; border-radius:12px; background:#05070a; border:1px solid #333; color:#fff; margin-top:10px; font-weight: 900;">
-            </div>
-
-            <button class="btn-save" onclick="salvarMeta()">ATUALIZAR MEMBRO</button>
-            <button onclick="closeModal()" style="width:100%; background:none; border:none; color:#64748b; margin-top:15px; cursor:pointer; font-weight: 800;">Fechar</button>
+            <button class="btn-save" onclick="salvarMeta()">SALVAR ALTERAÇÕES</button>
+            <button onclick="closeModal()" style="width:100%; background:none; border:none; color:#64748b; margin-top:15px; cursor:pointer;">Fechar</button>
         </div>
     </div>
-
     <script src="client.js"></script>
 </body>
 </html>
