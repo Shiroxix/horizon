@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Command | Professional Panel</title>
+    <title>Horizon Command | Pro Analytics</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,120 +16,96 @@
         
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-        
-        /* Background Glow */
-        body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 50% -20%, rgba(0, 242, 255, 0.15), transparent 80%); z-index: -1; }
+        body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(circle at 50% -20%, rgba(188, 19, 254, 0.15), transparent 80%); z-index: -1; }
 
         .container { max-width: 1300px; margin: auto; padding: 20px; }
+        header { text-align: center; padding: 30px 0; }
+        .logo { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--primary); letter-spacing: 5px; text-transform: uppercase; }
+
+        /* Grid Membros */
+        .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 15px; }
+        .p-card { background: var(--card); border-radius: 15px; padding: 20px; border: 1px solid var(--glass); cursor: pointer; transition: 0.3s; position: relative; }
+        .p-card:hover { border-color: var(--primary); transform: scale(1.02); }
+
+        /* Modal Principal */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: var(--card); width: 100%; max-width: 900px; max-height: 90vh; border-radius: 20px; border: 1px solid var(--glass); display: flex; flex-direction: column; position: relative; }
         
-        header { text-align: center; padding: 40px 0; }
-        .logo { font-family: 'Rajdhani', sans-serif; font-size: 3rem; font-weight: 700; color: var(--primary); text-shadow: 0 0 20px rgba(0,242,255,0.4); letter-spacing: 5px; }
+        .modal-tabs { display: flex; background: rgba(0,0,0,0.5); border-bottom: 1px solid var(--glass); }
+        .tab-btn { flex: 1; padding: 15px; background: none; border: none; color: #64748b; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; text-transform: uppercase; }
+        .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); }
 
-        /* Dashboard de Informações Técnicas do Clube */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 40px; }
-        .kpi-card { background: var(--card); border: 1px solid var(--glass); padding: 20px; border-radius: 20px; border-bottom: 3px solid var(--accent); }
-        .kpi-label { font-size: 0.65rem; color: #64748b; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
-        .kpi-value { display: block; font-family: 'Rajdhani'; font-size: 1.8rem; font-weight: 700; color: #fff; margin-top: 5px; }
-
-        /* Lista de Membros */
-        .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .p-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--glass); cursor: pointer; transition: 0.3s; }
-        .p-card:hover { border-color: var(--primary); background: rgba(255,255,255,0.02); }
-
-        /* Barra de Meta */
-        .meta-box { margin-top: 15px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; }
-        .meta-info { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; margin-bottom: 8px; }
-        .progress-bar { background: #000; height: 10px; border-radius: 10px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); transition: 1s ease-out; box-shadow: 0 0 10px var(--primary); }
-
-        /* Modal e Abas */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 1000; backdrop-filter: blur(15px); align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 850px; max-height: 85vh; border-radius: 25px; border: 1px solid var(--glass); overflow: hidden; display: flex; flex-direction: column; }
-        
-        .modal-tabs { display: flex; background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--glass); }
-        .tab-btn { flex: 1; padding: 15px; background: none; border: none; color: #64748b; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; transition: 0.3s; text-transform: uppercase; font-size: 0.9rem; }
-        .tab-btn.active { color: var(--primary); border-bottom: 2px solid var(--primary); background: rgba(0,242,255,0.05); }
-
-        .modal-section { display: none; padding: 30px; overflow-y: auto; }
+        .modal-section { display: none; padding: 25px; overflow-y: auto; }
         .modal-section.active { display: block; }
 
-        /* Busca de Brawlers */
-        .search-container { position: relative; margin-bottom: 20px; }
-        .search-input { width: 100%; background: #000; border: 1px solid var(--glass); padding: 12px 15px; border-radius: 10px; color: #fff; font-size: 0.9rem; }
-        
+        /* Info Organizadora do Jogador */
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .stat-item { background: rgba(255,255,255,0.02); padding: 15px; border-radius: 12px; border: 1px solid var(--glass); text-align: center; }
+        .stat-item label { font-size: 0.6rem; color: #64748b; text-transform: uppercase; display: block; }
+        .stat-item b { font-family: 'Rajdhani'; font-size: 1.4rem; color: #fff; }
+
+        /* Lista de Brawlers Otimizada */
         .brawlers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-        .b-item { background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid var(--glass); text-align: center; }
-        .b-item b { display: block; font-size: 0.75rem; color: #fff; text-transform: uppercase; }
-        .b-item span { font-size: 0.65rem; color: var(--primary); font-weight: 700; }
+        .b-card { background: #000; padding: 12px; border-radius: 12px; border: 1px solid var(--glass); cursor: pointer; transition: 0.2s; text-align: center; }
+        .b-card:hover { border-color: var(--accent); background: rgba(188, 19, 254, 0.1); }
+        .b-card b { display: block; font-size: 0.8rem; color: #fff; }
+
+        /* Sub-PopUp de Build (Habilidades) */
+        .build-popup { display: none; position: absolute; inset: 0; background: var(--card); z-index: 101; padding: 25px; border-radius: 20px; flex-direction: column; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
+
+        .skill-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .skill-badge { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 0.7rem; border-left: 3px solid var(--primary); }
+        .skill-badge.star { border-left-color: #ffd700; }
+        .skill-badge.hyper { border-left-color: #ff4655; box-shadow: 0 0 10px rgba(255, 70, 85, 0.2); }
+
+        .search-bar { width: 100%; background: #000; border: 1px solid var(--glass); padding: 12px; border-radius: 10px; color: #fff; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header>
-            <h1 class="logo">HORIZON COMMAND</h1>
-            <p id="clubStatus" style="font-size: 0.7rem; color: var(--accent); font-weight: 900; letter-spacing: 3px;">COLLECTING CLUB DATA...</p>
-        </header>
-
-        <div class="kpi-grid" id="clubTechnicalInfo">
-            <div class="kpi-card">
-                <span class="kpi-label">Troféus Totais</span>
-                <span id="c-trophies" class="kpi-value">0</span>
-            </div>
-            <div class="kpi-card">
-                <span class="kpi-label">Média por Membro</span>
-                <span id="c-avg" class="kpi-value">0</span>
-            </div>
-            <div class="kpi-card">
-                <span class="kpi-label">Vagas Disponíveis</span>
-                <span id="c-slots" class="kpi-value">0/30</span>
-            </div>
-            <div class="kpi-card">
-                <span class="kpi-label">Mínimo para Entrar</span>
-                <span id="c-req" class="kpi-value">0</span>
-            </div>
-        </div>
-
+        <header><h1 class="logo">Horizon Command</h1></header>
         <div class="member-grid" id="memberList"></div>
     </div>
 
     <div id="playerModal" class="modal">
         <div class="modal-content">
             <div class="modal-tabs">
-                <button class="tab-btn active" onclick="switchModalTab('m-stats', this)">Resumo Geral</button>
-                <button class="tab-btn" onclick="switchModalTab('m-brawlers', this)">Análise de Brawlers</button>
-                <button onclick="closeModal()" style="padding: 15px; background:none; border:none; color:#ff4655; cursor:pointer;"><i class="fas fa-times"></i></button>
+                <button class="tab-btn active" onclick="switchTab('m-geral', this)">Geral</button>
+                <button class="tab-btn" onclick="switchTab('m-brawlers', this)">Brawlers</button>
+                <button onclick="closeModal()" style="padding:15px; background:none; border:none; color:#ff4655; cursor:pointer;"><i class="fas fa-times"></i></button>
             </div>
 
-            <div id="m-stats" class="modal-section active">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <div>
-                        <h2 id="m-name" style="font-family:'Rajdhani'; font-size: 2.2rem; color:#fff;">-</h2>
-                        <span id="m-tag" style="color:var(--primary); font-weight: 700;">#000</span>
-                    </div>
-                    <div style="text-align: right;">
-                        <p style="font-size: 0.7rem; color: #64748b;">RECORDE</p>
-                        <b id="m-high" style="color:#ffd700; font-size: 1.5rem;">0</b>
-                    </div>
+            <div id="m-geral" class="modal-section active">
+                <div class="stats-row">
+                    <div class="stat-item"><label>Taxa de Win</label><b id="m-winrate">0%</b></div>
+                    <div class="stat-item"><label>Últimas 24h</label><b id="m-24h" style="color:var(--success)">+0</b></div>
+                    <div class="stat-item"><label>Média/Brawler</label><b id="m-avg-b">0</b></div>
+                    <div class="stat-item"><label>Exp Level</label><b id="m-exp">0</b></div>
                 </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                
+                <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px;">
                     <div style="background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px;">
-                        <label style="font-size: 0.6rem; color: var(--primary); font-weight: 800;">EDITAR META DO JOGADOR</label>
-                        <input type="number" id="inputMeta" style="width: 100%; background: transparent; border: none; border-bottom: 2px solid var(--primary); color: #fff; font-size: 1.5rem; padding: 10px 0; margin-bottom: 15px;">
-                        <button onclick="salvarMeta()" style="width: 100%; background: var(--primary); color: #000; border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer;">SALVAR PROTOCOLO</button>
+                        <h4 style="font-size: 0.7rem; color: var(--primary); margin-bottom: 15px;">CONFIGURAR META</h4>
+                        <input type="number" id="inputMeta" style="width:100%; background:none; border:none; border-bottom: 2px solid var(--primary); color:#fff; font-size: 1.8rem; font-family:'Rajdhani'; margin-bottom: 20px;">
+                        <button onclick="salvarMeta()" style="width:100%; padding:15px; border-radius:10px; background:var(--primary); border:none; font-weight:800; cursor:pointer;">ATUALIZAR DADOS</button>
                     </div>
-                    <div style="max-width: 200px; margin: auto;">
-                        <canvas id="winChart"></canvas>
-                    </div>
+                    <canvas id="winChart" style="max-height: 180px;"></canvas>
                 </div>
             </div>
 
-            <div id="m-brawlers" class="modal-section">
-                <div class="search-container">
-                    <input type="text" id="brawlerSearch" class="search-input" placeholder="Pesquisar Brawler..." onkeyup="filterBrawlers()">
-                </div>
+            <div id="m-brawlers" class="modal-section" style="position: relative;">
+                <input type="text" class="search-bar" id="b-search" placeholder="Filtrar brawler por nome..." onkeyup="filterBrawlers()">
                 <div id="brawlersList" class="brawlers-grid"></div>
+
+                <div id="buildPopup" class="build-popup">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--glass); padding-bottom: 15px;">
+                        <h2 id="b-title" style="font-family:'Rajdhani'; color:var(--primary)">-</h2>
+                        <button onclick="closeBuild()" style="background:none; border:none; color:#64748b; cursor:pointer; font-size: 1.2rem;"><i class="fas fa-arrow-left"></i> Voltar</button>
+                    </div>
+                    <div class="skill-list" id="skillList"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -137,98 +113,103 @@
     <script>
         let currentTag = "";
         let metasGlobal = {};
+        let initialTrophies = {}; 
         let winChart = null;
 
         async function updateDashboard() {
-            try {
-                const res = await fetch('/api/stats');
-                const data = await res.json();
-                metasGlobal = data.metas || {};
+            const res = await fetch('/api/stats');
+            const data = await res.json();
+            metasGlobal = data.metas || {};
+            const list = document.getElementById('memberList');
+            list.innerHTML = '';
 
-                // Informações Técnicas Reais da API
-                document.getElementById('c-trophies').innerText = data.club.trophies.toLocaleString();
-                document.getElementById('c-avg').innerText = Math.floor(data.club.trophies / data.club.members.length).toLocaleString();
-                document.getElementById('c-slots').innerText = `${data.club.members.length}/30`;
-                document.getElementById('c-req').innerText = data.club.requiredTrophies.toLocaleString();
-                document.getElementById('clubStatus').innerText = "SYSTEMS ONLINE // " + data.club.name.toUpperCase();
-
-                const list = document.getElementById('memberList');
-                list.innerHTML = '';
-
-                data.club.members.sort((a,b) => b.trophies - a.trophies).forEach(m => {
-                    const meta = metasGlobal[m.tag] || 0;
-                    const percent = meta > 0 ? Math.floor(Math.min((m.trophies / meta) * 100, 100)) : 0;
-
-                    const card = document.createElement('div');
-                    card.className = 'p-card';
-                    card.onclick = () => openModal(m.tag, m.name);
-                    card.innerHTML = `
-                        <div style="display:flex; justify-content:space-between;">
-                            <b>${m.name}</b>
-                            <b style="color:var(--primary)">${m.trophies.toLocaleString()}</b>
-                        </div>
-                        <div class="meta-box">
-                            <div class="meta-info">
-                                <span>CONCLUSÃO DA META</span>
-                                <span style="color:var(--primary)">${percent}%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: ${percent}%"></div>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; font-size:0.55rem; margin-top:5px; color:#64748b;">
-                                <span>OBJETIVO: ${meta || '---'}</span>
-                                <span>${m.tag}</span>
-                            </div>
-                        </div>
-                    `;
-                    list.appendChild(card);
-                });
-            } catch (e) { console.error("Erro na API"); }
+            data.club.members.sort((a,b) => b.trophies - a.trophies).forEach(m => {
+                if(!initialTrophies[m.tag]) initialTrophies[m.tag] = m.trophies;
+                const meta = metasGlobal[m.tag] || 0;
+                const percent = meta > 0 ? Math.floor(Math.min((m.trophies / meta) * 100, 100)) : 0;
+                
+                const card = document.createElement('div');
+                card.className = 'p-card';
+                card.onclick = () => openModal(m.tag, m.name);
+                card.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <b>${m.name}</b>
+                        <b style="color:var(--primary)">${m.trophies.toLocaleString()}</b>
+                    </div>
+                    <div style="background:#000; height:8px; border-radius:10px; overflow:hidden;">
+                        <div style="background:var(--primary); width:${percent}%; height:100%;"></div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
         }
 
         async function openModal(tag, name) {
             currentTag = tag;
             document.getElementById('playerModal').style.display = 'flex';
-            document.getElementById('m-name').innerText = name;
-            document.getElementById('m-tag').innerText = tag;
-            document.getElementById('inputMeta').value = metasGlobal[tag] || "";
+            document.querySelectorAll('.modal-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('m-geral').classList.add('active');
             
             try {
                 const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
                 const p = await res.json();
-
-                document.getElementById('m-high').innerText = p.highestTrophies.toLocaleString();
                 
-                // Renderizar Brawlers
+                // Cálculos de Informações Organizativas
+                const totalWins = p['3vs3Victories'] + p.soloVictories + p.duoVictories;
+                const winRate = ((p['3vs3Victories'] / totalWins) * 100).toFixed(1);
+                const gain = p.trophies - (initialTrophies[tag] || p.trophies);
+
+                document.getElementById('m-winrate').innerText = winRate + "%";
+                document.getElementById('m-24h').innerText = (gain >= 0 ? "+" : "") + gain;
+                document.getElementById('m-avg-b').innerText = Math.floor(p.trophies / p.brawlers.length);
+                document.getElementById('m-exp').innerText = p.expLevel;
+                document.getElementById('inputMeta').value = metasGlobal[tag] || "";
+
+                // Gráfico
+                renderChart(p['3vs3Victories'], p.soloVictories, p.duoVictories);
+
+                // Render Brawlers
                 const bList = document.getElementById('brawlersList');
                 bList.innerHTML = '';
-                p.brawlers.sort((a,b) => b.trophies - a.trophies).forEach(b => {
+                p.brawlers.forEach(b => {
                     const div = document.createElement('div');
-                    div.className = 'b-item';
-                    div.dataset.name = b.name.toUpperCase();
-                    div.innerHTML = `<b>${b.name}</b><span>LVL ${b.power} | ${b.trophies} TR</span>`;
+                    div.className = 'b-card';
+                    div.onclick = (e) => { e.stopPropagation(); openBuild(b); };
+                    div.innerHTML = `<b>${b.name}</b><small style="color:var(--primary)">${b.trophies} TR</small>`;
                     bList.appendChild(div);
                 });
 
-                renderChart(p['3vs3Victories'], p.soloVictories, p.duoVictories);
             } catch(e) {}
         }
 
-        // FUNÇÃO DE BUSCA CORRIGIDA
-        function filterBrawlers() {
-            const query = document.getElementById('brawlerSearch').value.toUpperCase();
-            const items = document.querySelectorAll('.b-item');
-            items.forEach(item => {
-                const name = item.dataset.name;
-                item.style.display = name.includes(query) ? 'block' : 'none';
+        function openBuild(brawler) {
+            const popup = document.getElementById('buildPopup');
+            const skillList = document.getElementById('skillList');
+            document.getElementById('b-title').innerText = brawler.name + " // BUILD";
+            skillList.innerHTML = '';
+            popup.style.display = 'flex';
+
+            // Mapear Acessórios
+            (brawler.gadgets || []).forEach(g => {
+                skillList.innerHTML += `<div class="skill-badge"><i class="fas fa-bolt"></i> ${g.name}</div>`;
             });
+            // Mapear Star Powers
+            (brawler.starPowers || []).forEach(s => {
+                skillList.innerHTML += `<div class="skill-badge star"><i class="fas fa-star"></i> ${s.name}</div>`;
+            });
+            // Checar Hypercarga (Baseado no nome ou logica da API)
+            if(brawler.power >= 11) {
+                skillList.innerHTML += `<div class="skill-badge hyper"><i class="fas fa-zap"></i> HYPERCHARGE</div>`;
+            }
         }
 
-        function switchModalTab(sectionId, btn) {
-            document.querySelectorAll('.modal-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            btn.classList.add('active');
+        function closeBuild() { document.getElementById('buildPopup').style.display = 'none'; }
+
+        function filterBrawlers() {
+            const q = document.getElementById('b-search').value.toUpperCase();
+            document.querySelectorAll('.b-card').forEach(c => {
+                c.style.display = c.innerText.includes(q) ? 'block' : 'none';
+            });
         }
 
         function renderChart(v3, solo, duo) {
@@ -245,6 +226,13 @@
                 },
                 options: { cutout: '80%', plugins: { legend: { display: false } } }
             });
+        }
+
+        function switchTab(id, btn) {
+            document.querySelectorAll('.modal-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
         }
 
         async function salvarMeta() {
