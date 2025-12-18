@@ -23,7 +23,6 @@
             min-height: 100vh; overflow-x: hidden; 
         }
 
-        /* Efeito de Fundo Dinâmico */
         body::before {
             content: ''; position: fixed; inset: 0;
             background: 
@@ -32,25 +31,54 @@
             z-index: -1;
         }
 
-        .container { max-width: 1400px; margin: auto; padding: 25px; }
-
-        header { text-align: center; padding: 60px 0 40px; }
-        .logo { 
-            font-family: 'Rajdhani', sans-serif; font-size: clamp(2rem, 8vw, 3.5rem); 
-            font-weight: 700; color: #fff; letter-spacing: 10px; text-transform: uppercase;
-            background: linear-gradient(to bottom, #fff, var(--primary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.3));
+        /* TELA DE LOGIN */
+        #loginScreen {
+            position: fixed; inset: 0; z-index: 2000; background: var(--bg);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .login-box {
+            background: var(--card); padding: 40px; border-radius: 30px; border: 1px solid var(--border);
+            width: 100%; max-width: 380px; text-align: center;
+        }
+        .input-cyber {
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+            padding: 15px; border-radius: 12px; color: #fff; margin-bottom: 15px;
+            font-family: 'Rajdhani'; font-size: 1.1rem; text-align: center;
+        }
+        .btn-cyber {
+            width: 100%; padding: 15px; border-radius: 12px; border: none;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
         }
 
-        /* Cards de Membros (Estilo Cyber) */
+        /* PAINEL PRINCIPAL */
+        #mainContent { display: none; }
+        .container { max-width: 1400px; margin: auto; padding: 25px; }
+
+        header { display: flex; justify-content: space-between; align-items: center; padding: 40px 0; }
+        .logo { 
+            font-family: 'Rajdhani', sans-serif; font-size: clamp(1.5rem, 5vw, 2.5rem); 
+            font-weight: 700; color: #fff; letter-spacing: 8px; text-transform: uppercase;
+            background: linear-gradient(to bottom, #fff, var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        /* Ícone de Configurações ADM */
+        .nav-tools { display: flex; gap: 20px; align-items: center; }
+        .adm-gear { 
+            font-size: 1.2rem; color: #64748b; cursor: pointer; transition: 0.3s; 
+            display: none; /* Só aparece para ADM */
+        }
+        .adm-gear:hover { color: var(--primary); transform: rotate(90deg); }
+
+        /* GRID E CARDS */
         .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
         .p-card { 
             background: var(--card); border-radius: 24px; padding: 25px; 
             border: 1px solid var(--border); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative; overflow: hidden; cursor: pointer;
         }
-        .p-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.6); }
+        .p-card:hover { transform: translateY(-10px); border-color: var(--primary); }
         .p-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
             background: linear-gradient(90deg, var(--accent), var(--primary));
@@ -59,27 +87,18 @@
         .meta-bar-container { margin-top: 20px; }
         .meta-label { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
         .meta-track { background: rgba(0,0,0,0.5); height: 12px; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
-        .meta-fill { 
-            height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); 
-            border-radius: 20px; transition: 1.5s ease; box-shadow: 0 0 15px var(--primary);
-        }
+        .meta-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 20px; transition: 1.5s ease; }
 
-        /* Modal Ultra */
+        /* MODAIS */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; backdrop-filter: blur(20px); align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { 
-            background: var(--card); width: 100%; max-width: 1000px; height: 90vh; border-radius: 32px; 
-            border: 1px solid var(--border); display: flex; flex-direction: column; position: relative;
-            animation: modalIn 0.5s ease;
-        }
-        @keyframes modalIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .modal-content { background: var(--card); width: 100%; max-width: 1000px; height: 90vh; border-radius: 32px; border: 1px solid var(--border); display: flex; flex-direction: column; position: relative; }
+        
+        /* Modal ADM Específico */
+        .adm-modal-content { max-width: 500px; height: auto; padding: 30px; }
 
         .modal-header { padding: 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .modal-tabs { display: flex; gap: 30px; padding: 0 30px; background: rgba(0,0,0,0.2); }
-        .tab-btn { 
-            padding: 20px 0; background: none; border: none; color: #64748b; font-family: 'Rajdhani'; 
-            font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.9rem; letter-spacing: 2px;
-            position: relative;
-        }
+        .tab-btn { padding: 20px 0; background: none; border: none; color: #64748b; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.9rem; position: relative; }
         .tab-btn.active { color: var(--primary); }
         .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--primary); box-shadow: 0 0 10px var(--primary); }
 
@@ -87,53 +106,63 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
 
-        /* Grid de Brawlers Caprichado */
         .brawlers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .brawler-card {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 15px;
-            transition: 0.3s; cursor: pointer; text-align: center; position: relative;
-        }
-        .brawler-card:hover { background: rgba(255,255,255,0.05); border-color: var(--accent); }
-        .brawler-card b { display: block; font-family: 'Rajdhani'; font-size: 1.1rem; color: #fff; margin-bottom: 5px; }
-        .brawler-card span { font-size: 0.7rem; color: var(--primary); font-weight: 800; text-transform: uppercase; }
+        .brawler-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 15px; transition: 0.3s; cursor: pointer; text-align: center; }
+        .brawler-card:hover { border-color: var(--accent); }
 
-        /* Sub-PopUp de Build */
-        .build-panel {
-            position: absolute; inset: 0; background: var(--card); z-index: 10; padding: 30px; display: none;
-            flex-direction: column; overflow-y: auto;
-        }
-        .skill-group { margin-bottom: 25px; }
-        .skill-group h4 { font-size: 0.65rem; color: #64748b; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; }
-        .skill-item { 
-            background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 15px; border-radius: 15px;
-            margin-bottom: 8px; display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--primary);
-        }
+        .build-panel { position: absolute; inset: 0; background: var(--card); z-index: 10; padding: 30px; display: none; flex-direction: column; overflow-y: auto; }
+        .skill-item { background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 15px; border-radius: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--primary); }
         .skill-item.star { border-left-color: #ffd700; }
-        .skill-item.hyper { border-left-color: #ff4655; box-shadow: 0 0 15px rgba(255, 70, 85, 0.2); }
+        .skill-item.hyper { border-left-color: #ff4655; }
 
-        /* KPI do Jogador */
         .player-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .kpi-box { background: rgba(255,255,255,0.02); padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-        .kpi-box label { font-size: 0.6rem; color: #64748b; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        .kpi-box div { font-family: 'Rajdhani'; font-size: 1.8rem; font-weight: 700; color: #fff; margin-top: 5px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        @media (max-width: 768px) {
-            .member-grid { grid-template-columns: 1fr; }
-            .modal-content { height: 95vh; border-radius: 20px; }
-            .player-stats { grid-template-columns: 1fr 1fr; }
-        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1 class="logo">HORIZON COMMAND</h1>
-        </header>
+    <div id="loginScreen">
+        <div class="login-box">
+            <h2 style="font-family:'Rajdhani'; color:var(--primary); margin-bottom: 25px; letter-spacing: 3px;">IDENTIFICAÇÃO</h2>
+            <input type="text" id="userIn" class="input-cyber" placeholder="NOME DO MEMBRO" oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
+            <div id="passArea" style="display:none;">
+                <input type="password" id="passIn" class="input-cyber" placeholder="SENHA MESTRA">
+            </div>
+            <button class="btn-cyber" onclick="tryLogin()">Entrar no Sistema</button>
+        </div>
+    </div>
 
-        <div class="member-grid" id="memberList"></div>
+    <div id="mainContent">
+        <div class="container">
+            <header>
+                <h1 class="logo">HORIZON COMMAND</h1>
+                <div class="nav-tools">
+                    <i class="fas fa-cog adm-gear" id="admIcon" onclick="openAdmModal()"></i>
+                    <button onclick="logout()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size: 0.8rem; font-weight: 800;">LOGOUT</button>
+                </div>
+            </header>
+            <div class="member-grid" id="memberList"></div>
+        </div>
+    </div>
+
+    <div id="admModal" class="modal">
+        <div class="modal-content adm-modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <h2 style="font-family:'Rajdhani'; color:var(--danger);">CONFIGURAÇÕES DO SITE</h2>
+                <button onclick="closeAdmModal()" style="background:none; border:none; color:#fff; cursor:pointer;"><i class="fas fa-times"></i></button>
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="font-size:0.7rem; color:#64748b;">LOGS DE ACESSO</label>
+                <div id="loginLogs" style="background:#000; height:120px; border-radius:10px; padding:10px; font-size:0.7rem; overflow-y:auto; margin-top:5px; border:1px solid var(--border);"></div>
+            </div>
+            <div>
+                <label style="font-size:0.7rem; color:#64748b;">ELEGER ADMINISTRADOR</label>
+                <select id="promoteSelect" class="input-cyber" style="margin-top:5px; font-size:0.9rem;"></select>
+                <button class="btn-cyber" style="font-size:0.8rem; padding:10px;" onclick="promoteUser()">Confirmar Privilégios</button>
+            </div>
+        </div>
     </div>
 
     <div id="playerModal" class="modal">
@@ -159,32 +188,23 @@
                         <div class="kpi-box"><label>Saldo Sessão</label><div id="m-gain" style="color:var(--success)">+0</div></div>
                         <div class="kpi-box"><label>Exp Level</label><div id="m-exp">0</div></div>
                     </div>
-
                     <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px;">
                         <div style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 25px; border: 1px solid var(--border);">
                             <h3 style="font-family:'Rajdhani'; margin-bottom: 20px; color:var(--primary)">PROTOCOLO DE METAS</h3>
-                            <label style="font-size: 0.6rem; font-weight: 900; color: #64748b;">META DE TROFÉUS</label>
-                            <input type="number" id="inputMeta" style="width:100%; background:none; border:none; border-bottom: 2px solid var(--primary); color:#fff; font-size: 2.5rem; font-family:'Rajdhani'; margin-bottom: 30px; padding: 10px 0;">
-                            <button onclick="salvarMeta()" style="width:100%; padding:20px; border-radius:15px; background:var(--primary); color:#000; font-weight:900; border:none; cursor:pointer; font-size: 1rem; text-transform: uppercase; letter-spacing: 2px;">Atualizar Meta</button>
+                            <input type="number" id="inputMeta" style="width:100%; background:none; border:none; border-bottom: 2px solid var(--primary); color:#fff; font-size: 2.5rem; font-family:'Rajdhani'; margin-bottom: 30px;">
+                            <button onclick="salvarMeta()" class="btn-cyber">Atualizar Meta</button>
                         </div>
-                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                            <canvas id="winChart"></canvas>
-                        </div>
+                        <canvas id="winChart"></canvas>
                     </div>
                 </div>
 
                 <div id="tab-brawlers" class="tab-content" style="position: relative; height: 100%;">
-                    <div id="brawlersContainer">
-                        <div style="margin-bottom: 20px; position: sticky; top: 0; background: var(--card); padding: 10px 0; z-index: 5;">
-                            <input type="text" id="b-search" onkeyup="filterBrawlers()" placeholder="Localizar brawler..." style="width:100%; padding:15px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:15px; color:#fff;">
-                        </div>
-                        <div id="brawlersList" class="brawlers-grid"></div>
-                    </div>
-
+                    <input type="text" id="b-search" onkeyup="filterBrawlers()" placeholder="Filtrar brawler..." style="width:100%; padding:15px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:15px; color:#fff; margin-bottom:20px;">
+                    <div id="brawlersList" class="brawlers-grid"></div>
                     <div id="buildPanel" class="build-panel">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-                            <h2 id="b-title" style="font-family:'Rajdhani'; font-size: 2.5rem; color:var(--primary);">BRAWLER</h2>
-                            <button onclick="closeBuild()" style="background:var(--glass); border:1px solid var(--border); padding:10px 20px; border-radius:12px; color:#fff; cursor:pointer;">VOLTAR</button>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                            <h2 id="b-title" style="font-family:'Rajdhani'; font-size:2rem; color:var(--primary);"></h2>
+                            <button onclick="closeBuild()" class="btn-cyber" style="width:auto; padding:10px 20px;">VOLTAR</button>
                         </div>
                         <div id="skillList"></div>
                     </div>
@@ -194,11 +214,71 @@
     </div>
 
     <script>
-        let currentTag = "";
+        // CONFIGS ADM
+        const MASTER_NAME = "shiro";
+        const MASTER_PASS = "18172220";
+        
+        let currentUser = null;
+        let isAdmin = false;
         let metasGlobal = {};
         let initialTrophies = {};
         let winChart = null;
 
+        // LOGIN LOGIC
+        document.getElementById('userIn').addEventListener('input', (e) => {
+            document.getElementById('passArea').style.display = (e.target.value.toLowerCase() === MASTER_NAME) ? 'block' : 'none';
+        });
+
+        function tryLogin() {
+            const user = document.getElementById('userIn').value.toLowerCase();
+            const pass = document.getElementById('passIn').value;
+            
+            if(!user) return;
+
+            if(user === MASTER_NAME) {
+                if(pass === MASTER_PASS) { loginSuccess(user, true); }
+                else { alert("Senha Incorreta"); }
+            } else {
+                const localAdms = JSON.parse(localStorage.getItem('hz_adms') || '[]');
+                loginSuccess(user, localAdms.includes(user));
+            }
+        }
+
+        function loginSuccess(user, isAdm) {
+            currentUser = user; isAdmin = isAdm;
+            localStorage.setItem('hz_user', user);
+            localStorage.setItem('hz_isadm', isAdm);
+            
+            // Log access
+            let logs = JSON.parse(localStorage.getItem('hz_logs') || '[]');
+            logs.unshift(`${new Date().toLocaleTimeString()} - ${user} entrou`);
+            localStorage.setItem('hz_logs', JSON.stringify(logs.slice(0, 30)));
+
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            if(isAdm) document.getElementById('admIcon').style.display = 'block';
+            
+            updateDashboard();
+        }
+
+        // ADM PANEL FUNCTIONS
+        function openAdmModal() {
+            document.getElementById('admModal').style.display = 'flex';
+            document.getElementById('loginLogs').innerHTML = JSON.parse(localStorage.getItem('hz_logs') || '[]').map(l => `<div>${l}</div>`).join('');
+        }
+        function closeAdmModal() { document.getElementById('admModal').style.display = 'none'; }
+        
+        function promoteUser() {
+            const user = document.getElementById('promoteSelect').value;
+            let adms = JSON.parse(localStorage.getItem('hz_adms') || '[]');
+            if(!adms.includes(user)) {
+                adms.push(user);
+                localStorage.setItem('hz_adms', JSON.stringify(adms));
+                alert(user + " agora é Administrador.");
+            }
+        }
+
+        // CORE DASHBOARD (MANTIDO DO ANTERIOR)
         async function updateDashboard() {
             try {
                 const res = await fetch('/api/stats');
@@ -206,120 +286,91 @@
                 metasGlobal = data.metas || {};
                 const list = document.getElementById('memberList');
                 list.innerHTML = '';
+                
+                // Popula select de promoção no ADM
+                document.getElementById('promoteSelect').innerHTML = data.club.members.map(m => `<option value="${m.name.toLowerCase()}">${m.name}</option>`).join('');
 
                 data.club.members.sort((a,b) => b.trophies - a.trophies).forEach(m => {
                     if(!initialTrophies[m.tag]) initialTrophies[m.tag] = m.trophies;
                     const meta = metasGlobal[m.tag] || 0;
                     const percent = meta > 0 ? Math.floor(Math.min((m.trophies / meta) * 100, 100)) : 0;
                     
-                    const card = document.createElement('div');
-                    card.className = 'p-card';
-                    card.onclick = () => openModal(m.tag, m.name);
-                    card.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-                            <div><b style="font-family:'Rajdhani'; font-size:1.5rem; color:#fff;">${m.name}</b><br><small style="color:#64748b">${m.tag}</small></div>
-                            <b style="color:var(--primary); font-size:1.4rem; font-family:'Rajdhani';">${m.trophies.toLocaleString()}</b>
+                    const div = document.createElement('div');
+                    div.className = 'p-card';
+                    div.onclick = () => openModal(m.tag, m.name);
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b>${m.name}</b>
+                            <b style="color:var(--primary)">${m.trophies.toLocaleString()}</b>
                         </div>
                         <div class="meta-bar-container">
-                            <div class="meta-label"><span>Status da Meta</span><span>${percent}%</span></div>
+                            <div class="meta-label"><span>Progresso</span><span>${percent}%</span></div>
                             <div class="meta-track"><div class="meta-fill" style="width:${percent}%"></div></div>
-                            <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:0.6rem; color:#64748b;">
-                                <span>OBJETIVO: ${meta.toLocaleString()}</span>
-                            </div>
                         </div>
                     `;
-                    list.appendChild(card);
+                    list.appendChild(div);
                 });
             } catch(e) {}
         }
 
         async function openModal(tag, name) {
-            currentTag = tag;
             document.getElementById('playerModal').style.display = 'flex';
             document.getElementById('m-name').innerText = name;
             document.getElementById('m-tag').innerText = tag;
+            currentTag = tag;
+
+            const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
+            const p = await res.json();
+
+            const total = p['3vs3Victories'] + p.soloVictories + p.duoVictories;
+            document.getElementById('m-winrate').innerText = ((p['3vs3Victories'] / total) * 100).toFixed(1) + "%";
+            document.getElementById('m-high').innerText = p.highestTrophies;
+            document.getElementById('m-exp').innerText = p.expLevel;
+            document.getElementById('m-gain').innerText = (p.trophies - initialTrophies[tag]);
+            document.getElementById('inputMeta').value = metasGlobal[tag] || "";
             
-            try {
-                const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
-                const p = await res.json();
-                
-                // Stats
-                const totalWins = p['3vs3Victories'] + p.soloVictories + p.duoVictories;
-                document.getElementById('m-winrate').innerText = ((p['3vs3Victories'] / totalWins) * 100).toFixed(1) + "%";
-                document.getElementById('m-high').innerText = p.highestTrophies.toLocaleString();
-                document.getElementById('m-exp').innerText = p.expLevel;
-                const gain = p.trophies - (initialTrophies[tag] || p.trophies);
-                document.getElementById('m-gain').innerText = (gain >= 0 ? "+" : "") + gain;
-                document.getElementById('inputMeta').value = metasGlobal[tag] || "";
+            renderChart(p['3vs3Victories'], p.soloVictories, p.duoVictories);
 
-                renderChart(p['3vs3Victories'], p.soloVictories, p.duoVictories);
-
-                // Brawlers
-                const bList = document.getElementById('brawlersList');
-                bList.innerHTML = '';
-                p.brawlers.sort((a,b) => b.trophies - a.trophies).forEach(b => {
-                    const div = document.createElement('div');
-                    div.className = 'brawler-card';
-                    div.onclick = () => openBuild(b);
-                    div.innerHTML = `<b>${b.name}</b><span>${b.trophies} TR | LVL ${b.power}</span>`;
-                    bList.appendChild(div);
-                });
-            } catch(e) {}
+            const bList = document.getElementById('brawlersList');
+            bList.innerHTML = '';
+            p.brawlers.forEach(b => {
+                const card = document.createElement('div');
+                card.className = 'brawler-card';
+                card.onclick = () => openBuild(b);
+                card.innerHTML = `<b>${b.name}</b><span>${b.trophies} TR</span>`;
+                bList.appendChild(card);
+            });
         }
 
         function openBuild(b) {
             const panel = document.getElementById('buildPanel');
-            const list = document.getElementById('skillList');
-            document.getElementById('b-title').innerText = b.name.toUpperCase();
-            list.innerHTML = '';
+            document.getElementById('b-title').innerText = b.name;
             panel.style.display = 'flex';
-
-            let html = '<div class="skill-group"><h4>Acessórios</h4>';
-            (b.gadgets || []).forEach(g => html += `<div class="skill-item"><i class="fas fa-bolt" style="color:var(--success)"></i> ${g.name}</div>`);
-            
-            html += '<h4>Poderes de Estrela</h4>';
-            (b.starPowers || []).forEach(s => html += `<div class="skill-item star"><i class="fas fa-star" style="color:#ffd700"></i> ${s.name}</div>`);
-            
-            if(b.power >= 11) {
-                html += '<h4>Habilidades Especiais</h4><div class="skill-item hyper"><i class="fas fa-zap" style="color:#ff4655"></i> HYPERCHARGE</div>';
-            }
-            list.innerHTML = html + '</div>';
+            let h = '<h4>Build Equipada</h4>';
+            (b.gadgets || []).forEach(g => h += `<div class="skill-item"><i class="fas fa-bolt"></i> ${g.name}</div>`);
+            (b.starPowers || []).forEach(s => h += `<div class="skill-item star"><i class="fas fa-star"></i> ${s.name}</div>`);
+            if(b.power >= 11) h += `<div class="skill-item hyper"><i class="fas fa-zap"></i> HYPERCHARGE</div>`;
+            document.getElementById('skillList').innerHTML = h;
         }
 
         function closeBuild() { document.getElementById('buildPanel').style.display = 'none'; }
-
-        function filterBrawlers() {
-            const q = document.getElementById('b-search').value.toUpperCase();
-            document.querySelectorAll('.brawler-card').forEach(c => {
-                c.style.display = c.innerText.includes(q) ? 'block' : 'none';
-            });
-        }
-
-        function renderChart(v3, solo, duo) {
-            const ctx = document.getElementById('winChart').getContext('2d');
-            if(winChart) winChart.destroy();
-            winChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['3vs3', 'Solo', 'Duo'],
-                    datasets: [{
-                        data: [v3, solo, duo],
-                        backgroundColor: ['#00f2ff', '#00ff88', '#bc13fe'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { 
-                    cutout: '80%', 
-                    plugins: { legend: { display: false } }
-                }
-            });
-        }
-
+        function closeModal() { document.getElementById('playerModal').style.display = 'none'; closeBuild(); }
+        
         function switchTab(id, btn) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             btn.classList.add('active');
+        }
+
+        function renderChart(v3, s, d) {
+            const ctx = document.getElementById('winChart').getContext('2d');
+            if(winChart) winChart.destroy();
+            winChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: { datasets: [{ data: [v3, s, d], backgroundColor: ['#00f2ff', '#00ff88', '#bc13fe'], borderWidth: 0 }] },
+                options: { cutout: '80%', plugins: { legend: { display: false } } }
+            });
         }
 
         async function salvarMeta() {
@@ -329,14 +380,22 @@
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ tag: currentTag, meta: val })
             });
-            closeModal();
-            updateDashboard();
+            closeModal(); updateDashboard();
         }
 
-        function closeModal() { document.getElementById('playerModal').style.display = 'none'; closeBuild(); }
-        
-        updateDashboard();
-        setInterval(updateDashboard, 30000);
+        function logout() { localStorage.clear(); location.reload(); }
+
+        window.onload = () => {
+            const saved = localStorage.getItem('hz_user');
+            if(saved) loginSuccess(saved, localStorage.getItem('hz_isadm') === 'true');
+        };
+
+        function filterBrawlers() {
+            const q = document.getElementById('b-search').value.toUpperCase();
+            document.querySelectorAll('.brawler-card').forEach(c => {
+                c.style.display = c.innerText.includes(q) ? 'block' : 'none';
+            });
+        }
     </script>
 </body>
 </html>
