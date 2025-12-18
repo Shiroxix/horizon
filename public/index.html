@@ -3,204 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Troféus - Brawl Club</title>
+    <title>Horizon Pro Hub | Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&family=Inter:wght@400;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f0f2f5;
-            --card: rgba(255, 255, 255, 0.8);
-            --primary: #3498db;
-            --text: #2c3e50;
-            --accent: #f1c40f;
+            --primary: #00e5ff; --accent: #7000ff; --bg: #0a0e17;
+            --card-bg: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1);
+            --gold: #ffc107; --silver: #e2e8f0; --bronze: #cd7f32;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text);
-            padding: 20px;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', sans-serif; background: var(--bg); color: white; 
+            background-image: radial-gradient(circle at 50% 0%, #1a1f35 0%, #0a0e17 100%);
+            min-height: 100vh; padding-bottom: 50px;
         }
-
-        /* Container Principal com Glassmorphism */
-        .dashboard {
-            background: var(--card);
-            backdrop-filter: blur(15px);
-            border-radius: 24px;
-            width: 100%;
-            max-width: 450px;
-            padding: 2rem;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.3);
-            animation: fadeIn 0.8s ease-out;
+        .header { 
+            padding: 30px 20px; text-align: center; border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(10px); sticky; top: 0; z-index: 10;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .header { text-align: center; margin-bottom: 2rem; }
-        .header h1 { font-size: 1.5rem; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.2); background: rgba(0,0,0,0.2); display: inline-block; padding: 5px 20px; border-radius: 50px; }
-
-        /* Status de Totalização */
-        .total-box {
-            background: rgba(255,255,255,0.9);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-
-        .total-box span { font-size: 2rem; font-weight: 800; color: var(--primary); display: block; }
-
-        /* Lista de Membros */
-        .member-card {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: 0.3s;
-            animation: slideIn 0.5s ease-out both;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .info-player { display: flex; flex-direction: column; }
-        .player-name { font-weight: 700; font-size: 1.1rem; }
-        .player-rank { font-size: 0.8rem; color: #7f8c8d; }
-
-        /* Controles de Troféus */
-        .trophy-controls { display: flex; align-items: center; gap: 10px; }
+        .logo { font-family: 'Rajdhani', sans-serif; font-size: 2rem; font-weight: 800; letter-spacing: 2px; color: var(--primary); text-shadow: 0 0 15px rgba(0,229,255,0.5); }
         
-        .trophy-count {
-            background: #fdfaf0;
-            padding: 5px 12px;
-            border-radius: 10px;
-            font-weight: 800;
-            color: #e67e22;
-            border: 1px solid #fcebb6;
-            min-width: 60px;
-            text-align: center;
+        .stats-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
+            gap: 15px; padding: 20px; max-width: 1000px; margin: auto;
         }
+        .mini-stat { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
+        .mini-stat span { display: block; font-size: 0.7rem; color: #94a3b8; text-transform: uppercase; margin-bottom: 5px; }
+        .mini-stat b { font-size: 1.2rem; color: var(--primary); }
 
-        .btn-update {
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            transition: 0.2s;
+        .members-container {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px; padding: 20px; max-width: 1200px; margin: auto;
         }
+        .player-card {
+            background: var(--card-bg); border-radius: 16px; border: 1px solid var(--border);
+            padding: 20px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; position: relative; overflow: hidden;
+        }
+        .player-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .player-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--accent);
+        }
+        .role-VP::before { background: var(--gold); }
+        .role-P::before { background: #ff4d4d; }
 
-        .btn-plus { background: #2ecc71; color: white; }
-        .btn-minus { background: #e74c3c; color: white; }
-        .btn-update:hover { transform: scale(1.1); filter: brightness(1.1); }
-        .btn-update:active { transform: scale(0.9); }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .p-name { font-weight: 800; font-size: 1.1rem; }
+        .p-tag { font-size: 0.7rem; color: #64748b; font-weight: bold; }
+        .p-role { font-size: 0.6rem; background: rgba(255,255,255,0.1); padding: 3px 8px; border-radius: 20px; margin-top: 5px; display: inline-block; }
 
+        .trophy-count { font-size: 1.4rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .trophy-count::before { content: '🏆'; font-size: 1.1rem; }
+
+        /* Modal / Pop-up */
+        .modal { 
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); 
+            z-index: 100; backdrop-filter: blur(8px); padding: 20px; align-items: center; justify-content: center;
+        }
+        .modal-content { 
+            background: #161b22; width: 100%; max-width: 400px; border-radius: 24px; 
+            padding: 30px; position: relative; border: 1px solid var(--primary);
+        }
+        .close-modal { position: absolute; top: 20px; right: 20px; font-size: 1.5rem; cursor: pointer; color: #64748b; }
+        
+        .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .detail-row span { color: #94a3b8; font-size: 0.9rem; }
+        .detail-row b { color: #fff; }
+
+        .btn-action {
+            width: 100%; padding: 15px; margin-top: 20px; border-radius: 12px; border: none;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            color: white; font-weight: 800; cursor: pointer;
+        }
     </style>
 </head>
 <body>
-
-    <div class="dashboard">
-        <div class="header">
-            <h1>🏆 Brawl Manager</h1>
-        </div>
-
-        <div class="total-box">
-            <small>Total do Clube</small>
-            <span id="totalTrofeus">0</span>
-        </div>
-
-        <div id="memberContainer">
-            </div>
+    <div class="header">
+        <div class="logo">HORIZON PRO HUB</div>
+        <div id="clubInfo" style="color: #64748b; font-size: 0.8rem; margin-top: 10px;">Carregando dados do clube...</div>
     </div>
 
-    <script>
-        // Dados Iniciais dos Membros
-        let membros = [
-            { id: 1, nome: "Arthur Pro", trofeus: 12500 },
-            { id: 2, nome: "Beatriz Star", trofeus: 11200 },
-            { id: 3, nome: "Caio Gamer", trofeus: 9800 }
-        ];
+    <div class="stats-grid" id="globalStats">
+        </div>
 
-        // Função de som sutil (Web Audio API)
-        function playPopSound(freq = 400) {
-            const context = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = context.createOscillator();
-            const gain = context.createGain();
+    <div class="members-container" id="memberList">
+        </div>
 
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, context.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
-            
-            gain.gain.setValueAtTime(0.05, context.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 0.1);
-
-            osc.connect(gain);
-            gain.connect(context.destination);
-            osc.start();
-            osc.stop(context.currentTime + 0.1);
-        }
-
-        function renderizarMembros() {
-            const container = document.getElementById('memberContainer');
-            const totalDisplay = document.getElementById('totalTrofeus');
-            container.innerHTML = '';
-            let total = 0;
-
-            membros.forEach((m, index) => {
-                total += m.trofeus;
-                const card = document.createElement('div');
-                card.className = 'member-card';
-                card.style.animationDelay = `${index * 0.1}s`;
+    <div id="playerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <div id="modalData">
+                <h2 id="m-name" style="font-size: 1.8rem; margin-bottom: 5px;">Nome</h2>
+                <p id="m-tag" style="color: var(--primary); margin-bottom: 20px;">#TAG</p>
+                <div class="detail-row"><span>Troféus Atuais</span><b id="m-trophies">0</b></div>
+                <div class="detail-row"><span>Maior Recorde</span><b id="m-highest">0</b></div>
+                <div class="detail-row"><span>Vitórias 3v3</span><b id="m-3v3">0</b></div>
+                <div class="detail-row"><span>Vitórias Solo</span><b id="m-solo">0</b></div>
+                <div class="detail-row"><span>Nível da Conta</span><b id="m-level">0</b></div>
                 
-                card.innerHTML = `
-                    <div class="info-player">
-                        <span class="player-name">${m.nome}</span>
-                        <span class="player-rank">Membro Ativo</span>
-                    </div>
-                    <div class="trophy-controls">
-                        <button class="btn-update btn-minus" onclick="updateTrophy(${m.id}, -100)">-</button>
-                        <div class="trophy-count">${m.trofeus.toLocaleString()}</div>
-                        <button class="btn-update btn-plus" onclick="updateTrophy(${m.id}, 100)">+</button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+                <div style="margin-top: 20px;">
+                    <label style="font-size: 0.7rem; color: #64748b;">DEFINIR META DE TROFÉUS</label>
+                    <input type="number" id="inputMeta" style="width:100%; padding:10px; border-radius:8px; background: #0a0e17; border:1px solid var(--border); color:white; margin-top:5px;">
+                </div>
+                <button class="btn-action" onclick="salvarMeta()">SALVAR CONFIGURAÇÕES</button>
+            </div>
+        </div>
+    </div>
 
-            totalDisplay.innerText = total.toLocaleString();
-        }
-
-        function updateTrophy(id, valor) {
-            const membro = membros.find(m => m.id === id);
-            if (membro) {
-                membro.trofeus += valor;
-                if (membro.trofeus < 0) membro.trofeus = 0;
-                
-                // Toca som: Agudo para mais, grave para menos
-                playPopSound(valor > 0 ? 600 : 300);
-                
-                renderizarMembros();
-            }
-        }
-
-        // Inicialização
-        renderizarMembros();
-    </script>
+    <script src="client.js"></script>
 </body>
 </html>
