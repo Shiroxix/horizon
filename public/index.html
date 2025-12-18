@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Painel | Ultra Management</title>
+    <title>Horizon Painel | Elite Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,42 +21,52 @@
         header { text-align: center; padding: 40px 0; }
         .logo { font-family: 'Rajdhani', sans-serif; font-size: 3rem; font-weight: 700; color: var(--primary); text-shadow: 0 0 20px rgba(0,242,255,0.4); letter-spacing: 4px; text-transform: uppercase; }
 
-        /* Abas */
+        /* Navegação */
         .tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
         .tab-btn { background: var(--card); border: 1px solid rgba(255,255,255,0.1); color: #64748b; padding: 12px 25px; border-radius: 12px; cursor: pointer; font-family: 'Rajdhani'; font-weight: 700; transition: 0.3s; text-transform: uppercase; }
         .tab-btn.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,255,0.3); }
 
-        /* Grid e Cards */
         .content-section { display: none; }
         .content-section.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Grid Membros */
         .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
         .p-card { background: var(--card); border-radius: 20px; padding: 25px; border: 1px solid rgba(255,255,255,0.03); cursor: pointer; position: relative; overflow: hidden; transition: 0.3s; }
         .p-card:hover { transform: translateY(-5px); border-color: var(--primary); }
         .p-card::after { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: var(--primary); }
 
-        /* Modal Expandido */
+        /* Modal */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 100; backdrop-filter: blur(15px); align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 900px; max-height: 90vh; border-radius: 30px; padding: 35px; border: 1px solid rgba(0,242,255,0.2); overflow-y: auto; position: relative; }
+        .modal-content { background: var(--card); width: 100%; max-width: 950px; max-height: 90vh; border-radius: 30px; padding: 35px; border: 1px solid rgba(0,242,255,0.2); overflow-y: auto; position: relative; }
 
-        .modal-tabs { display: flex; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); margin: 20px 0; }
+        .modal-tabs { display: flex; gap: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin: 20px 0; }
         .m-tab { padding: 10px 0; cursor: pointer; color: #64748b; font-weight: 700; font-size: 0.8rem; text-transform: uppercase; border-bottom: 2px solid transparent; }
         .m-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 
-        /* Brawlers Grid */
-        .brawlers-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 20px; }
-        .b-card { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .b-card.locked { opacity: 0.4; filter: grayscale(1); border-style: dashed; }
-        .b-name { font-size: 0.75rem; font-weight: 900; color: #fff; text-transform: uppercase; }
-        .b-level { font-size: 0.65rem; color: var(--primary); font-weight: 800; display: block; margin-top: 4px; }
-        .b-streak { font-size: 0.6rem; color: var(--success); display: block; }
+        /* Busca e Brawlers */
+        .search-wrapper { margin-bottom: 20px; position: relative; }
+        .search-input { width: 100%; padding: 12px 40px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; }
+        .search-icon { position: absolute; left: 15px; top: 14px; color: #64748b; }
 
-        /* Scrollbar Custom */
+        .brawlers-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+        .b-card { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; cursor: help; }
+        .b-card:not(.locked):hover { border-color: var(--primary); background: rgba(0,242,255,0.05); }
+        .b-card.locked { opacity: 0.3; filter: grayscale(1); border-style: dashed; }
+        
+        .b-build-icons { display: flex; justify-content: center; gap: 4px; margin-top: 8px; font-size: 0.7rem; }
+        .b-icon { width: 18px; height: 18px; border-radius: 4px; display: flex; align-items: center; justify-content: center; background: #222; border: 1px solid #444; }
+        .b-icon.gadget { color: var(--success); }
+        .b-icon.star { color: #ffd700; }
+        .b-icon.gear { color: var(--accent); }
+
+        /* Globais */
+        .global-card { background: var(--card); border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
+        .global-val { font-family: 'Rajdhani'; font-size: 2.5rem; font-weight: 700; color: var(--primary); display: block; }
+        .global-label { color: #64748b; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
+
         .modal-content::-webkit-scrollbar { width: 6px; }
         .modal-content::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-
-        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
     </style>
 </head>
 <body>
@@ -64,7 +74,7 @@
     <div class="container">
         <header>
             <h1 class="logo">HORIZON PAINEL</h1>
-            <p id="clubStatus" style="font-size: 0.7rem; color: var(--accent); font-weight: 900; letter-spacing: 3px;">CONNECTING...</p>
+            <p id="clubStatus" style="font-size: 0.7rem; color: var(--accent); font-weight: 900; letter-spacing: 3px;">INITIALIZING...</p>
         </header>
 
         <div class="tabs">
@@ -77,40 +87,61 @@
         </div>
 
         <div id="stats" class="content-section">
-            <div id="globalStats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;"></div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <div class="global-card">
+                    <span class="global-label">Média de Troféus/Membro</span>
+                    <span id="g-avg" class="global-val">0</span>
+                </div>
+                <div class="global-card">
+                    <span class="global-label">Total de Vitórias 3v3 do Clube</span>
+                    <span id="g-wins" class="global-val">0</span>
+                </div>
+                <div class="global-card">
+                    <span class="global-label">Participação na Meta</span>
+                    <span id="g-meta" class="global-val">0%</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="playerModal" class="modal">
         <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; justify-content: space-between;">
                 <div>
-                    <h2 id="m-name" style="font-family: 'Rajdhani'; font-size: 2.5rem; color: #fff;">-</h2>
-                    <p id="m-tag" style="color: var(--primary); font-weight: 700; letter-spacing: 1px;">#TAG</p>
+                    <h2 id="m-name" style="font-family: 'Rajdhani'; font-size: 2.5rem;">-</h2>
+                    <p id="m-tag" style="color: var(--primary); font-weight: 700;">#TAG</p>
                 </div>
                 <button onclick="closeModal()" style="background:none; border:none; color:#64748b; font-size: 1.5rem; cursor:pointer;"><i class="fas fa-times"></i></button>
             </div>
 
             <div class="modal-tabs">
                 <div class="m-tab active" onclick="switchModalTab('m-geral')" id="tab-geral">Geral</div>
-                <div class="m-tab" onclick="switchModalTab('m-brawlers')" id="tab-brawlers">Análise de Brawlers</div>
+                <div class="m-tab" onclick="switchModalTab('m-brawlers')" id="tab-brawlers">Brawlers & Builds</div>
             </div>
 
             <div id="m-geral" class="modal-section">
-                <div class="detail-row"><span>Recorde de Troféus</span><b id="m-high" style="color:#ffd700">0</b></div>
-                <div class="detail-row"><span>Vitórias 3v3</span><b id="m-3v3">0</b></div>
-                <div class="detail-row"><span>Vitórias Solo</span><b id="m-solo">0</b></div>
-                <div class="detail-row"><span>Vitórias Duo</span><b id="m-duo">0</b></div>
-                
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div style="background:rgba(255,255,255,0.02); padding: 20px; border-radius: 15px;">
+                        <p style="color:#64748b; font-size: 0.7rem; text-transform: uppercase;">Recorde Histórico</p>
+                        <b id="m-high" style="font-size: 1.5rem; color:#ffd700">0</b>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.02); padding: 20px; border-radius: 15px;">
+                        <p style="color:#64748b; font-size: 0.7rem; text-transform: uppercase;">Vitórias 3vs3</p>
+                        <b id="m-3v3" style="font-size: 1.5rem; color:var(--primary)">0</b>
+                    </div>
+                </div>
                 <div style="margin-top: 25px;">
-                    <label style="font-size: 0.7rem; color: var(--primary); font-weight: 900;">META DE EVOLUÇÃO</label>
-                    <input type="number" id="inputMeta" style="width:100%; padding:15px; border-radius:12px; background:#05070a; border:1px solid #333; color:#fff; margin-top:10px; font-weight: 900;">
-                    <button onclick="salvarMeta()" style="width:100%; padding:15px; background:var(--primary); color:#000; font-weight:800; border:none; border-radius:12px; margin-top:15px; cursor:pointer;">SALVAR ALTERAÇÕES</button>
+                    <label style="font-size: 0.7rem; color: var(--primary); font-weight: 900;">ATUALIZAR META DO JOGADOR</label>
+                    <input type="number" id="inputMeta" style="width:100%; padding:15px; border-radius:12px; background:#05070a; border:1px solid #333; color:#fff; margin-top:10px;">
+                    <button onclick="salvarMeta()" style="width:100%; padding:15px; background:var(--primary); color:#000; font-weight:800; border:none; border-radius:12px; margin-top:15px; cursor:pointer;">CONFIRMAR PROTOCOLO</button>
                 </div>
             </div>
 
             <div id="m-brawlers" class="modal-section" style="display:none;">
-                <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 15px;">* Exibindo todos os Brawlers e Streaks atuais.</p>
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="brawlerSearch" class="search-input" placeholder="Pesquisar brawler..." onkeyup="filterBrawlers()">
+                </div>
                 <div id="brawlersList" class="brawlers-container"></div>
             </div>
         </div>
@@ -120,9 +151,10 @@
         let initialTrophies = {}; 
         let currentTagOpen = "";
         let metasGlobal = {};
-        
-        // Lista completa de brawlers para checagem (Atualize conforme novos saírem)
-        const ALL_BRAWLERS = ["SHELLY", "COLT", "BULL", "BROCK", "RICO", "SPIKE", "CROW", "LEON", "GENE", "MORTIS", "TARA", "PIPER", "PAM", "FRANK", "BIBI", "BEA", "NANI", "EDGAR", "STU", "BUZZ", "FANG", "SURGE", "COLETTE", "LOU", "RUFFS", "BELLE", "ASH", "LOLA", "EVE", "JANET", "OTIS", "SAM", "BUSTER", "MANDY", "R-T", "MAISIE", "HANK", "CORDELIUS", "DOUG", "PEARL", "CHUCK", "CHARLIE", "MICO", "KIT", "LARRY & LAWRIE", "MELODIE", "ANGELO", "DRACO", "LILY", "CLANCY", "BERRY", "MOE", "KENJI", "JUJU", "CHADE"];
+        let currentPlayerBrawlers = [];
+
+        // Lista de Brawlers atualizada (Sem o brawler inexistente "Chade")
+        const ALL_BRAWLERS = ["SHELLY", "NITA", "COLT", "BULL", "BROCK", "EL PRIMO", "BARLEY", "POCO", "ROSA", "RICO", "DARRYL", "PENNY", "CARL", "JACKY", "GUS", "PIPER", "PAM", "FRANK", "BIBI", "BEA", "NANI", "EDGAR", "GRIFF", "GROM", "BONNIE", "MORTIS", "TARA", "GENE", "MAX", "P", "SPROUT", "BYRON", "SQUEAK", "LOU", "RUFFS", "BELLE", "BUZZ", "ASH", "LOLA", "FANG", "EVE", "JANET", "OTIS", "SAM", "BUSTER", "MANDY", "R-T", "MAISIE", "HANK", "PEARL", "SPIKE", "CROW", "LEON", "SANDY", "AMBER", "MEG", "SURGE", "COLETTE", "STU", "CORDELIUS", "DOUG", "CHUCK", "CHARLIE", "MICO", "KIT", "LARRY & LAWRIE", "MELODIE", "ANGELO", "DRACO", "LILY", "CLANCY", "BERRY", "MOE", "KENJI", "JUJU"];
 
         async function updateDashboard() {
             try {
@@ -130,26 +162,31 @@
                 const data = await res.json();
                 metasGlobal = data.metas || {};
                 
+                // Atualiza Status Globais
+                const totalTr = data.club.trophies;
+                const membersCount = data.club.members.length;
+                document.getElementById('g-avg').innerText = Math.floor(totalTr / (membersCount || 1)).toLocaleString();
                 document.getElementById('clubStatus').innerText = "SYSTEMS ONLINE // " + data.club.name.toUpperCase();
 
+                // Lógica de Renderização de Membros
                 const list = document.getElementById('memberList');
                 list.innerHTML = '';
+                let total3v3 = 0;
 
                 data.club.members.sort((a,b) => b.trophies - a.trophies).forEach(m => {
-                    if(!initialTrophies[m.tag]) initialTrophies[m.tag] = m.trophies;
                     const meta = metasGlobal[m.tag] || 0;
                     const percent = meta > 0 ? Math.min((m.trophies / meta) * 100, 100) : 0;
-
                     const card = document.createElement('div');
                     card.className = `p-card role-${m.role}`;
                     card.onclick = () => openModal(m.tag, m.name);
                     card.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div><p style="font-family:'Rajdhani'; font-size:1.4rem; font-weight:700;">${m.name}</p></div>
-                            <div style="text-align:right"><p style="color:var(--primary); font-weight:900;">${m.trophies.toLocaleString()}</p></div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <p style="font-family:'Rajdhani'; font-size:1.3rem; font-weight:700;">${m.name}</p>
+                            <p style="color:var(--primary); font-weight:900;">${m.trophies.toLocaleString()}</p>
                         </div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: ${percent}%"></div></div>
-                        <p style="font-size:0.6rem; color:#64748b; margin-top:5px;">META: ${meta > 0 ? meta.toLocaleString() : '---'}</p>
+                        <div style="background:rgba(255,255,255,0.05); height:4px; border-radius:10px; margin-top:8px;">
+                            <div style="background:var(--primary); height:100%; width:${percent}%; transition:1s;"></div>
+                        </div>
                     `;
                     list.appendChild(card);
                 });
@@ -167,41 +204,60 @@
             try {
                 const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
                 const p = await res.json();
+                currentPlayerBrawlers = p.brawlers;
 
                 document.getElementById('m-high').innerText = p.highestTrophies.toLocaleString();
                 document.getElementById('m-3v3').innerText = p['3vs3Victories'].toLocaleString();
-                document.getElementById('m-solo').innerText = p.soloVictories.toLocaleString();
-                document.getElementById('m-duo').innerText = (p.duoVictories || 0).toLocaleString();
-
-                // Processamento de Brawlers
-                const bList = document.getElementById('brawlersList');
-                bList.innerHTML = '';
                 
-                const ownedBrawlersNames = p.brawlers.map(b => b.name.toUpperCase());
-
-                // Mostrar os que tem
-                p.brawlers.sort((a,b) => b.trophies - a.trophies).forEach(b => {
-                    const bCard = document.createElement('div');
-                    bCard.className = 'b-card';
-                    bCard.innerHTML = `
-                        <span class="b-name">${b.name}</span>
-                        <span class="b-level">POWER ${b.power}</span>
-                        <span class="b-streak"><i class="fas fa-fire"></i> ${b.trophies} TR</span>
-                    `;
-                    bList.appendChild(bCard);
-                });
-
-                // Mostrar os que NÃO tem
-                ALL_BRAWLERS.forEach(name => {
-                    if(!ownedBrawlersNames.includes(name)) {
-                        const bCard = document.createElement('div');
-                        bCard.className = 'b-card locked';
-                        bCard.innerHTML = `<span class="b-name">${name}</span><span class="b-level">BLOQUEADO</span>`;
-                        bList.appendChild(bCard);
-                    }
-                });
-
+                renderBrawlers(p.brawlers);
             } catch(e) { console.log(e); }
+        }
+
+        function renderBrawlers(owned) {
+            const list = document.getElementById('brawlersList');
+            list.innerHTML = '';
+            const ownedNames = owned.map(b => b.name.toUpperCase());
+
+            // Renderiza possuídos
+            owned.sort((a,b) => b.trophies - a.trophies).forEach(b => {
+                const card = document.createElement('div');
+                card.className = 'b-card';
+                card.dataset.name = b.name.toUpperCase();
+                
+                // Build indicators (Gadgets, Star Powers, Gears)
+                const gadgets = b.gadgets ? b.gadgets.length : 0;
+                const stars = b.starPowers ? b.starPowers.length : 0;
+                const gears = b.gears ? b.gears.length : 0;
+
+                card.innerHTML = `
+                    <div style="font-weight:900; font-size:0.75rem; color:#fff;">${b.name}</div>
+                    <div style="font-size:0.6rem; color:var(--primary);">LVL ${b.power} • ${b.trophies} TR</div>
+                    <div class="b-build-icons">
+                        <div class="b-icon gadget" title="Gadgets"><i class="fas fa-bolt"></i><span>${gadgets}</span></div>
+                        <div class="b-icon star" title="Star Powers"><i class="fas fa-star"></i><span>${stars}</span></div>
+                        <div class="b-icon gear" title="Gears"><i class="fas fa-cog"></i><span>${gears}</span></div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+
+            // Renderiza bloqueados
+            ALL_BRAWLERS.forEach(name => {
+                if(!ownedNames.includes(name)) {
+                    const card = document.createElement('div');
+                    card.className = 'b-card locked';
+                    card.dataset.name = name;
+                    card.innerHTML = `<div style="font-size:0.75rem;">${name}</div><div style="font-size:0.6rem;">BLOQUEADO</div>`;
+                    list.appendChild(card);
+                }
+            });
+        }
+
+        function filterBrawlers() {
+            const query = document.getElementById('brawlerSearch').value.toUpperCase();
+            document.querySelectorAll('.b-card').forEach(card => {
+                card.style.display = card.dataset.name.includes(query) ? 'block' : 'none';
+            });
         }
 
         function switchTab(id) {
@@ -215,23 +271,11 @@
             document.querySelectorAll('.modal-section').forEach(s => s.style.display = 'none');
             document.querySelectorAll('.m-tab').forEach(t => t.classList.remove('active'));
             document.getElementById(id).style.display = 'block';
-            if(id === 'm-geral') document.getElementById('tab-geral').classList.add('active');
-            else document.getElementById('tab-brawlers').classList.add('active');
-        }
-
-        async function salvarMeta() {
-            const val = document.getElementById('inputMeta').value;
-            await fetch('/api/save-meta', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ tag: currentTagOpen, meta: val })
-            });
-            closeModal();
-            updateDashboard();
+            document.getElementById('tab-' + id.split('-')[1]).classList.add('active');
         }
 
         function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
-        
+
         updateDashboard();
         setInterval(updateDashboard, 40000);
     </script>
