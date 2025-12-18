@@ -3,63 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Pro Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <title>Interface Premium Clean</title>
     <style>
-        :root { --primary: #00f2ff; --accent: #bc13fe; --bg: #05070a; --card: #11161d; --text: #f0f0f0; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
-        .container { max-width: 1200px; margin: auto; padding: 20px; }
-        header { text-align: center; padding: 40px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .logo { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--primary); text-shadow: 0 0 15px rgba(0,242,255,0.4); }
-        
-        .top-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 30px 0; }
-        .stat-box { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
-        
-        .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .p-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; cursor: pointer; position: relative; }
-        .p-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .p-card::after { content: ''; position: absolute; left: 0; top: 0; width: 4px; height: 100%; background: var(--accent); border-radius: 10px 0 0 10px; }
-        .role-president::after { background: #ff4655; }
-        .role-vicePresident::after { background: #ffd700; }
+        /* Reset e Fontes */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
 
-        .progress-bar { background: rgba(255,255,255,0.05); height: 8px; border-radius: 10px; margin-top: 15px; overflow: hidden; }
-        .progress-fill { background: linear-gradient(90deg, var(--accent), var(--primary)); height: 100%; transition: 1s; }
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            overflow: hidden;
+        }
 
-        /* Pop-up */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; backdrop-filter: blur(10px); align-items: center; justify-content: center; padding: 20px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 450px; border-radius: 30px; padding: 40px; border: 1px solid var(--primary); position: relative; }
-        .detail-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .btn-save { width: 100%; padding: 18px; margin-top: 25px; border-radius: 15px; border: none; background: var(--primary); color: #000; font-weight: 900; cursor: pointer; }
-        .delta-badge { padding: 4px 10px; border-radius: 8px; font-weight: 900; font-size: 0.9rem; }
+        /* Animação de entrada do Background */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(100, 149, 237, 0.2);
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes float {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(20%, 20%); }
+        }
+
+        /* Card Principal (Glassmorphism) */
+        .card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            
+            /* Animação de surgimento */
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeIn 1.2s forwards cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #2d3436;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        p {
+            color: #636e72;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        /* Botão Minimalista com Micro-interação */
+        .btn {
+            background: #2d3436;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .btn:hover {
+            background: #000;
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Efeito de brilho ao passar o mouse */
+        .card:hover {
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1 class="logo">HORIZON PRO HUB</h1>
-            <p id="clubStatus">CONECTANDO À API...</p>
-        </header>
-        <div class="top-stats" id="globalStats"></div>
-        <div class="member-grid" id="memberList"></div>
+
+    <div class="card">
+        <h1>Bem-vindo</h1>
+        <p>Esta é uma interface limpa, focada em experiência do usuário e suavidade visual.</p>
+        <button class="btn" id="sndBtn">Interagir</button>
     </div>
 
-    <div id="playerModal" class="modal">
-        <div class="modal-content">
-            <h2 id="m-name" style="font-size: 2rem; font-weight: 900;">Nome</h2>
-            <p id="m-tag" style="color: var(--primary); font-weight: 700; margin-bottom: 25px;">#TAG</p>
-            <div class="detail-row"><span>Ganhos (24h)</span><b id="m-24h" class="delta-badge">0</b></div>
-            <div class="detail-row"><span>Recorde</span><b id="m-high">0</b></div>
-            <div class="detail-row"><span>Vitórias 3v3</span><b id="m-3v3">0</b></div>
-            <div class="detail-row"><span>Vitórias Solo</span><b id="m-solo">0</b></div>
-            <div style="margin-top: 20px;">
-                <label style="font-size: 0.7rem; color: #64748b; font-weight: 900;">META DE TROFÉUS</label>
-                <input type="number" id="inputMeta" style="width:100%; padding:15px; border-radius:12px; background:#05070a; border:1px solid #333; color:#fff; margin-top:10px;">
-            </div>
-            <button class="btn-save" onclick="salvarMeta()">SALVAR ALTERAÇÕES</button>
-            <button onclick="closeModal()" style="width:100%; background:none; border:none; color:#64748b; margin-top:15px; cursor:pointer;">Fechar</button>
-        </div>
-    </div>
-    <script src="client.js"></script>
+    <script>
+        // Função para gerar um som "Clean" via Web Audio API
+        const playSoftSound = () => {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            oscillator.type = 'sine'; // Som suave (senoidal)
+            oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // Frequência média
+            oscillator.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime); // Volume baixo
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.1);
+        };
+
+        // Evento do botão
+        const button = document.getElementById('sndBtn');
+        button.addEventListener('click', () => {
+            playSoftSound();
+            // Pequeno feedback visual extra
+            button.innerText = "Sucesso!";
+            setTimeout(() => button.innerText = "Interagir", 1000);
+        });
+    </script>
 </body>
 </html>
