@@ -1,108 +1,93 @@
-let dadosIniciais = JSON.parse(localStorage.getItem('dados_iniciais')) || {};
-let currentPlayerTag = "";
+let currentTag = "";
 
-async function atualizarClube() {
+async function carregarClube() {
     try {
-        const res = await fetch(`/api/stats?t=${Date.now()}`);
-        const data = await res.json();
-        const container = document.getElementById('listaPlayers');
-        if (!data.club || !data.club.members) return;
-
-        const membros = data.club.members.sort((a, b) => b.trophies - a.trophies);
-        const metasServidor = data.metas || {}; 
-        container.innerHTML = '';
-
-        membros.forEach(m => {
-            if (!dadosIniciais[m.tag]) { 
-                dadosIniciais[m.tag] = m.trophies; 
-                localStorage.setItem('dados_iniciais', JSON.stringify(dadosIniciais)); 
-            }
-            const delta = m.trophies - dadosIniciais[m.tag];
-            const meta = metasServidor[m.tag] || 30000;
-            const porc = Math.min(((m.trophies / meta) * 100), 100).toFixed(1);
-            const falta = Math.max(meta - m.trophies, 0);
-
-            container.innerHTML += `
-                <div class="player-card">
-                    <div class="card-header">
-                        <div class="name-area"><span class="name">${m.name}</span><span class="tag-small">${m.tag}</span></div>
-                        <div class="actions">
-                            <button class="btn-icon" onclick="openModal('${m.tag}', '${m.name}', ${meta})">⚙️</button>
-                            <button class="btn-icon" style="color:#10b981" onclick="sendZap('${m.name}', ${m.trophies}, ${delta}, ${meta})">📱</button>
-                        </div>
-                    </div>
-                    <div class="stats-minimal">
-                        <div class="stat-item"><span class="stat-label">Atual</span><span class="stat-val">${m.trophies.toLocaleString()}</span></div>
-                        <div class="stat-item" style="text-align:right"><span class="stat-label">Sessão</span><span class="stat-val" style="color:${delta >= 0 ? '#10b981' : '#f43f5e'}">${delta > 0 ? '+' : ''}${delta}</span></div>
-                    </div>
-                    <div class="progress-bar"><div class="progress-fill" style="width:${porc}%"></div></div>
-                    <div class="meta-info"><span>${porc}% concluído</span><span style="color:#3b82f6">Falta ${falta.toLocaleString()}</span></div>
-                </div>`;
-        });
-    } catch (e) { console.error("Erro ao carregar clube", e); }
-}
-
-async function pesquisarJogador() {
-    let tagInput = document.getElementById('playerTagInput').value.trim().toUpperCase().replace('#', '');
-    const resDiv = document.getElementById('playerResult');
-    if (!tagInput) return;
-    resDiv.innerHTML = "<div class='player-card' style='text-align:center'>Buscando dados na Supercell...</div>";
-    
-    try {
-        const res = await fetch(`/api/player/${tagInput}`);
+        const res = await fetch('/api/stats');
         const data = await res.json();
         
-        if (data.error || !data.player || !data.player.name) {
-            resDiv.innerHTML = "<div class='player-card' style='text-align:center; color:#f43f5e'><b>TAG NÃO ENCONTRADA</b><br><small>Verifique se digitou corretamente.</small></div>";
+        if(data.error) {
+            document.getElementById('clubName').innerText = "⚠️ ERRO DE IP NA API KEY";
             return;
         }
 
-        const p = data.player;
-        const meta = data.metas[p.tag] || 30000;
-        const porc = Math.min(((p.trophies / meta) * 100), 100).toFixed(1);
-        const falta = Math.max(meta - p.trophies, 0);
+        const club = data.club;
+        const metas = data.metas;
+        const members = club.members.sort((a,b) => b.trophies - a.trophies);
 
-        resDiv.innerHTML = `
-            <div class="player-card" style="border-left: 5px solid #3b82f6">
-                <div class="card-header">
-                    <div class="name-area"><span class="name">${p.name}</span><span class="tag-small">${p.tag}</span></div>
-                    <button class="btn-icon" onclick="openModal('${p.tag}', '${p.name}', ${meta})">⚙️</button>
+        document.getElementById('clubName').innerText = `${club.name} • ${members.length}/30 MEMBROS`;
+        
+        // Stats do Topo
+        document.getElementById('globalStats').innerHTML = `
+            <div class="stat-box"><small>Troféus Totais</small><div>${club.trophies.toLocaleString()}</div></div>
+            <div class="stat-box"><small>Requisito</small><div>${club.requiredTrophies.toLocaleString()}</div></div>
+            <div class="stat-box"><small>Status</small><div>${club.type.toUpperCase()}</div></div>
+        `;
+
+        // Lista de Cards
+        const list = document.getElementById('memberList');
+        list.innerHTML = '';
+
+        members.forEach(m => {
+            const meta = metas[m.tag] || 30000;
+            const porc = Math.min((m.trophies / meta) * 100, 100).toFixed(0);
+            const roleClass = `role-${m.role}`;
+
+            list.innerHTML += `
+                <div class="p-card ${roleClass}" onclick="verDetalhes('${m.tag}', ${meta})">
+                    <div class="p-info">
+                        <span>${m.tag}</span>
+                        <h3>${m.name}</h3>
+                    </div>
+                    <div class="p-trophies">🏆 ${m.trophies.toLocaleString()}</div>
+                    <div class="progress-container">
+                        <div class="progress-labels">
+                            <span>META: ${meta.toLocaleString()}</span>
+                            <span>${porc}%</span>
+                        </div>
+                        <div class="progress-bg">
+                            <div class="progress-bar" style="width: ${porc}%"></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stats-minimal">
-                    <div class="stat-item"><span class="stat-label">Troféus</span><span class="stat-val">${p.trophies.toLocaleString()}</span></div>
-                    <div class="stat-item"><span class="stat-label">Recorde</span><span class="stat-val">${p.highestTrophies.toLocaleString()}</span></div>
-                </div>
-                <div class="progress-bar"><div class="progress-fill" style="width:${porc}%"></div></div>
-                <div class="meta-info"><span>${porc}% da meta</span><span style="color:#3b82f6">Faltam ${falta.toLocaleString()}</span></div>
-                <div style="margin-top:10px; padding-top:10px; border-top:1px solid var(--border); display:flex; justify-content:space-between; opacity:0.7">
-                    <span class="stat-label">Nível: ${p.expLevel}</span>
-                    <span class="stat-label">Vitórias 3v3: ${p['3vs3Victories']}</span>
-                </div>
-            </div>`;
-    } catch (e) { resDiv.innerHTML = "Erro de conexão."; }
+            `;
+        });
+    } catch (e) { console.error(e); }
 }
 
-function openModal(tag, name, meta) {
-    currentPlayerTag = tag;
-    document.getElementById('modalPlayerName').innerText = name;
-    document.getElementById('newMetaInput').value = meta;
-    document.getElementById('metaModal').style.display = 'flex';
+async function verDetalhes(tag, metaAtual) {
+    currentTag = tag;
+    const modal = document.getElementById('playerModal');
+    modal.style.display = 'flex';
+    
+    document.getElementById('det-name').innerText = "Carregando...";
+    document.getElementById('inputMeta').value = metaAtual;
+
+    try {
+        const res = await fetch(`/api/player/${tag.replace('#', '')}`);
+        const p = await res.json();
+
+        document.getElementById('det-name').innerText = p.name;
+        document.getElementById('det-tag').innerText = p.tag;
+        document.getElementById('det-high').innerText = p.highestTrophies.toLocaleString();
+        document.getElementById('det-3v3').innerText = p['3vs3Victories'].toLocaleString();
+        document.getElementById('det-solo').innerText = p.soloVictories.toLocaleString();
+        document.getElementById('det-level').innerText = p.expLevel;
+    } catch (e) { console.log(e); }
 }
-function closeModal() { document.getElementById('metaModal').style.display = 'none'; }
-async function saveMeta() {
-    const val = document.getElementById('newMetaInput').value;
+
+function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
+
+async function salvarMeta() {
+    const novaMeta = document.getElementById('inputMeta').value;
     await fetch('/api/save-meta', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tag: currentPlayerTag, meta: val })
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ tag: currentTag, meta: novaMeta })
     });
     closeModal();
-    atualizarClube();
-}
-function sendZap(n, a, d, m) {
-    const txt = encodeURIComponent(`📊 *HORIZON*\n👤 *${n}*\n🏆 Atual: ${a}\n📈 Ganho: ${d}\n🎯 Meta: ${m}`);
-    window.open(`https://api.whatsapp.com/send?text=${txt}`, '_blank');
+    carregarClube();
 }
 
-setInterval(atualizarClube, 30000);
-atualizarClube();
+// Inicia
+carregarClube();
+setInterval(carregarClube, 60000); // Atualiza a cada 1 min
