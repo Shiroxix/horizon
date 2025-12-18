@@ -1,93 +1,75 @@
 let currentTag = "";
 
-async function carregarClube() {
-    const statusText = document.getElementById('clubName');
+async function updateData() {
     try {
         const res = await fetch('/api/stats');
         const data = await res.json();
-        
-        if (data.error) {
-            statusText.style.color = "#ff4655";
-            statusText.innerHTML = `⚠️ ERRO: ${data.detalhes || data.error} (Status: ${data.status})`;
-            return;
-        }
+        if (data.error) { document.getElementById('clubStatus').innerText = "⚠️ ERRO DE IP NA API"; return; }
 
         const club = data.club;
-        const metas = data.metas || {};
-        const members = club.members.sort((a, b) => b.trophies - a.trophies);
+        const metas = data.metas;
+        const members = club.members.sort((a,b) => b.trophies - a.trophies);
 
-        statusText.style.color = "#64748b";
-        statusText.innerText = `${club.name} • ${members.length}/30 MEMBROS`;
-        
-        // Stats do Topo
+        document.getElementById('clubStatus').innerText = `${club.name} • ${members.length}/30 MEMBROS`;
         document.getElementById('globalStats').innerHTML = `
-            <div class="stat-box"><small>Troféus Totais</small><div>${club.trophies.toLocaleString()}</div></div>
-            <div class="stat-box"><small>Requisito</small><div>${club.requiredTrophies.toLocaleString()}</div></div>
-            <div class="stat-box"><small>Status</small><div>${club.type.toUpperCase()}</div></div>
+            <div class="stat-box"><small>TOTAL DE TROFÉUS</small><div>${club.trophies.toLocaleString()}</div></div>
+            <div class="stat-box"><small>REQUISITO</small><div>${club.requiredTrophies.toLocaleString()}</div></div>
         `;
 
         const list = document.getElementById('memberList');
         list.innerHTML = '';
-
         members.forEach(m => {
             const meta = metas[m.tag] || 30000;
             const porc = Math.min((m.trophies / meta) * 100, 100).toFixed(0);
-            const roleClass = `role-${m.role}`;
-
             list.innerHTML += `
-                <div class="p-card ${roleClass}" onclick="verDetalhes('${m.tag}', ${meta})">
-                    <div class="p-info">
-                        <span>${m.tag}</span>
-                        <h3>${m.name}</h3>
+                <div class="p-card role-${m.role}" onclick="openDetails('${m.tag}', ${meta})">
+                    <div style="font-size: 0.7rem; color: #64748b;">${m.tag}</div>
+                    <h3 style="font-weight: 900;">${m.name}</h3>
+                    <div style="font-size: 1.2rem; margin: 10px 0;">🏆 ${m.trophies.toLocaleString()}</div>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.6rem; margin-bottom: 5px;">
+                        <span>META: ${meta.toLocaleString()}</span>
+                        <span>${porc}%</span>
                     </div>
-                    <div class="p-trophies">🏆 ${m.trophies.toLocaleString()}</div>
-                    <div class="progress-container">
-                        <div class="progress-labels">
-                            <span>META: ${meta.toLocaleString()}</span>
-                            <span>${porc}%</span>
-                        </div>
-                        <div class="progress-bg">
-                            <div class="progress-bar" style="width: ${porc}%"></div>
-                        </div>
-                    </div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${porc}%"></div></div>
                 </div>`;
         });
-    } catch (e) { 
-        statusText.innerText = "❌ ERRO DE CONEXÃO COM O SERVIDOR";
-        console.error(e); 
-    }
+    } catch (e) { console.error(e); }
 }
 
-async function verDetalhes(tag, metaAtual) {
+async function openDetails(tag, meta) {
     currentTag = tag;
     document.getElementById('playerModal').style.display = 'flex';
-    document.getElementById('det-name').innerText = "Carregando...";
-    document.getElementById('inputMeta').value = metaAtual;
+    document.getElementById('m-name').innerText = "Carregando...";
+    document.getElementById('inputMeta').value = meta;
 
-    try {
-        const res = await fetch(`/api/player/${tag.replace('#', '')}`);
-        const p = await res.json();
+    const res = await fetch(`/api/player/${tag.replace('#', '')}`);
+    const p = await res.json();
 
-        document.getElementById('det-name').innerText = p.name;
-        document.getElementById('det-tag').innerText = p.tag;
-        document.getElementById('det-high').innerText = (p.highestTrophies || 0).toLocaleString();
-        document.getElementById('det-3v3').innerText = (p['3vs3Victories'] || 0).toLocaleString();
-        document.getElementById('det-solo').innerText = (p.soloVictories || 0).toLocaleString();
-        document.getElementById('det-level').innerText = p.expLevel || 0;
-    } catch (e) { console.log(e); }
+    document.getElementById('m-name').innerText = p.name;
+    document.getElementById('m-tag').innerText = p.tag;
+    document.getElementById('m-high').innerText = p.highestTrophies.toLocaleString();
+    document.getElementById('m-3v3').innerText = p['3vs3Victories'].toLocaleString();
+    document.getElementById('m-solo').innerText = p.soloVictories.toLocaleString();
+    
+    const delta = p.delta24h || 0;
+    const dEl = document.getElementById('m-24h');
+    dEl.innerText = (delta >= 0 ? "+" : "") + delta;
+    dEl.style.color = delta > 0 ? "#00ff85" : (delta < 0 ? "#ff4655" : "#fff");
+    dEl.style.background = delta > 0 ? "rgba(0,255,133,0.1)" : "rgba(255,255,255,0.05)";
 }
 
 function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
 
 async function salvarMeta() {
-    const novaMeta = document.getElementById('inputMeta').value;
+    const val = document.getElementById('inputMeta').value;
     await fetch('/api/save-meta', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ tag: currentTag, meta: novaMeta })
+        body: JSON.stringify({ tag: currentTag, meta: val })
     });
     closeModal();
-    carregarClube();
+    updateData();
 }
 
-carregarClube();
+updateData();
+setInterval(updateData, 60000);
