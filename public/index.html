@@ -20,6 +20,8 @@
             --text: #f1f5f9;
             --accent: #ef4444;
             --gold: #fbbf24;
+            --silver: #94a3b8;
+            --bronze: #cd7f32;
             --border: rgba(255,255,255,0.1);
             --input-bg: rgba(255,255,255,0.05);
             
@@ -61,24 +63,22 @@
         /* TIER STYLES */
         .tier-badge { font-size: 0.55rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-top: 5px; display: inline-block; letter-spacing: 0.5px; border: 1px solid transparent; }
         
-        /* ELITE (>60k) */
         .card-elite { border-left: 4px solid var(--tier-elite); background: linear-gradient(90deg, rgba(251, 191, 36, 0.05), var(--card-bg) 30%); }
         .badge-elite { color: var(--tier-elite); background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.2); }
-        
-        /* VETERAN (40k-60k) */
         .card-veteran { border-left: 4px solid var(--tier-veteran); background: linear-gradient(90deg, rgba(168, 85, 247, 0.05), var(--card-bg) 30%); }
         .badge-veteran { color: var(--tier-veteran); background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); }
-        
-        /* OPERATIVE (20k-40k) */
         .card-operative { border-left: 4px solid var(--tier-op); }
         .badge-operative { color: var(--tier-op); background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); }
-        
-        /* ROOKIE (<20k) */
         .card-rookie { border-left: 4px solid var(--tier-rookie); opacity: 0.9; }
         .badge-rookie { color: var(--tier-rookie); background: rgba(100, 116, 139, 0.1); border-color: rgba(100, 116, 139, 0.2); }
 
-        .mvp-crown { animation: float 3s ease-in-out infinite; color: var(--gold); filter: drop-shadow(0 0 5px rgba(251,191,36,0.6)); margin-left: 6px; }
+        .rank-crown { animation: float 3s ease-in-out infinite; margin-left: 6px; font-size: 0.9rem; }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-3px); } 100% { transform: translateY(0px); } }
+
+        /* MEDALS SYSTEM */
+        .medal-box { background: var(--input-bg); border: 1px solid var(--border); padding: 8px; border-radius: 10px; text-align: center; }
+        .medal-box i { font-size: 1.2rem; margin-bottom: 5px; display: block; }
+        .medal-box span { font-size: 0.5rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; }
 
         /* --- MODAL --- */
         .modal { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); overflow-y: auto; }
@@ -86,11 +86,9 @@
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
         .stat-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); transition: 0.2s; }
         
-        /* POPUP BRAWLER */
         .brawler-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 6000; width: 90%; max-width: 400px; background: var(--card-bg); padding: 25px; border-radius: 24px; border: 2px solid var(--primary); box-shadow: 0 0 50px rgba(0,0,0,0.5); }
         .item-icon { width: 35px; height: 35px; background: var(--input-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 1px solid var(--border); }
 
-        /* ARSENAL GRID OPTIMIZATION */
         .brawler-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding-bottom: 40px; }
         @media (min-width: 768px) { .brawler-grid { grid-template-columns: repeat(4, 1fr); } }
 
@@ -105,7 +103,6 @@
         .icon-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--input-bg); cursor: pointer; border: 1px solid var(--border); }
         .btn-whatsapp { background: #25d366 !important; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         
-        /* TIMER STYLE */
         .last-update-tag { font-size: 0.65rem; color: #64748b; font-weight: 500; background: var(--input-bg); padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border); white-space: nowrap; }
     </style>
 </head>
@@ -193,13 +190,7 @@
             const diffMin = Math.floor(diffMs / 60000);
             const diffHrs = Math.floor(diffMin / 60);
             const diffDays = Math.floor(diffHrs / 24);
-
-            let timeStr = "";
-            if (diffMin < 1) timeStr = "just now";
-            else if (diffMin < 60) timeStr = `${diffMin}m ago`;
-            else if (diffHrs < 24) timeStr = `${diffHrs}h ago`;
-            else timeStr = `${diffDays}d ago`;
-
+            let timeStr = diffMin < 1 ? "just now" : (diffMin < 60 ? `${diffMin}m ago` : (diffHrs < 24 ? `${diffHrs}h ago` : `${diffDays}d ago`));
             document.getElementById('githubTimer').innerText = `Last update ${timeStr}`;
         }
 
@@ -237,112 +228,41 @@
                 const data = await res.json();
                 cachedMembers = data.club.members.sort((a,b) => b.trophies - a.trophies);
                 
-                const topPlayerTag = cachedMembers[0].tag;
-
                 const selects = [document.getElementById('p1Sel'), document.getElementById('p2Sel')];
                 selects.forEach(s => {
                     s.innerHTML = '<option value="">Selecionar Jogador</option>' + 
                     cachedMembers.map(m => `<option value="${m.tag}">${m.name}</option>`).join('');
                 });
                 
-                document.getElementById('clubGrid').innerHTML = cachedMembers.map(m => {
-                    const isMvp = m.tag === topPlayerTag;
-                    const mvpIcon = isMvp ? '<i class="fas fa-crown mvp-crown" title="Líder do Clube"></i>' : '';
+                document.getElementById('clubGrid').innerHTML = cachedMembers.map((m, index) => {
+                    let rankIcon = '';
+                    if (index === 0) rankIcon = '<i class="fas fa-crown rank-crown" style="color:var(--gold)"></i>';
+                    else if (index === 1) rankIcon = '<i class="fas fa-crown rank-crown" style="color:var(--silver)"></i>';
+                    else if (index === 2) rankIcon = '<i class="fas fa-crown rank-crown" style="color:var(--bronze)"></i>';
                     
-                    // LÓGICA DE TIERS
-                    let tierClass = 'card-rookie';
-                    let tierName = 'ROOKIE';
-                    let badgeClass = 'badge-rookie';
-
-                    if (m.trophies >= 60000) {
-                        tierClass = 'card-elite'; tierName = 'ELITE'; badgeClass = 'badge-elite';
-                    } else if (m.trophies >= 40000) {
-                        tierClass = 'card-veteran'; tierName = 'VETERAN'; badgeClass = 'badge-veteran';
-                    } else if (m.trophies >= 20000) {
-                        tierClass = 'card-operative'; tierName = 'OPERATIVE'; badgeClass = 'badge-operative';
-                    }
+                    let tierClass = 'card-rookie', tierName = 'ROOKIE', badgeClass = 'badge-rookie';
+                    if (m.trophies >= 60000) { tierClass = 'card-elite'; tierName = 'ELITE'; badgeClass = 'badge-elite'; }
+                    else if (m.trophies >= 40000) { tierClass = 'card-veteran'; tierName = 'VETERAN'; badgeClass = 'badge-veteran'; }
+                    else if (m.trophies >= 20000) { tierClass = 'card-operative'; tierName = 'OPERATIVE'; badgeClass = 'badge-operative'; }
 
                     return `
                     <div class="player-card ${tierClass}" onclick="openProfile('${m.tag}')">
                         <div style="display:flex; align-items:center;">
                             <div>
                                 <div style="font-weight:700; display:flex; align-items:center;">
-                                    ${m.name} ${mvpIcon}
+                                    ${m.name} ${rankIcon}
                                 </div>
                                 <div style="font-size:0.7rem; color:#64748b;">${m.tag}</div>
                                 <div class="tier-badge ${badgeClass}">${tierName}</div>
                             </div>
                         </div>
                         <div style="text-align:right">
-                            <div style="font-weight:800; color:${isMvp ? 'var(--gold)' : 'var(--text)'};">${m.trophies}</div>
+                            <div style="font-weight:800; color:${index < 3 ? 'var(--gold)' : 'var(--text)'};">${m.trophies}</div>
                             <div style="font-size:0.6rem; opacity:0.6;">TROFÉUS</div>
                         </div>
                     </div>
                 `}).join('');
             } catch(e) { showToast("ERRO NA API"); }
-        }
-
-        function openX1() { document.getElementById('x1Modal').style.display = 'block'; }
-        function closeX1() { document.getElementById('x1Modal').style.display = 'none'; }
-
-        async function updateX1() {
-            const t1 = document.getElementById('p1Sel').value;
-            const t2 = document.getElementById('p2Sel').value;
-            if(!t1 || !t2) return;
-            const res1 = await fetch(`${API_BASE}/api/player/${t1.replace('#', '%23')}`);
-            const res2 = await fetch(`${API_BASE}/api/player/${t2.replace('#', '%23')}`);
-            const p1 = await res1.json();
-            const p2 = await res2.json();
-            const createBar = (v1, v2, label) => {
-                const total = (v1 + v2) || 1;
-                const p1w = (v1 / total) * 100;
-                return `
-                    <div style="margin-bottom: 15px;">
-                        <div style="display:flex; justify-content:space-between; font-size:0.7rem; font-weight:700; margin-bottom:5px;">
-                            <span>${v1}</span> <span style="opacity:0.5">${label.toUpperCase()}</span> <span>${v2}</span>
-                        </div>
-                        <div class="compare-bar-container">
-                            <div class="compare-bar" style="width:${p1w}%; background:var(--primary)"></div>
-                            <div class="compare-bar" style="width:${100-p1w}%; background:var(--accent)"></div>
-                        </div>
-                    </div>
-                `;
-            };
-            const b1 = p1.brawlers.sort((a,b)=>b.trophies-a.trophies)[0];
-            const b2 = p2.brawlers.sort((a,b)=>b.trophies-a.trophies)[0];
-            document.getElementById('x1Result').innerHTML = `
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; text-align:center; margin-bottom:30px;">
-                    <div><h2 style="color:var(--primary)">${p1.name}</h2><small>${p1.tag}</small></div>
-                    <div><h2 style="color:var(--accent)">${p2.name}</h2><small>${p2.tag}</small></div>
-                </div>
-                ${createBar(p1.trophies, p2.trophies, 'Troféus Atuais')}
-                ${createBar(p1.expLevel, p2.expLevel, 'Nível')}
-                ${createBar(p1['3vs3Victories'], p2['3vs3Victories'], 'Vitórias 3v3')}
-                <div class="stats-grid">
-                    <div class="stat-box" style="border-left: 4px solid var(--primary)">
-                        <div style="font-size:0.6rem; opacity:0.6;">MELHOR</div>
-                        <div style="font-weight:800;">${b1.name}</div>
-                        <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b1.trophies}</div>
-                    </div>
-                    <div class="stat-box" style="border-right: 4px solid var(--accent); text-align:right;">
-                        <div style="font-size:0.6rem; opacity:0.6;">MELHOR</div>
-                        <div style="font-weight:800;">${b2.name}</div>
-                        <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b2.trophies}</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function getApiDiff(tag, current) {
-            const key = `api_last_${tag}`;
-            const last = localStorage.getItem(key);
-            if(last === null) {
-                localStorage.setItem(key, current);
-                return 0;
-            }
-            const diff = current - parseInt(last);
-            localStorage.setItem(key, current);
-            return diff;
         }
 
         async function openProfile(tag) {
@@ -353,8 +273,12 @@
                 const res = await fetch(`${API_BASE}/api/player/${tag.replace('#', '%23')}`);
                 const p = await res.json();
                 currentPlayerBrawlers = p.brawlers;
-                
                 const diff = getApiDiff(p.tag, p.trophies);
+
+                // LOGICA DE MEDALHAS
+                const bestBrawler = p.brawlers.sort((a,b)=>b.trophies-a.trophies)[0];
+                const isSniper = ["PIPER", "BROCK", "BELLE", "MANDY"].includes(bestBrawler.name.toUpperCase());
+                const isTank = ["BULL", "EL PRIMO", "ROSA", "FRANK", "JACKY"].includes(bestBrawler.name.toUpperCase());
 
                 document.getElementById('mContent').innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
@@ -365,6 +289,13 @@
                     <h1 style="font-size:2.2rem; margin-bottom:5px;">${p.name}</h1>
                     <span style="background:var(--primary); color:white; padding:3px 10px; border-radius:6px; font-size:0.7rem; font-weight:700;">${p.tag}</span>
                     
+                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:20px;">
+                        <div class="medal-box" style="opacity:${isSniper ? '1':'0.2'}"><i class="fas fa-crosshairs" style="color:#60a5fa"></i><span>Sniper</span></div>
+                        <div class="medal-box" style="opacity:${isTank ? '1':'0.2'}"><i class="fas fa-shield-alt" style="color:#f87171"></i><span>Tanque</span></div>
+                        <div class="medal-box" style="opacity:${p['3vs3Victories'] > 10000 ? '1':'0.2'}"><i class="fas fa-users" style="color:#4ad3ff"></i><span>Mestre 3v3</span></div>
+                        <div class="medal-box" style="opacity:${p.trophies >= 60000 ? '1':'0.2'}"><i class="fas fa-medal" style="color:var(--gold)"></i><span>Elite</span></div>
+                    </div>
+
                     <div class="stats-grid">
                         <div class="stat-box">
                             <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Variação API</div>
@@ -376,9 +307,7 @@
                         </div>
                     </div>
 
-                    <div class="stat-box" style="margin-bottom:20px;">
-                        <canvas id="profileChart" height="150"></canvas>
-                    </div>
+                    <div class="stat-box" style="margin-bottom:20px;"><canvas id="profileChart" height="150"></canvas></div>
 
                     <button class="btn-action btn-whatsapp" onclick="shareStats('${p.name}', '${p.trophies}', '${diff}')">
                         <i class="fab fa-whatsapp"></i> COMPARTILHAR
@@ -408,9 +337,61 @@
             } catch(e) { showToast("ERRO AO CARREGAR PERFIL"); }
         }
 
+        function openX1() { document.getElementById('x1Modal').style.display = 'block'; }
+        function closeX1() { document.getElementById('x1Modal').style.display = 'none'; }
+
+        async function updateX1() {
+            const t1 = document.getElementById('p1Sel').value, t2 = document.getElementById('p2Sel').value;
+            if(!t1 || !t2) return;
+            const res1 = await fetch(`${API_BASE}/api/player/${t1.replace('#', '%23')}`);
+            const res2 = await fetch(`${API_BASE}/api/player/${t2.replace('#', '%23')}`);
+            const p1 = await res1.json(), p2 = await res2.json();
+            const createBar = (v1, v2, label) => {
+                const total = (v1 + v2) || 1, p1w = (v1 / total) * 100;
+                return `
+                    <div style="margin-bottom: 15px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.7rem; font-weight:700; margin-bottom:5px;">
+                            <span>${v1}</span> <span style="opacity:0.5">${label.toUpperCase()}</span> <span>${v2}</span>
+                        </div>
+                        <div class="compare-bar-container">
+                            <div class="compare-bar" style="width:${p1w}%; background:var(--primary)"></div>
+                            <div class="compare-bar" style="width:${100-p1w}%; background:var(--accent)"></div>
+                        </div>
+                    </div>
+                `;
+            };
+            const b1 = p1.brawlers.sort((a,b)=>b.trophies-a.trophies)[0], b2 = p2.brawlers.sort((a,b)=>b.trophies-a.trophies)[0];
+            document.getElementById('x1Result').innerHTML = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; text-align:center; margin-bottom:30px;">
+                    <div><h2 style="color:var(--primary)">${p1.name}</h2><small>${p1.tag}</small></div>
+                    <div><h2 style="color:var(--accent)">${p2.name}</h2><small>${p2.tag}</small></div>
+                </div>
+                ${createBar(p1.trophies, p2.trophies, 'Troféus Atuais')}
+                ${createBar(p1.expLevel, p2.expLevel, 'Nível')}
+                ${createBar(p1['3vs3Victories'], p2['3vs3Victories'], 'Vitórias 3v3')}
+                <div class="stats-grid">
+                    <div class="stat-box" style="border-left: 4px solid var(--primary)">
+                        <div style="font-size:0.6rem; opacity:0.6;">MELHOR</div>
+                        <div style="font-weight:800;">${b1.name}</div>
+                        <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b1.trophies}</div>
+                    </div>
+                    <div class="stat-box" style="border-right: 4px solid var(--accent); text-align:right;">
+                        <div style="font-size:0.6rem; opacity:0.6;">MELHOR</div>
+                        <div style="font-weight:800;">${b2.name}</div>
+                        <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b2.trophies}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getApiDiff(tag, current) {
+            const key = `api_last_${tag}`, last = localStorage.getItem(key);
+            localStorage.setItem(key, current);
+            return last === null ? 0 : current - parseInt(last);
+        }
+
         function openBrawlerDetails(index) {
-            const b = currentPlayerBrawlers[index];
-            const content = document.getElementById('bpContent');
+            const b = currentPlayerBrawlers[index], content = document.getElementById('bpContent');
             content.innerHTML = `
                 <h2 style="color:var(--primary); margin-bottom:5px;">${b.name}</h2>
                 <p style="font-size:0.8rem; opacity:0.6; margin-bottom:20px;">Nível de Poder ${b.power}</p>
@@ -438,13 +419,11 @@
         }
 
         function closeBrawlerPopup() { document.getElementById('brawlerPopup').style.display = 'none'; }
-        
         function shareStats(name, total, diff) {
             const status = diff >= 0 ? `+${diff} 📈` : `${diff} 📉`;
             const msg = `📊 *HORIZON LIVE*\n👤 *${name}*\n🏆 *Total:* ${total}\n⚡ *Variação:* ${status}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
         }
-
         function showToast(m) {
             const t = document.getElementById('toast');
             t.innerText = m; t.style.display = "block";
@@ -452,11 +431,7 @@
         }
         function closeModal() { document.getElementById('playerModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
         function logout() { localStorage.removeItem('hz_session'); location.reload(); }
-        
-        window.onload = () => { 
-            const session = localStorage.getItem('hz_session');
-            if(session) loginOk(session);
-        };
+        window.onload = () => { if(localStorage.getItem('hz_session')) loginOk(localStorage.getItem('hz_session')); };
     </script>
 </body>
 </html>
