@@ -3,399 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Command | Ultra Analytics</title>
+    <title>Horizon Command | Ultra Genesis</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
-            --primary: #00f2ff; --accent: #bc13fe; --bg: #030508; 
-            --card: #0d121a; --text: #f0f0f0; --success: #00ff88; --danger: #ff4655;
-            --glass: rgba(255, 255, 255, 0.03); --border: rgba(255, 255, 255, 0.08);
+            --primary: #00f2ff; --accent: #bc13fe; --bg: #020406; 
+            --card: #0a0f16; --text: #f0f0f0; --success: #00ff88; --danger: #ff4655;
+            --border: rgba(255, 255, 255, 0.08); --gold: #ffd700;
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-        body { 
-            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); 
-            min-height: 100vh; overflow-x: hidden; 
-        }
-
+        /* Background Animado */
         body::before {
             content: ''; position: fixed; inset: 0;
             background: 
-                radial-gradient(circle at 15% 15%, rgba(188, 19, 254, 0.15), transparent 40%),
-                radial-gradient(circle at 85% 85%, rgba(0, 242, 255, 0.15), transparent 40%);
-            z-index: -1;
+                radial-gradient(circle at 10% 10%, rgba(0, 242, 255, 0.1), transparent 30%),
+                radial-gradient(circle at 90% 90%, rgba(188, 19, 254, 0.1), transparent 30%);
+            z-index: -1; animation: pulseBg 10s infinite alternate;
+        }
+        @keyframes pulseBg { from { opacity: 0.5; } to { opacity: 1; } }
+
+        /* TELA DE ENTRADA (LOGIN/CADASTRO) */
+        #authScreen {
+            position: fixed; inset: 0; z-index: 5000; background: var(--bg);
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+        .auth-box {
+            background: var(--card); padding: 40px; border-radius: 30px; border: 1px solid var(--border);
+            width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
-        /* TELA DE LOGIN */
-        #loginScreen {
-            position: fixed; inset: 0; z-index: 2000; background: var(--bg);
-            display: flex; align-items: center; justify-content: center;
-        }
-        .login-box {
-            background: var(--card); padding: 40px; border-radius: 30px; border: 1px solid var(--border);
-            width: 100%; max-width: 380px; text-align: center;
-        }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { font-size: 0.65rem; font-weight: 800; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; margin-left: 10px; }
         .input-cyber {
             width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border);
-            padding: 15px; border-radius: 12px; color: #fff; margin-bottom: 15px;
-            font-family: 'Rajdhani'; font-size: 1.1rem; text-align: center;
+            padding: 15px; border-radius: 15px; color: #fff; font-family: 'Rajdhani'; font-size: 1.2rem;
+            transition: 0.3s; margin-top: 5px;
         }
-        .btn-cyber {
-            width: 100%; padding: 15px; border-radius: 12px; border: none;
-            background: linear-gradient(90deg, var(--accent), var(--primary));
-            color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;
-        }
+        .input-cyber:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
 
-        /* PAINEL PRINCIPAL */
+        .btn-glow {
+            width: 100%; padding: 18px; border-radius: 15px; border: none;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase;
+            letter-spacing: 2px; transition: 0.3s;
+        }
+        .btn-glow:hover { transform: scale(1.02); filter: brightness(1.2); box-shadow: 0 0 20px var(--primary); }
+
+        /* DASHBOARD PRINCIPAL */
         #mainContent { display: none; }
-        .container { max-width: 1400px; margin: auto; padding: 25px; }
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
 
-        header { display: flex; justify-content: space-between; align-items: center; padding: 40px 0; }
-        .logo { 
-            font-family: 'Rajdhani', sans-serif; font-size: clamp(1.5rem, 5vw, 2.5rem); 
-            font-weight: 700; color: #fff; letter-spacing: 8px; text-transform: uppercase;
-            background: linear-gradient(to bottom, #fff, var(--primary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        header { display: flex; justify-content: space-between; align-items: center; padding: 30px 0; }
+        .logo { font-family: 'Rajdhani'; font-size: 2rem; letter-spacing: 8px; font-weight: 700; color: #fff; }
+
+        /* ICONE CONFIGURAÇÕES */
+        .adm-btn { 
+            width: 45px; height: 45px; display: none; align-items: center; justify-content: center;
+            background: var(--glass); border: 1px solid var(--border); border-radius: 12px;
+            cursor: pointer; color: #64748b; transition: 0.3s;
+        }
+        .adm-btn:hover { color: var(--primary); border-color: var(--primary); transform: rotate(45deg); }
+
+        /* BRAWLER CARDS LUXO */
+        .brawlers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+        .b-card-ultra {
+            background: linear-gradient(145deg, #111827, #0a0f16);
+            border: 1px solid var(--border); border-radius: 25px; padding: 20px;
+            text-align: center; cursor: pointer; transition: 0.4s; position: relative; overflow: hidden;
+        }
+        .b-card-ultra:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .b-card-ultra::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .b-lvl { position: absolute; top: 12px; right: 12px; font-size: 0.6rem; font-weight: 900; background: var(--gold); color: #000; padding: 2px 8px; border-radius: 20px; }
+
+        /* SKILL ITEMS TRADUZIDOS */
+        .skill-item {
+            background: rgba(255,255,255,0.03); padding: 18px; border-radius: 20px;
+            margin-bottom: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 15px;
+            animation: slideRight 0.4s ease forwards;
+        }
+        .skill-icon { width: 40px; height: 40px; background: rgba(0,0,0,0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+
+        /* STATUS PERFIL / ID DE LOGIN */
+        .user-id-badge {
+            background: rgba(0, 242, 255, 0.1); color: var(--primary);
+            padding: 5px 12px; border-radius: 8px; font-family: 'Rajdhani'; font-weight: 700; font-size: 0.8rem;
         }
 
-        /* Ícone de Configurações ADM */
-        .nav-tools { display: flex; gap: 20px; align-items: center; }
-        .adm-gear { 
-            font-size: 1.2rem; color: #64748b; cursor: pointer; transition: 0.3s; 
-            display: none; /* Só aparece para ADM */
-        }
-        .adm-gear:hover { color: var(--primary); transform: rotate(90deg); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
-        /* GRID E CARDS */
-        .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .p-card { 
-            background: var(--card); border-radius: 24px; padding: 25px; 
-            border: 1px solid var(--border); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative; overflow: hidden; cursor: pointer;
-        }
-        .p-card:hover { transform: translateY(-10px); border-color: var(--primary); }
-        .p-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, var(--accent), var(--primary));
-        }
-
-        .meta-bar-container { margin-top: 20px; }
-        .meta-label { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; color: #64748b; margin-bottom: 8px; text-transform: uppercase; }
-        .meta-track { background: rgba(0,0,0,0.5); height: 12px; border-radius: 20px; border: 1px solid var(--border); overflow: hidden; }
-        .meta-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--primary)); border-radius: 20px; transition: 1.5s ease; }
-
-        /* MODAIS */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; backdrop-filter: blur(20px); align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 1000px; height: 90vh; border-radius: 32px; border: 1px solid var(--border); display: flex; flex-direction: column; position: relative; }
-        
-        /* Modal ADM Específico */
-        .adm-modal-content { max-width: 500px; height: auto; padding: 30px; }
-
-        .modal-header { padding: 30px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-        .modal-tabs { display: flex; gap: 30px; padding: 0 30px; background: rgba(0,0,0,0.2); }
-        .tab-btn { padding: 20px 0; background: none; border: none; color: #64748b; font-family: 'Rajdhani'; font-weight: 700; cursor: pointer; text-transform: uppercase; font-size: 0.9rem; position: relative; }
-        .tab-btn.active { color: var(--primary); }
-        .tab-btn.active::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: var(--primary); box-shadow: 0 0 10px var(--primary); }
-
-        .modal-body { flex: 1; overflow-y: auto; padding: 30px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
-
-        .brawlers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .brawler-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 20px; padding: 15px; transition: 0.3s; cursor: pointer; text-align: center; }
-        .brawler-card:hover { border-color: var(--accent); }
-
-        .build-panel { position: absolute; inset: 0; background: var(--card); z-index: 10; padding: 30px; display: none; flex-direction: column; overflow-y: auto; }
-        .skill-item { background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 15px; border-radius: 15px; margin-bottom: 8px; display: flex; align-items: center; gap: 15px; border-left: 4px solid var(--primary); }
-        .skill-item.star { border-left-color: #ffd700; }
-        .skill-item.hyper { border-left-color: #ff4655; }
-
-        .player-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .kpi-box { background: rgba(255,255,255,0.02); padding: 20px; border-radius: 20px; border: 1px solid var(--border); text-align: center; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* MODAL RESPONSIVO */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 10000; align-items: center; justify-content: center; padding: 15px; }
+        .modal-content { background: var(--card); width: 100%; max-width: 900px; height: 90vh; border-radius: 35px; border: 1px solid var(--border); position: relative; overflow: hidden; display: flex; flex-direction: column; }
     </style>
 </head>
 <body>
 
-    <div id="loginScreen">
-        <div class="login-box">
-            <h2 style="font-family:'Rajdhani'; color:var(--primary); margin-bottom: 25px; letter-spacing: 3px;">IDENTIFICAÇÃO</h2>
-            <input type="text" id="userIn" class="input-cyber" placeholder="NOME DO MEMBRO" oninput="this.value = this.value.replace(/[^a-zA-Z]/g, '')">
-            <div id="passArea" style="display:none;">
-                <input type="password" id="passIn" class="input-cyber" placeholder="SENHA MESTRA">
+    <div id="authScreen">
+        <div class="auth-box">
+            <h1 style="font-family:'Rajdhani'; letter-spacing: 5px; margin-bottom: 10px;">HORIZON</h1>
+            <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 30px; text-transform: uppercase; font-weight: 800;">Protocolo de Acesso</p>
+            
+            <div class="input-group">
+                <label>Codinome</label>
+                <input type="text" id="userInput" class="input-cyber" placeholder="Ex: Shiro" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')">
             </div>
-            <button class="btn-cyber" onclick="tryLogin()">Entrar no Sistema</button>
+
+            <div id="passArea" style="display:none;" class="input-group">
+                <label>Chave Mestra</label>
+                <input type="password" id="passInput" class="input-cyber" placeholder="••••••••">
+            </div>
+
+            <button class="btn-glow" onclick="handleAuth()">Iniciar Sessão</button>
+            <p id="authMsg" style="margin-top: 15px; font-size: 0.7rem; color: var(--danger); display: none;">Acesso Negado</p>
         </div>
     </div>
 
     <div id="mainContent">
         <div class="container">
             <header>
-                <h1 class="logo">HORIZON COMMAND</h1>
-                <div class="nav-tools">
-                    <i class="fas fa-cog adm-gear" id="admIcon" onclick="openAdmModal()"></i>
-                    <button onclick="logout()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-size: 0.8rem; font-weight: 800;">LOGOUT</button>
+                <div>
+                    <h1 class="logo">HORIZON</h1>
+                    <div id="userProfile" style="display:flex; align-items:center; gap:10px; margin-top:5px;">
+                        <span id="userNameDisplay" style="font-weight:900; font-size:0.8rem;">--</span>
+                        <span id="userIdDisplay" class="user-id-badge">ID: --</span>
+                    </div>
+                </div>
+                <div style="display:flex; gap:15px;">
+                    <div class="adm-btn" id="admTrigger" onclick="toggleAdmModal()"><i class="fas fa-cog"></i></div>
+                    <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-weight:900; cursor:pointer;">SAIR</button>
                 </div>
             </header>
+
             <div class="member-grid" id="memberList"></div>
         </div>
     </div>
 
     <div id="admModal" class="modal">
-        <div class="modal-content adm-modal-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
-                <h2 style="font-family:'Rajdhani'; color:var(--danger);">CONFIGURAÇÕES DO SITE</h2>
-                <button onclick="closeAdmModal()" style="background:none; border:none; color:#fff; cursor:pointer;"><i class="fas fa-times"></i></button>
+        <div class="modal-content" style="max-width: 500px; height: auto; padding: 30px;">
+            <h2 style="font-family:'Rajdhani'; color:var(--danger); margin-bottom: 20px;">CONTROLE DE PRIVILÉGIOS</h2>
+            
+            <div style="margin-bottom: 20px;">
+                <p style="font-size:0.6rem; color:#64748b; margin-bottom:10px;">PROMOVER POR ID DE ASSINATURA</p>
+                <input type="text" id="idToPromote" class="input-cyber" placeholder="Ex: HZ-1234">
+                <button class="btn-glow" style="margin-top:10px; padding:10px;" onclick="promoteById()">Eleger Administrador</button>
             </div>
-            <div style="margin-bottom:20px;">
-                <label style="font-size:0.7rem; color:#64748b;">LOGS DE ACESSO</label>
-                <div id="loginLogs" style="background:#000; height:120px; border-radius:10px; padding:10px; font-size:0.7rem; overflow-y:auto; margin-top:5px; border:1px solid var(--border);"></div>
-            </div>
-            <div>
-                <label style="font-size:0.7rem; color:#64748b;">ELEGER ADMINISTRADOR</label>
-                <select id="promoteSelect" class="input-cyber" style="margin-top:5px; font-size:0.9rem;"></select>
-                <button class="btn-cyber" style="font-size:0.8rem; padding:10px;" onclick="promoteUser()">Confirmar Privilégios</button>
-            </div>
+
+            <p style="font-size:0.6rem; color:#64748b; margin-bottom:10px;">LOGS DE ATIVIDADE</p>
+            <div id="logContent" style="background:#000; height:150px; border-radius:15px; padding:15px; overflow-y:auto; font-size:0.7rem; border:1px solid var(--border);"></div>
+            <button class="btn-glow" style="background:var(--danger); margin-top:20px; padding:10px;" onclick="toggleAdmModal()">Fechar</button>
         </div>
     </div>
 
     <div id="playerModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div>
-                    <h2 id="m-name" style="font-family:'Rajdhani'; font-size: 2.5rem; line-height: 1;">-</h2>
-                    <p id="m-tag" style="color:var(--primary); font-weight: 700; letter-spacing: 2px;">#TAG000</p>
-                </div>
-                <button onclick="closeModal()" style="background:none; border:none; color:#64748b; font-size: 2rem; cursor:pointer;"><i class="fas fa-times"></i></button>
-            </div>
-
-            <div class="modal-tabs">
-                <button class="tab-btn active" onclick="switchTab('tab-geral', this)">Visão Geral</button>
-                <button class="tab-btn" onclick="switchTab('tab-brawlers', this)">Brawlers & Builds</button>
-            </div>
-
             <div class="modal-body">
-                <div id="tab-geral" class="tab-content active">
-                    <div class="player-stats">
-                        <div class="kpi-box"><label>Win Rate 3v3</label><div id="m-winrate">--%</div></div>
-                        <div class="kpi-box"><label>Recorde</label><div id="m-high">0</div></div>
-                        <div class="kpi-box"><label>Saldo Sessão</label><div id="m-gain" style="color:var(--success)">+0</div></div>
-                        <div class="kpi-box"><label>Exp Level</label><div id="m-exp">0</div></div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px;">
-                        <div style="background: rgba(0,0,0,0.3); padding: 30px; border-radius: 25px; border: 1px solid var(--border);">
-                            <h3 style="font-family:'Rajdhani'; margin-bottom: 20px; color:var(--primary)">PROTOCOLO DE METAS</h3>
-                            <input type="number" id="inputMeta" style="width:100%; background:none; border:none; border-bottom: 2px solid var(--primary); color:#fff; font-size: 2.5rem; font-family:'Rajdhani'; margin-bottom: 30px;">
-                            <button onclick="salvarMeta()" class="btn-cyber">Atualizar Meta</button>
-                        </div>
-                        <canvas id="winChart"></canvas>
-                    </div>
-                </div>
-
-                <div id="tab-brawlers" class="tab-content" style="position: relative; height: 100%;">
-                    <input type="text" id="b-search" onkeyup="filterBrawlers()" placeholder="Filtrar brawler..." style="width:100%; padding:15px; background:rgba(0,0,0,0.4); border:1px solid var(--border); border-radius:15px; color:#fff; margin-bottom:20px;">
-                    <div id="brawlersList" class="brawlers-grid"></div>
-                    <div id="buildPanel" class="build-panel">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
-                            <h2 id="b-title" style="font-family:'Rajdhani'; font-size:2rem; color:var(--primary);"></h2>
-                            <button onclick="closeBuild()" class="btn-cyber" style="width:auto; padding:10px 20px;">VOLTAR</button>
-                        </div>
-                        <div id="skillList"></div>
-                    </div>
-                </div>
+                <div id="brawlersContainer" class="brawlers-grid"></div>
+            </div>
+            <div id="buildPanel" style="position:absolute; inset:0; background:var(--card); display:none; padding:40px; z-index:100;">
+                 <div id="buildContent"></div>
+                 <button class="btn-glow" style="width:auto; margin-top:20px; padding:10px 30px;" onclick="closeBuild()">Voltar</button>
             </div>
         </div>
     </div>
 
-    <script>
-        // CONFIGS ADM
-        const MASTER_NAME = "shiro";
-        const MASTER_PASS = "18172220";
-        
-        let currentUser = null;
-        let isAdmin = false;
-        let metasGlobal = {};
-        let initialTrophies = {};
-        let winChart = null;
+    <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 
-        // LOGIN LOGIC
-        document.getElementById('userIn').addEventListener('input', (e) => {
-            document.getElementById('passArea').style.display = (e.target.value.toLowerCase() === MASTER_NAME) ? 'block' : 'none';
+    <script>
+        // TRADUÇÃO DE ACESSÓRIOS (EXEMPLO DE MAPEAMENTO)
+        const tradutor = {
+            "Speed Zone": "Zona de Velocidade", "Recoiling Rotator": "Rotador de Recuo",
+            "Clay Pigeons": "Pombos de Argila", "Homemade Recipe": "Receita Caseira",
+            "Fidget Spinner": "Giro de Stress", "Slowing Toxin": "Toxina de Lentidão"
+        };
+
+        const MASTER_USER = "shiro";
+        const MASTER_PASS = "18172220";
+
+        let session = { user: '', id: '', isAdm: false };
+
+        // MONITOR DE LOGIN
+        document.getElementById('userInput').addEventListener('input', (e) => {
+            document.getElementById('passArea').style.display = (e.target.value.toLowerCase() === MASTER_USER) ? 'block' : 'none';
         });
 
-        function tryLogin() {
-            const user = document.getElementById('userIn').value.toLowerCase();
-            const pass = document.getElementById('passIn').value;
+        function handleAuth() {
+            const user = document.getElementById('userInput').value.trim();
+            const pass = document.getElementById('passInput').value;
             
             if(!user) return;
+            playClick();
 
-            if(user === MASTER_NAME) {
-                if(pass === MASTER_PASS) { loginSuccess(user, true); }
-                else { alert("Senha Incorreta"); }
+            // Gerar ID de Assinatura se for novo
+            let accounts = JSON.parse(localStorage.getItem('hz_accounts') || '{}');
+            
+            if(user.toLowerCase() === MASTER_USER) {
+                if(pass === MASTER_PASS) {
+                    startSession(user, "MASTER-01", true);
+                } else {
+                    showError();
+                }
             } else {
-                const localAdms = JSON.parse(localStorage.getItem('hz_adms') || '[]');
-                loginSuccess(user, localAdms.includes(user));
+                if(!accounts[user]) {
+                    accounts[user] = { id: 'HZ-' + Math.floor(1000 + Math.random() * 9000), isAdm: false };
+                    localStorage.setItem('hz_accounts', JSON.stringify(accounts));
+                }
+                startSession(user, accounts[user].id, accounts[user].isAdm);
             }
         }
 
-        function loginSuccess(user, isAdm) {
-            currentUser = user; isAdmin = isAdm;
-            localStorage.setItem('hz_user', user);
-            localStorage.setItem('hz_isadm', isAdm);
-            
-            // Log access
-            let logs = JSON.parse(localStorage.getItem('hz_logs') || '[]');
-            logs.unshift(`${new Date().toLocaleTimeString()} - ${user} entrou`);
-            localStorage.setItem('hz_logs', JSON.stringify(logs.slice(0, 30)));
-
-            document.getElementById('loginScreen').style.display = 'none';
+        function startSession(user, id, isAdm) {
+            session = { user, id, isAdm };
+            document.getElementById('authScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
-            if(isAdm) document.getElementById('admIcon').style.display = 'block';
+            document.getElementById('userNameDisplay').innerText = user.toUpperCase();
+            document.getElementById('userIdDisplay').innerText = `ID: ${id}`;
+            if(isAdm) document.getElementById('admTrigger').style.display = 'flex';
             
-            updateDashboard();
+            saveLog(`${user} conectou-se.`);
+            loadDashboard();
         }
 
-        // ADM PANEL FUNCTIONS
-        function openAdmModal() {
-            document.getElementById('admModal').style.display = 'flex';
-            document.getElementById('loginLogs').innerHTML = JSON.parse(localStorage.getItem('hz_logs') || '[]').map(l => `<div>${l}</div>`).join('');
+        function saveLog(msg) {
+            let logs = JSON.parse(localStorage.getItem('hz_logs') || '[]');
+            logs.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
+            localStorage.setItem('hz_logs', JSON.stringify(logs.slice(0, 50)));
         }
-        function closeAdmModal() { document.getElementById('admModal').style.display = 'none'; }
-        
-        function promoteUser() {
-            const user = document.getElementById('promoteSelect').value;
-            let adms = JSON.parse(localStorage.getItem('hz_adms') || '[]');
-            if(!adms.includes(user)) {
-                adms.push(user);
-                localStorage.setItem('hz_adms', JSON.stringify(adms));
-                alert(user + " agora é Administrador.");
+
+        function promoteById() {
+            const id = document.getElementById('idToPromote').value;
+            let accounts = JSON.parse(localStorage.getItem('hz_accounts') || '{}');
+            let found = false;
+
+            for(let u in accounts) {
+                if(accounts[u].id === id) {
+                    accounts[u].isAdm = true;
+                    found = true;
+                    saveLog(`Usuário ${u} promovido por ID.`);
+                    break;
+                }
             }
+            localStorage.setItem('hz_accounts', JSON.stringify(accounts));
+            alert(found ? "Sucesso: Administrador Eleito!" : "ID não encontrado.");
         }
 
-        // CORE DASHBOARD (MANTIDO DO ANTERIOR)
-        async function updateDashboard() {
-            try {
-                const res = await fetch('/api/stats');
-                const data = await res.json();
-                metasGlobal = data.metas || {};
-                const list = document.getElementById('memberList');
-                list.innerHTML = '';
-                
-                // Popula select de promoção no ADM
-                document.getElementById('promoteSelect').innerHTML = data.club.members.map(m => `<option value="${m.name.toLowerCase()}">${m.name}</option>`).join('');
+        async function loadDashboard() {
+            const res = await fetch('/api/stats');
+            const data = await res.json();
+            const list = document.getElementById('memberList');
+            list.innerHTML = '';
 
-                data.club.members.sort((a,b) => b.trophies - a.trophies).forEach(m => {
-                    if(!initialTrophies[m.tag]) initialTrophies[m.tag] = m.trophies;
-                    const meta = metasGlobal[m.tag] || 0;
-                    const percent = meta > 0 ? Math.floor(Math.min((m.trophies / meta) * 100, 100)) : 0;
-                    
-                    const div = document.createElement('div');
-                    div.className = 'p-card';
-                    div.onclick = () => openModal(m.tag, m.name);
-                    div.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <b>${m.name}</b>
-                            <b style="color:var(--primary)">${m.trophies.toLocaleString()}</b>
-                        </div>
-                        <div class="meta-bar-container">
-                            <div class="meta-label"><span>Progresso</span><span>${percent}%</span></div>
-                            <div class="meta-track"><div class="meta-fill" style="width:${percent}%"></div></div>
-                        </div>
-                    `;
-                    list.appendChild(div);
-                });
-            } catch(e) {}
-        }
-
-        async function openModal(tag, name) {
-            document.getElementById('playerModal').style.display = 'flex';
-            document.getElementById('m-name').innerText = name;
-            document.getElementById('m-tag').innerText = tag;
-            currentTag = tag;
-
-            const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
-            const p = await res.json();
-
-            const total = p['3vs3Victories'] + p.soloVictories + p.duoVictories;
-            document.getElementById('m-winrate').innerText = ((p['3vs3Victories'] / total) * 100).toFixed(1) + "%";
-            document.getElementById('m-high').innerText = p.highestTrophies;
-            document.getElementById('m-exp').innerText = p.expLevel;
-            document.getElementById('m-gain').innerText = (p.trophies - initialTrophies[tag]);
-            document.getElementById('inputMeta').value = metasGlobal[tag] || "";
-            
-            renderChart(p['3vs3Victories'], p.soloVictories, p.duoVictories);
-
-            const bList = document.getElementById('brawlersList');
-            bList.innerHTML = '';
-            p.brawlers.forEach(b => {
+            data.club.members.forEach(m => {
                 const card = document.createElement('div');
-                card.className = 'brawler-card';
-                card.onclick = () => openBuild(b);
-                card.innerHTML = `<b>${b.name}</b><span>${b.trophies} TR</span>`;
-                bList.appendChild(card);
+                card.className = 'b-card-ultra';
+                card.onclick = () => openPlayer(m.tag, m.name);
+                card.innerHTML = `
+                    <div class="b-lvl">LVL ${Math.floor(Math.random()*11)+1}</div>
+                    <b style="font-family:'Rajdhani'; font-size:1.3rem;">${m.name}</b>
+                    <p style="color:var(--primary); font-weight:900;">${m.trophies.toLocaleString()}</p>
+                `;
+                list.appendChild(card);
             });
         }
 
-        function openBuild(b) {
+        async function openPlayer(tag, name) {
+            playClick();
+            document.getElementById('playerModal').style.display = 'flex';
+            const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
+            const p = await res.json();
+            
+            const bCont = document.getElementById('brawlersContainer');
+            bCont.innerHTML = p.brawlers.map(b => `
+                <div class="b-card-ultra" onclick="showBuild('${b.name}', ${JSON.stringify(b.gadgets).replace(/"/g, '&quot;')}, ${JSON.stringify(b.starPowers).replace(/"/g, '&quot;')})">
+                    <div class="b-lvl">PWR ${b.power}</div>
+                    <b>${b.name}</b>
+                    <div style="font-size:0.7rem; color:#64748b;">${b.trophies} TR</div>
+                </div>
+            `).join('');
+        }
+
+        function showBuild(name, gadgets, stars) {
+            playClick();
             const panel = document.getElementById('buildPanel');
-            document.getElementById('b-title').innerText = b.name;
-            panel.style.display = 'flex';
-            let h = '<h4>Build Equipada</h4>';
-            (b.gadgets || []).forEach(g => h += `<div class="skill-item"><i class="fas fa-bolt"></i> ${g.name}</div>`);
-            (b.starPowers || []).forEach(s => h += `<div class="skill-item star"><i class="fas fa-star"></i> ${s.name}</div>`);
-            if(b.power >= 11) h += `<div class="skill-item hyper"><i class="fas fa-zap"></i> HYPERCHARGE</div>`;
-            document.getElementById('skillList').innerHTML = h;
+            const content = document.getElementById('buildContent');
+            panel.style.display = 'block';
+
+            let html = `<h2 style="font-family:'Rajdhani'; color:var(--primary); margin-bottom:20px;">BUILD: ${name}</h2>`;
+            
+            gadgets.forEach(g => {
+                const nomePt = tradutor[g.name] || g.name;
+                html += `<div class="skill-item"><div class="skill-icon"><i class="fas fa-bolt" style="color:var(--success)"></i></div><div><b>${nomePt}</b><br><small>Acessório</small></div></div>`;
+            });
+
+            stars.forEach(s => {
+                const nomePt = tradutor[s.name] || s.name;
+                html += `<div class="skill-item" style="border-left:4px solid var(--gold)"><div class="skill-icon"><i class="fas fa-star" style="color:var(--gold)"></i></div><div><b>${nomePt}</b><br><small>Poder de Estrela</small></div></div>`;
+            });
+
+            content.innerHTML = html;
         }
 
         function closeBuild() { document.getElementById('buildPanel').style.display = 'none'; }
-        function closeModal() { document.getElementById('playerModal').style.display = 'none'; closeBuild(); }
+        function toggleAdmModal() { 
+            const m = document.getElementById('admModal');
+            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+            document.getElementById('logContent').innerHTML = JSON.parse(localStorage.getItem('hz_logs') || '[]').map(l => `<div>${l}</div>`).join('');
+        }
         
-        function switchTab(id, btn) {
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            btn.classList.add('active');
+        function playClick() { document.getElementById('clickSound').play().catch(()=>{}); }
+        function showError() { 
+            const msg = document.getElementById('authMsg');
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 3000);
         }
-
-        function renderChart(v3, s, d) {
-            const ctx = document.getElementById('winChart').getContext('2d');
-            if(winChart) winChart.destroy();
-            winChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: { datasets: [{ data: [v3, s, d], backgroundColor: ['#00f2ff', '#00ff88', '#bc13fe'], borderWidth: 0 }] },
-                options: { cutout: '80%', plugins: { legend: { display: false } } }
-            });
-        }
-
-        async function salvarMeta() {
-            const val = document.getElementById('inputMeta').value;
-            await fetch('/api/save-meta', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ tag: currentTag, meta: val })
-            });
-            closeModal(); updateDashboard();
-        }
-
-        function logout() { localStorage.clear(); location.reload(); }
-
-        window.onload = () => {
-            const saved = localStorage.getItem('hz_user');
-            if(saved) loginSuccess(saved, localStorage.getItem('hz_isadm') === 'true');
-        };
-
-        function filterBrawlers() {
-            const q = document.getElementById('b-search').value.toUpperCase();
-            document.querySelectorAll('.brawler-card').forEach(c => {
-                c.style.display = c.innerText.includes(q) ? 'block' : 'none';
-            });
-        }
+        function logout() { localStorage.removeItem('hz_user'); location.reload(); }
     </script>
 </body>
 </html>
