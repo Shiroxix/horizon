@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HORIZON ULTRA | Intelligence v6.0</title>
+    <title>HORIZON ULTRA | Intelligence v5.8</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,15 +19,8 @@
             --card-bg: #1e293b;
             --text: #f1f5f9;
             --accent: #ef4444;
-            --gold: #fbbf24;
-            --silver: #94a3b8;
-            --bronze: #cd7f32;
             --border: rgba(255,255,255,0.1);
             --input-bg: rgba(255,255,255,0.05);
-            --tier-elite: #fbbf24;
-            --tier-veteran: #a855f7;
-            --tier-op: #3b82f6;
-            --tier-rookie: #64748b;
         }
 
         body.amoled {
@@ -40,6 +33,7 @@
         body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; overflow-x: hidden; }
         h1, h2, h3, .btn-action { font-family: 'Outfit', sans-serif; }
 
+        /* --- AUTH SYSTEM --- */
         #authWrapper { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; background: var(--card-bg); border: 1px solid var(--border); text-align: center; }
         .auth-tabs { display: flex; gap: 10px; margin-bottom: 25px; background: var(--input-bg); padding: 5px; border-radius: 12px; }
@@ -47,60 +41,41 @@
         .tab-btn.active { background: var(--bg); color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .input-group { position: relative; margin-bottom: 15px; }
         .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
-        input { width: 100%; padding: 14px 14px 14px 45px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 1rem; transition: 0.3s; outline: none; }
+        input { width: 100%; padding: 14px 14px 14px 45px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 1rem; transition: 0.3s; }
         .btn-action { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: #fff; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px; }
 
+        /* --- APP UI --- */
         nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
         .nav-actions { display: flex; gap: 12px; align-items: center; }
         .main-container { max-width: 1000px; margin: 90px auto; padding: 0 20px; }
+        .player-card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
         
-        .player-card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; position: relative; overflow: hidden; }
-        .tier-badge { font-size: 0.55rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-top: 5px; display: inline-block; letter-spacing: 0.5px; border: 1px solid transparent; }
-        
-        .card-elite { border-left: 4px solid var(--tier-elite); background: linear-gradient(90deg, rgba(251, 191, 36, 0.05), var(--card-bg) 30%); }
-        .badge-elite { color: var(--tier-elite); background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.2); }
-        .card-veteran { border-left: 4px solid var(--tier-veteran); background: linear-gradient(90deg, rgba(168, 85, 247, 0.05), var(--card-bg) 30%); }
-        .badge-veteran { color: var(--tier-veteran); background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); }
-        .card-operative { border-left: 4px solid var(--tier-op); }
-        .badge-operative { color: var(--tier-op); background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); }
-        .card-rookie { border-left: 4px solid var(--tier-rookie); opacity: 0.9; }
-        .badge-rookie { color: var(--tier-rookie); background: rgba(100, 116, 139, 0.1); border-color: rgba(100, 116, 139, 0.2); }
-
-        .rank-crown { animation: float 3s ease-in-out infinite; margin-left: 6px; font-size: 0.9rem; }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-3px); } 100% { transform: translateY(0px); } }
-
-        .medal-box { background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); padding: 10px 5px; text-align: center; transition: 0.3s; }
-        .medal-box i { font-size: 1.6rem; margin-bottom: 8px; display: block; filter: drop-shadow(0 0 8px currentColor); }
-        .medal-box span { font-size: 0.55rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px; }
-
+        /* --- MODAL --- */
         .modal { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); overflow-y: auto; }
         .modal-content { background: var(--bg); width: 100%; min-height: 100vh; padding: 30px 20px; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 20px 0; }
         .stat-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); transition: 0.2s; }
         
+        /* POPUP BRAWLER */
         .brawler-popup { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 6000; width: 90%; max-width: 400px; background: var(--card-bg); padding: 25px; border-radius: 24px; border: 2px solid var(--primary); box-shadow: 0 0 50px rgba(0,0,0,0.5); }
         .item-icon { width: 35px; height: 35px; background: var(--input-bg); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 1px solid var(--border); }
 
+        /* ARSENAL GRID OPTIMIZATION */
         .brawler-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding-bottom: 40px; }
         @media (min-width: 768px) { .brawler-grid { grid-template-columns: repeat(4, 1fr); } }
 
+        /* --- X1 SYSTEM --- */
+        .x1-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .vs-circle { background: var(--accent); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; margin: 0 auto -20px auto; position: relative; z-index: 2; border: 4px solid var(--bg); }
         .compare-bar-container { background: var(--input-bg); height: 12px; border-radius: 10px; overflow: hidden; display: flex; margin: 10px 0; }
         .compare-bar { height: 100%; transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-        .achievement-row { background: transparent; padding: 15px 0; margin-bottom: 5px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 15px; }
-        .ach-icon { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.05); }
-        .ach-progress-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 8px; overflow: hidden; }
-        .ach-progress-fill { height: 100%; background: var(--primary); border-radius: 10px; transition: 1s ease-out; }
-
-        .profile-tabs { display: flex; gap: 10px; margin: 20px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-        .p-tab { padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: #64748b; transition: 0.3s; }
-        .p-tab.active { background: var(--primary); color: white; }
 
         .hidden { display: none !important; }
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 12px; background: var(--accent); color: white; z-index: 10000; display: none; font-weight: 700; }
         .icon-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--input-bg); cursor: pointer; border: 1px solid var(--border); }
         .btn-whatsapp { background: #25d366 !important; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
+        /* TIMER STYLE */
         .last-update-tag { font-size: 0.65rem; color: #64748b; font-weight: 500; background: var(--input-bg); padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border); white-space: nowrap; }
     </style>
 </head>
@@ -133,16 +108,17 @@
         <nav>
             <div style="font-weight: 800; font-size: 1.1rem;">HORIZON <span style="color:var(--primary)">ULTRA</span></div>
             <div class="nav-actions">
-                <div class="icon-btn" onclick="openX1()"><i class="fas fa-bolt" style="color: #fbbf24;"></i></div>
+                <div class="icon-btn" onclick="openX1()" title="Comparar X1"><i class="fas fa-bolt" style="color: #fbbf24;"></i></div>
                 <div class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon"></i></div>
-                <i class="fas fa-power-off" onclick="logout()" style="color:var(--accent); cursor:pointer;"></i>
+                <i class="fas fa-power-off" onclick="logout()" style="color:var(--accent); cursor:pointer; margin-left: 5px;"></i>
             </div>
         </nav>
         <div class="main-container">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                <h2 style="margin-bottom: 0;">Club Roster</h2>
-                <span id="githubTimer" class="last-update-tag">Sincronizando...</span>
+                <h2 style="margin-bottom: 0;">Database membros</h2>
+                <span id="githubTimer" class="last-update-tag">Loading update info...</span>
             </div>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Sincronizado com API Oficial</p>
             <div id="clubGrid"></div>
         </div>
     </div>
@@ -153,31 +129,55 @@
 
     <div id="brawlerPopup" class="brawler-popup">
         <div id="bpContent"></div>
-        <button class="btn-action" onclick="closeBrawlerPopup()" style="margin-top:20px;">FECHAR</button>
+        <button class="btn-action" onclick="closeBrawlerPopup()" style="margin-top:20px; background:var(--card-bg); border:1px solid var(--border)">FECHAR</button>
     </div>
 
     <div id="x1Modal" class="modal">
         <div class="modal-content">
-            <i class="fas fa-times" onclick="closeX1()" style="font-size:1.5rem; margin-bottom:20px;"></i>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                <i class="fas fa-times" onclick="closeX1()" style="font-size:1.5rem;"></i>
+                <span style="font-weight:800; color: #fbbf24;">ARENA DE COMPARATIVO</span>
+                <div></div>
+            </div>
             <div class="x1-selector">
-                <select id="p1Sel" class="btn-action" style="background: var(--card-bg);" onchange="updateX1()"></select>
-                <select id="p2Sel" class="btn-action" style="background: var(--card-bg);" onchange="updateX1()"></select>
+                <select id="p1Sel" class="btn-action" style="background: var(--card-bg); font-size: 0.8rem;" onchange="updateX1()"></select>
+                <select id="p2Sel" class="btn-action" style="background: var(--card-bg); font-size: 0.8rem;" onchange="updateX1()"></select>
             </div>
             <div class="vs-circle">VS</div>
-            <div id="x1Result" style="margin-top: 30px;"></div>
+            <div id="x1Result" style="margin-top: 30px;">
+                <p style="text-align: center; opacity: 0.5;">Selecione dois jogadores para comparar</p>
+            </div>
         </div>
     </div>
 
     <script>
         AOS.init();
-        const API_BASE = "https://brawlproxy.vercel.app"; // URL Base sugerida
+        const API_BASE = ""; 
         let cachedMembers = [];
         let currentPlayerBrawlers = [];
 
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg; t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 3000);
+        // LÓGICA DO TIMER DE ATUALIZAÇÃO GITHUB
+        function updateGithubTimer() {
+            const lastModified = new Date(document.lastModified);
+            const now = new Date();
+            const diffMs = now - lastModified;
+            const diffMin = Math.floor(diffMs / 60000);
+            const diffHrs = Math.floor(diffMin / 60);
+            const diffDays = Math.floor(diffHrs / 24);
+
+            let timeStr = "";
+            if (diffMin < 1) timeStr = "just now";
+            else if (diffMin < 60) timeStr = `${diffMin}m ago`;
+            else if (diffHrs < 24) timeStr = `${diffHrs}h ago`;
+            else timeStr = `${diffDays}d ago`;
+
+            document.getElementById('githubTimer').innerText = `Last update ${timeStr}`;
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('amoled');
+            const icon = document.querySelector('.icon-btn i.fa-moon, .icon-btn i.fa-sun');
+            if(icon) { icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun'); }
         }
 
         function switchTab(mode) {
@@ -190,25 +190,8 @@
 
         function doLogin() {
             const u = document.getElementById('lUser').value, p = document.getElementById('lPass').value;
-            const users = JSON.parse(localStorage.getItem('hz_users') || '[]');
-            if((u === 'shiro' && p === '18172220') || users.find(x => x.u === u && x.p === p)) {
-                loginOk(u);
-            } else {
-                showToast("ACESSO NEGADO!");
-            }
-        }
-
-        function doRegister() {
-            const u = document.getElementById('rUser').value, p = document.getElementById('rPass').value, k = document.getElementById('rKey').value;
-            if(u && p && k === 'HORIZON2025') {
-                let users = JSON.parse(localStorage.getItem('hz_users') || '[]');
-                users.push({u, p});
-                localStorage.setItem('hz_users', JSON.stringify(users));
-                showToast("CONTA CRIADA!");
-                switchTab('login');
-            } else {
-                showToast("DADOS INVÁLIDOS OU CHAVE INCORRETA");
-            }
+            if((u === 'shiro' && p === '18172220') || (JSON.parse(localStorage.getItem('hz_users') || '[]').find(x => x.u === u && x.p === p))) return loginOk(u);
+            showToast("ACESSO NEGADO!");
         }
 
         function loginOk(user) {
@@ -216,73 +199,209 @@
             document.getElementById('authWrapper').style.display = 'none';
             document.getElementById('app').classList.remove('hidden');
             loadClub();
-        }
-
-        function logout() {
-            localStorage.removeItem('hz_session');
-            location.reload();
+            updateGithubTimer(); // Inicia o timer ao logar
         }
 
         async function loadClub() {
             try {
                 const res = await fetch(`${API_BASE}/api/stats`);
                 const data = await res.json();
-                cachedMembers = data.club.members.sort((a,b) => b.trophies - a.trophies);
-                renderClub();
+                cachedMembers = data.club.members;
+                const selects = [document.getElementById('p1Sel'), document.getElementById('p2Sel')];
+                selects.forEach(s => {
+                    s.innerHTML = '<option value="">Selecionar Jogador</option>' + 
+                    cachedMembers.map(m => `<option value="${m.tag}">${m.name}</option>`).join('');
+                });
+                document.getElementById('clubGrid').innerHTML = cachedMembers.map(m => `
+                    <div class="player-card" onclick="openProfile('${m.tag}')">
+                        <div>
+                            <div style="font-weight:700;">${m.name}</div>
+                            <div style="font-size:0.7rem; color:#64748b;">${m.tag}</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div style="font-weight:800; color:var(--primary);">${m.trophies}</div>
+                            <div style="font-size:0.6rem; opacity:0.6;">TROFÉUS</div>
+                        </div>
+                    </div>
+                `).join('');
             } catch(e) { showToast("ERRO NA API"); }
         }
 
-        function renderClub() {
-            const grid = document.getElementById('clubGrid');
-            grid.innerHTML = cachedMembers.map((m, i) => {
-                let tier = m.trophies >= 60000 ? 'elite' : (m.trophies >= 40000 ? 'veteran' : (m.trophies >= 20000 ? 'operative' : 'rookie'));
-                return `<div class="player-card card-${tier}" onclick="openProfile('${m.tag}')">
-                    <div><b>${m.name}</b><br><small>${m.tag}</small><br><span class="tier-badge badge-${tier}">${tier}</span></div>
-                    <div style="text-align:right"><b>${m.trophies}</b><br><small>TROFÉUS</small></div>
-                </div>`;
-            }).join('');
-            
-            const selects = [document.getElementById('p1Sel'), document.getElementById('p2Sel')];
-            selects.forEach(s => {
-                s.innerHTML = '<option value="">Selecionar</option>' + cachedMembers.map(m => `<option value="${m.tag}">${m.name}</option>`).join('');
-            });
+        function openX1() { document.getElementById('x1Modal').style.display = 'block'; }
+        function closeX1() { document.getElementById('x1Modal').style.display = 'none'; }
+
+        async function updateX1() {
+            const t1 = document.getElementById('p1Sel').value;
+            const t2 = document.getElementById('p2Sel').value;
+            if(!t1 || !t2) return;
+            const res1 = await fetch(`${API_BASE}/api/player/${t1.replace('#', '%23')}`);
+            const res2 = await fetch(`${API_BASE}/api/player/${t2.replace('#', '%23')}`);
+            const p1 = await res1.json();
+            const p2 = await res2.json();
+            const createBar = (v1, v2, label) => {
+                const total = (v1 + v2) || 1;
+                const p1w = (v1 / total) * 100;
+                return `
+                    <div style="margin-bottom: 15px;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.7rem; font-weight:700; margin-bottom:5px;">
+                            <span>${v1}</span> <span style="opacity:0.5">${label.toUpperCase()}</span> <span>${v2}</span>
+                        </div>
+                        <div class="compare-bar-container">
+                            <div class="compare-bar" style="width:${p1w}%; background:var(--primary)"></div>
+                            <div class="compare-bar" style="width:${100-p1w}%; background:var(--accent)"></div>
+                        </div>
+                    </div>
+                `;
+            };
+            const b1 = p1.brawlers.sort((a,b)=>b.trophies-a.trophies)[0];
+            const b2 = p2.brawlers.sort((a,b)=>b.trophies-a.trophies)[0];
+            document.getElementById('x1Result').innerHTML = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; text-align:center; margin-bottom:30px;">
+                    <div><h2 style="color:var(--primary)">${p1.name}</h2><small>${p1.tag}</small></div>
+                    <div><h2 style="color:var(--accent)">${p2.name}</h2><small>${p2.tag}</small></div>
+                </div>
+                ${createBar(p1.trophies, p2.trophies, 'Troféus Atuais')}
+                ${createBar(p1.expLevel, p2.expLevel, 'Nível')}
+                ${createBar(p1['3vs3Victories'], p2['3vs3Victories'], 'Vitórias 3v3')}
+                <div class="stats-grid">
+                    <div class="stat-box" style="border-left: 4px solid var(--primary)">
+                        <div style="font-size:0.6rem; opacity:0.6;">MELHOR</div>
+                        <div style="font-weight:800;">${b1.name}</div>
+                        <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b1.trophies}</div>
+                    </div>
+                    <div class="stat-box" style="border-right: 4px solid var(--accent); text-align:right;">
+                        <div style="font-size:0.6rem; opacity:0.6;">MELHOR</div>
+                        <div style="font-weight:800;">${b2.name}</div>
+                        <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b2.trophies}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getApiDiff(tag, current) {
+            const key = `api_last_${tag}`;
+            const last = localStorage.getItem(key);
+            if(last === null) {
+                localStorage.setItem(key, current);
+                return 0;
+            }
+            const diff = current - parseInt(last);
+            localStorage.setItem(key, current);
+            return diff;
         }
 
         async function openProfile(tag) {
-            document.getElementById('playerModal').style.display = 'block';
+            const modal = document.getElementById('playerModal');
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
             try {
                 const res = await fetch(`${API_BASE}/api/player/${tag.replace('#', '%23')}`);
                 const p = await res.json();
                 currentPlayerBrawlers = p.brawlers;
+                
+                const diff = getApiDiff(p.tag, p.trophies);
+
                 document.getElementById('mContent').innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <i class="fas fa-arrow-left" onclick="closeModal()"></i>
-                        <h2>${p.name}</h2>
-                        <div></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
+                        <i class="fas fa-arrow-left" onclick="closeModal()" style="font-size:1.2rem;"></i>
+                        <span style="font-weight:800; font-size:0.7rem; opacity:0.5;">LIVE ANALYTICS</span>
+                        <i class="fas fa-sync" onclick="openProfile('${tag}')"></i>
                     </div>
+                    <h1 style="font-size:2.2rem; margin-bottom:5px;">${p.name}</h1>
+                    <span style="background:var(--primary); color:white; padding:3px 10px; border-radius:6px; font-size:0.7rem; font-weight:700;">${p.tag}</span>
+                    
                     <div class="stats-grid">
-                        <div class="stat-box">XP: ${p.expLevel}</div>
-                        <div class="stat-box">Troféus: ${p.trophies}</div>
+                        <div class="stat-box">
+                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Variação API</div>
+                            <div style="font-size:1.1rem; font-weight:800; color:${diff >= 0 ? '#22c55e' : '#ef4444'}">${diff >= 0 ? '+' : ''}${diff} 🏆</div>
+                        </div>
+                        <div class="stat-box">
+                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Total Atual</div>
+                            <div style="font-size:1.1rem; font-weight:800; color:var(--primary)">${p.trophies} 🏆</div>
+                        </div>
                     </div>
+
+                    <div class="stat-box" style="margin-bottom:20px;">
+                        <canvas id="profileChart" height="150"></canvas>
+                    </div>
+
+                    <button class="btn-action btn-whatsapp" onclick="shareStats('${p.name}', '${p.trophies}', '${diff}')">
+                        <i class="fab fa-whatsapp"></i> COMPARTILHAR
+                    </button>
+
+                    <h3 style="margin:25px 0 15px; font-size:1rem;">Arsenal Completo (${p.brawlers.length})</h3>
                     <div class="brawler-grid">
-                        ${p.brawlers.slice(0,12).map((b, i) => `<div class="stat-box" onclick="openBrawlerDetails(${i})">${b.name}<br>🏆${b.trophies}</div>`).join('')}
-                    </div>`;
-            } catch(e) { showToast("ERRO PERFIL"); }
+                        ${p.brawlers.sort((a,b)=>b.trophies-a.trophies).map((b, idx) => `
+                            <div class="stat-box" style="padding:10px; cursor:pointer;" onclick="openBrawlerDetails(${idx})">
+                                <div style="font-size:0.75rem; font-weight:700;">${b.name}</div>
+                                <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b.trophies}</div>
+                                <div style="font-size:0.6rem; opacity:0.5; margin-top:4px;">Poder ${b.power}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+
+                new Chart(document.getElementById('profileChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: p.brawlers.slice(0,6).map(b => b.name),
+                        datasets: [{ data: p.brawlers.slice(0,6).map(b => b.trophies), backgroundColor: '#3b82f6', borderRadius: 5 }]
+                    },
+                    options: { plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } } } }
+                });
+
+            } catch(e) { showToast("ERRO AO CARREGAR PERFIL"); }
         }
 
-        function openBrawlerDetails(i) {
-            const b = currentPlayerBrawlers[i];
-            document.getElementById('bpContent').innerHTML = `<h3>${b.name}</h3><p>Poder: ${b.power}</p><p>Troféus: ${b.trophies}</p>`;
+        function openBrawlerDetails(index) {
+            const b = currentPlayerBrawlers[index];
+            const content = document.getElementById('bpContent');
+            content.innerHTML = `
+                <h2 style="color:var(--primary); margin-bottom:5px;">${b.name}</h2>
+                <p style="font-size:0.8rem; opacity:0.6; margin-bottom:20px;">Nível de Poder ${b.power}</p>
+                <div style="margin-bottom:15px;">
+                    <p style="font-size:0.7rem; font-weight:700; margin-bottom:8px; color:#94a3b8;">ACESSÓRIOS E PODERES</p>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        ${b.gadgets.map(g => `<div class="item-icon"><i class="fas fa-plug" style="color:#22c55e"></i></div>`).join('')}
+                        ${b.starPowers.map(s => `<div class="item-icon"><i class="fas fa-star" style="color:#fbbf24"></i></div>`).join('')}
+                    </div>
+                </div>
+                <div style="margin-bottom:15px;">
+                    <p style="font-size:0.7rem; font-weight:700; margin-bottom:8px; color:#94a3b8;">ENGRENAGENS</p>
+                    <div style="display:flex; gap:8px;">
+                        ${b.gears.map(g => `<div class="item-icon"><i class="fas fa-cog" style="color:#94a3b8"></i></div>`).join('') || '<span style="font-size:0.7rem; opacity:0.4;">Nenhuma</span>'}
+                    </div>
+                </div>
+                <div>
+                    <p style="font-size:0.7rem; font-weight:700; margin-bottom:8px; color:#94a3b8;">HIPERCARGA</p>
+                    <div class="item-icon" style="border-color:${b.power >= 11 ? '#8b5cf6' : 'var(--border)'}">
+                        <i class="fas fa-bolt" style="color:${b.power >= 11 ? '#8b5cf6' : '#334155'}"></i>
+                    </div>
+                </div>
+            `;
             document.getElementById('brawlerPopup').style.display = 'block';
         }
 
         function closeBrawlerPopup() { document.getElementById('brawlerPopup').style.display = 'none'; }
-        function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
-        function openX1() { document.getElementById('x1Modal').style.display = 'block'; }
-        function closeX1() { document.getElementById('x1Modal').style.display = 'none'; }
-        function toggleTheme() { document.body.classList.toggle('amoled'); }
+        
+        function shareStats(name, total, diff) {
+            const status = diff >= 0 ? `+${diff} 📈` : `${diff} 📉`;
+            const msg = `📊 *HORIZON LIVE*\n👤 *${name}*\n🏆 *Total:* ${total}\n⚡ *Variação:* ${status}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        }
 
-        window.onload = () => { if(localStorage.getItem('hz_session')) loginOk(); };
+        function showToast(m) {
+            const t = document.getElementById('toast');
+            t.innerText = m; t.style.display = "block";
+            setTimeout(() => t.style.display = "none", 3000);
+        }
+        function closeModal() { document.getElementById('playerModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
+        function logout() { localStorage.removeItem('hz_session'); location.reload(); }
+        
+        window.onload = () => { 
+            const session = localStorage.getItem('hz_session');
+            if(session) loginOk(session);
+        };
     </script>
 </body>
 </html>
