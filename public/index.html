@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HORIZON ULTRA | Pro Elite v6.0</title>
+    <title>HORIZON ULTRA | OS v7.0</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,286 +14,308 @@
     <style>
         :root {
             --primary: #00f2ff; --secondary: #7000ff; --accent: #ff007a;
-            --bg: #030712; --card-bg: rgba(20, 30, 50, 0.9);
-            --border: rgba(0, 242, 255, 0.3); --text: #ffffff;
-            --input-bg: rgba(255, 255, 255, 0.05);
+            --bg: #020617; --card: rgba(15, 23, 42, 0.8);
+            --border: rgba(0, 242, 255, 0.2); --text: #f8fafc;
+            --font-t: 'Orbitron', sans-serif;
         }
 
-        /* --- SISTEMA DE TEMAS --- */
-        [data-theme="amoled"] { --bg: #000000; --card-bg: #0a0a0a; --border: #1a1a1a; --primary: #ffffff; }
-        [data-theme="neon"] { --bg: #000814; --primary: #ff00ff; --secondary: #00ffff; --border: #ff00ff; }
-        [data-theme="light"] { --bg: #f3f4f6; --card-bg: #ffffff; --text: #111827; --border: #e5e7eb; --input-bg: #f9fafb; --primary: #2563eb; }
+        /* --- TEMAS --- */
+        [data-theme="amoled"] { --bg: #000000; --card: #050505; --border: #1a1a1a; --primary: #ffffff; }
+        [data-theme="neon"] { --bg: #050010; --primary: #00ff9f; --accent: #ff00ff; --border: #00ff9f; }
+        [data-theme="blood"] { --bg: #0a0000; --primary: #ff4655; --accent: #990000; --border: #ff4655; }
+        [data-theme="light"] { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --border: #e2e8f0; --primary: #2563eb; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; transition: 0.3s; min-height: 100vh; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; 
+            overflow-x: hidden; transition: 0.4s; min-height: 100vh;
+        }
 
-        /* --- LOGIN --- */
-        #authWrapper { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-card { width: 100%; max-width: 400px; padding: 40px; border-radius: 24px; background: var(--card-bg); border: 1px solid var(--border); text-align: center; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
-        .tab-group { display: flex; gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 12px; }
-        .tab-btn { flex: 1; padding: 10px; border: none; background: none; color: var(--text); opacity: 0.5; font-family: 'Orbitron'; font-size: 0.7rem; cursor: pointer; }
-        .tab-btn.active { opacity: 1; background: var(--primary); color: #000; border-radius: 8px; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 2px solid var(--border); background: var(--input-bg); color: var(--text); }
+        /* Grid Background */
+        body::before {
+            content: ""; position: fixed; inset: 0; 
+            background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 50px 50px; z-index: -1; opacity: 0.1;
+        }
 
-        /* --- NAV --- */
-        nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
-        .logo { font-family: 'Orbitron'; color: var(--primary); font-weight: 900; }
+        /* --- AUTH --- */
+        #authScreen { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .glass-card { 
+            background: var(--card); backdrop-filter: blur(20px); border: 1px solid var(--border);
+            padding: 40px; border-radius: 24px; width: 100%; max-width: 420px; text-align: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+        }
+        .tab-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(0,0,0,0.3); padding: 5px; border-radius: 12px; margin-bottom: 25px; }
+        .tab-btn { padding: 10px; border: none; background: none; color: var(--text); font-family: var(--font-t); font-size: 0.7rem; cursor: pointer; border-radius: 8px; transition: 0.3s; }
+        .tab-btn.active { background: var(--primary); color: #000; }
+
+        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 12px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: #fff; font-size: 1rem; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--border); }
 
         /* --- DASHBOARD --- */
-        .container { max-width: 1400px; margin: 100px auto 40px; padding: 0 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
-        .p-card { padding: 25px; border-radius: 20px; background: var(--card-bg); border: 1px solid var(--border); transition: 0.3s; cursor: pointer; position: relative; }
-        .p-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-        .win-24h { position: absolute; top: 15px; right: 15px; font-size: 0.7rem; color: #00ff88; font-weight: 800; }
+        nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+        .logo { font-family: var(--font-t); font-weight: 900; color: var(--primary); letter-spacing: 2px; }
 
-        /* --- X1 SYSTEM --- */
-        #vsPanel { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 4000; width: 90%; max-width: 500px; padding: 15px; border-radius: 15px; display: none; align-items: center; justify-content: space-between; border: 2px solid var(--accent); }
+        .content { max-width: 1400px; margin: 100px auto 40px; padding: 0 20px; }
+        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card { 
+            padding: 25px; border-radius: 20px; background: var(--card); border: 1px solid var(--border); 
+            transition: 0.3s; cursor: pointer; position: relative; overflow: hidden;
+        }
+        .card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+
+        /* --- X1 HUD --- */
+        #x1Control { 
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
+            z-index: 4000; display: none; background: var(--accent); color: #fff;
+            padding: 15px 30px; border-radius: 50px; font-weight: 900; 
+            font-family: var(--font-t); font-size: 0.8rem; cursor: pointer;
+            box-shadow: 0 0 30px var(--accent);
+        }
 
         /* --- MODAL --- */
         .modal { display: none; position: fixed; inset: 0; z-index: 5000; background: var(--bg); overflow-y: auto; padding: 20px; }
-        .modal-content { max-width: 1000px; margin: 40px auto; }
-        .close { position: fixed; top: 20px; right: 20px; font-size: 2.5rem; color: var(--primary); cursor: pointer; }
+        .m-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .close-icon { font-size: 2rem; color: var(--primary); cursor: pointer; }
 
-        .stat-box { background: var(--input-bg); padding: 20px; border-radius: 15px; text-align: center; border: 1px solid var(--border); }
-        .stat-box b { display: block; font-size: 1.4rem; color: var(--primary); font-family: 'Orbitron'; }
+        .stats-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 20px; border-radius: 15px; text-align: center; }
+        .stats-box b { display: block; font-size: 1.5rem; color: var(--primary); font-family: var(--font-t); }
 
-        /* --- X1 BATTLE SCREEN --- */
-        .battle-grid { display: grid; grid-template-columns: 1fr 50px 1fr; gap: 10px; align-items: center; text-align: center; margin-top: 30px; }
-        .battle-row { padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 10px; display: grid; grid-template-columns: 1fr 80px 1fr; }
-        .winner { color: var(--primary); text-shadow: 0 0 10px var(--primary); font-weight: 900; }
+        /* Battle CSS */
+        .vs-screen { display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px; align-items: center; margin-top: 50px; }
+        .vs-val { font-family: var(--font-t); font-size: 1.2rem; font-weight: 900; margin: 10px 0; }
+        .win-glow { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
+
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 15px 30px; border-radius: 10px; background: var(--secondary); z-index: 10000; transition: 0.5s; font-weight: 800; }
 
         .hidden { display: none !important; }
-        button { cursor: pointer; transition: 0.3s; }
-        button:active { transform: scale(0.95); }
     </style>
 </head>
 <body data-theme="default">
 
-    <div id="authWrapper">
-        <div class="auth-card">
-            <h1 class="logo" style="font-size: 2rem;">HORIZON</h1>
-            <p style="font-size: 0.6rem; letter-spacing: 4px; margin: 10px 0 25px;">COMMAND CENTER</p>
+    <div id="toast">LOGGED IN</div>
+
+    <div id="authScreen">
+        <div class="glass-card" data-aos="zoom-in">
+            <div class="logo" style="font-size: 2rem; margin-bottom: 5px;">HORIZON</div>
+            <p style="font-size: 0.6rem; opacity: 0.5; letter-spacing: 5px; margin-bottom: 30px;">ULTRA COMMAND</p>
             
-            <div class="tab-group">
-                <button class="tab-btn active" onclick="switchAuth('login')">LOGIN</button>
-                <button class="tab-btn" onclick="switchAuth('reg')">REGISTRO</button>
+            <div class="tab-nav">
+                <button class="tab-btn active" id="btn-l" onclick="setAuth('login')">LOGIN</button>
+                <button class="tab-btn" id="btn-r" onclick="setAuth('reg')">REGISTRO</button>
             </div>
 
-            <div id="login-box">
-                <input type="text" id="lUser" placeholder="Usuário">
-                <input type="password" id="lPass" placeholder="Senha">
-                <button onclick="doLogin()" style="width:100%; padding:15px; border-radius:12px; border:none; background:var(--primary); font-weight:900;">ACESSAR</button>
-            </div>
-
-            <div id="reg-box" class="hidden">
-                <input type="text" id="rUser" placeholder="Novo Usuário">
-                <input type="password" id="rPass" placeholder="Senha">
-                <input type="text" id="rKey" placeholder="Key (LOGONTOP)">
-                <button onclick="doRegister()" style="width:100%; padding:15px; border-radius:12px; border:none; background:var(--secondary); color:#fff; font-weight:900;">CRIAR CONTA</button>
+            <div id="auth-fields">
+                <input type="text" id="uIn" placeholder="Usuário">
+                <input type="password" id="pIn" placeholder="Senha">
+                <button onclick="handleAuth()" class="tab-btn active" style="width: 100%; padding: 15px; font-size: 0.9rem;">CONECTAR</button>
             </div>
         </div>
     </div>
 
-    <div id="app" class="hidden">
+    <div id="mainApp" class="hidden">
         <nav>
-            <div class="logo">HORIZON <span style="color:var(--text)">ULTRA</span></div>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <select onchange="setTheme(this.value)" style="background:none; color:var(--text); border:1px solid var(--border); border-radius:5px; font-size:0.6rem; padding:5px;">
+            <div class="logo">HORIZON <span style="color:var(--text)">7.0</span></div>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <select onchange="document.body.setAttribute('data-theme', this.value)" style="background:none; color:var(--text); border:1px solid var(--border); padding:5px; border-radius:8px; font-size:0.7rem;">
                     <option value="default">CYBER</option>
                     <option value="amoled">AMOLED</option>
                     <option value="neon">NEON</option>
-                    <option value="light">WHITE</option>
+                    <option value="blood">BLOOD</option>
+                    <option value="light">LIGHT</option>
                 </select>
                 <i class="fas fa-power-off" onclick="logout()" style="color:var(--accent); cursor:pointer;"></i>
             </div>
         </nav>
 
-        <div class="container">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center;">
-                <h2 style="font-family:'Orbitron'; font-size:0.9rem;">MEMBROS ATIVOS</h2>
-                <div id="selection-count" style="font-size:0.7rem; color:var(--primary)">Clique em VS para comparar</div>
+        <div class="content">
+            <div style="display:flex; justify-content:space-between; margin-bottom:25px;">
+                <h2 style="font-family: var(--font-t); font-size:0.8rem;">ANÁLISE DE MEMBROS</h2>
+                <span id="pCount" style="color:var(--primary); font-size:0.7rem; font-weight:900;"></span>
             </div>
-            <div class="grid" id="clubGrid"></div>
+            <div class="player-grid" id="grid"></div>
         </div>
     </div>
 
-    <div id="vsPanel" class="auth-card" style="padding:15px;">
-        <span id="vsText" style="font-size:0.7rem; font-weight:800;">0/2 SELECIONADOS</span>
-        <button onclick="startBattle()" style="background:var(--accent); color:#fff; border:none; padding:8px 15px; border-radius:8px; font-weight:900; font-size:0.7rem;">COMPARAR X1</button>
-    </div>
+    <div id="x1Control" onclick="openX1()">COMPARAR X1 (<span id="xCount">0</span>/2)</div>
 
-    <div id="masterModal" class="modal">
-        <span class="close" onclick="closeModal()">&times;</span>
-        <div class="modal-content" id="masterContent"></div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="m-header">
+                <div id="mTitle"></div>
+                <div class="close-icon" onclick="closeModal()">&times;</div>
+            </div>
+            <div id="mBody"></div>
+        </div>
     </div>
 
     <script>
         AOS.init();
-        let selectedVS = [];
+        let authMode = 'login';
+        let selX1 = [];
         let clubCache = [];
 
-        // --- THEMES ---
-        function setTheme(t) { document.body.setAttribute('data-theme', t); }
-
-        // --- AUTH ---
-        function switchAuth(m) {
-            document.getElementById('login-box').classList.toggle('hidden', m === 'reg');
-            document.getElementById('reg-box').classList.toggle('hidden', m === 'login');
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase() === m));
+        // --- AUTH LOGIC ---
+        function setAuth(m) {
+            authMode = m;
+            document.getElementById('btn-l').classList.toggle('active', m === 'login');
+            document.getElementById('btn-r').classList.toggle('active', m === 'reg');
         }
 
-        function doRegister() {
-            const u = document.getElementById('rUser').value, p = document.getElementById('rPass').value, k = document.getElementById('rKey').value;
-            if(k !== "LOGONTOP") return alert("KEY INVÁLIDA!");
-            let users = JSON.parse(localStorage.getItem('hz_users') || '[]');
-            users.push({u, p});
-            localStorage.setItem('hz_users', JSON.stringify(users));
-            alert("CONTA CRIADA!"); switchAuth('login');
+        function handleAuth() {
+            const u = document.getElementById('uIn').value;
+            const p = document.getElementById('pIn').value;
+            if(!u || !p) return notify("PREENCHA OS CAMPOS");
+
+            if(authMode === 'reg') {
+                let users = JSON.parse(localStorage.getItem('hz_db') || '[]');
+                if(users.find(x => x.u === u)) return notify("USUÁRIO JÁ EXISTE");
+                users.push({u, p});
+                localStorage.setItem('hz_db', JSON.stringify(users));
+                notify("REGISTRADO! FAÇA LOGIN");
+                setAuth('login');
+            } else {
+                let users = JSON.parse(localStorage.getItem('hz_db') || '[]');
+                if((u === 'shiro' && p === '18172220') || users.find(x => x.u === u && x.p === p)) {
+                    localStorage.setItem('hz_user', u);
+                    init();
+                } else notify("ACESSO NEGADO");
+            }
         }
 
-        function doLogin() {
-            const u = document.getElementById('lUser').value, p = document.getElementById('lPass').value;
-            let users = JSON.parse(localStorage.getItem('hz_users') || '[]');
-            if((u === 'shiro' && p === '18172220') || users.find(x => x.u === u && x.p === p)) {
-                localStorage.setItem('hz_session', u);
-                document.getElementById('authWrapper').style.display = 'none';
-                document.getElementById('app').classList.remove('hidden');
-                loadData();
-            } else alert("ACESSO NEGADO!");
-        }
-
-        // --- CORE DATA ---
-        async function loadData() {
+        // --- APP LOGIC ---
+        async function init() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('mainApp').classList.remove('hidden');
+            notify("SISTEMA ONLINE");
+            
             const res = await fetch('/api/stats');
             const data = await res.json();
             clubCache = data.club.members;
-            document.getElementById('clubGrid').innerHTML = clubCache.map(m => {
-                const wins24h = Math.floor(Math.random() * 80) + 10; // Simulação de progressão
-                return `
-                    <div class="p-card" onclick="openProfile('${m.tag}')">
-                        <div class="win-24h"><i class="fas fa-caret-up"></i> ${wins24h}</div>
-                        <div style="font-family:'Orbitron'; font-size:0.9rem;">${m.name}</div>
-                        <div style="font-size:0.65rem; opacity:0.5; margin-bottom:10px;">${m.tag}</div>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
+            document.getElementById('pCount').innerText = `${clubCache.length} OPERADORES`;
+            
+            renderGrid();
+        }
+
+        function renderGrid() {
+            document.getElementById('grid').innerHTML = clubCache.map((m, i) => `
+                <div class="card" data-aos="fade-up" data-aos-delay="${i*30}" onclick="showPlayer('${m.tag}')">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <b style="font-family:var(--font-t); font-size:0.9rem;">${m.name}</b>
+                            <p style="font-size:0.6rem; opacity:0.5;">${m.tag}</p>
+                        </div>
+                        <div style="text-align:right;">
                             <b style="color:var(--primary)">🏆 ${m.trophies}</b>
-                            <button onclick="toggleVS(event, '${m.tag}', '${m.name}')" style="background:none; border:1px solid var(--accent); color:var(--accent); padding:4px 10px; border-radius:5px; font-size:0.6rem; font-weight:900;">MODO VS</button>
+                            <button onclick="addX1(event, '${m.tag}', '${m.name}')" style="display:block; margin-top:5px; background:none; border:1px solid var(--accent); color:var(--accent); padding:2px 8px; border-radius:4px; font-size:0.5rem; font-weight:900;">X1</button>
                         </div>
                     </div>
-                `;
-            }).join('');
+                </div>
+            `).join('');
         }
 
-        function toggleVS(e, tag, name) {
-            e.stopPropagation();
-            const idx = selectedVS.findIndex(x => x.tag === tag);
-            if(idx > -1) selectedVS.splice(idx, 1);
-            else if(selectedVS.length < 2) selectedVS.push({tag, name});
-            
-            document.getElementById('vsPanel').style.display = selectedVS.length > 0 ? 'flex' : 'none';
-            document.getElementById('vsText').innerText = `${selectedVS.length}/2 SELECIONADOS`;
-        }
-
-        // --- PROFILE MODAL ---
-        async function openProfile(tag) {
-            document.getElementById('masterModal').style.display = 'block';
+        async function showPlayer(tag) {
             const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
             const p = await res.json();
-            const hrs = Math.floor((p['3vs3Victories'] * 6.8) / 60);
-
-            document.getElementById('masterContent').innerHTML = `
-                <div style="text-align:center; margin-bottom:30px;">
-                    <h1 style="font-family:'Orbitron'; color:var(--primary);">${p.name}</h1>
-                    <p style="font-size:0.7rem; opacity:0.5;">${p.tag} • ${p.club?.name || 'SEM CLUBE'}</p>
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('mTitle').innerHTML = `<h1 style="font-family:var(--font-t); color:var(--primary);">${p.name}</h1>`;
+            
+            document.getElementById('mBody').innerHTML = `
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:15px; margin-bottom:30px;">
+                    <div class="stats-box"><b>${p.trophies}</b><small>ATUAL</small></div>
+                    <div class="stats-box"><b>${p.highestTrophies}</b><small>RECORDE</small></div>
+                    <div class="stats-box"><b>${p.expLevel}</b><small>NÍVEL</small></div>
+                    <div class="stats-box"><b>${p.brawlers.length}</b><small>BRAWLERS</small></div>
                 </div>
 
-                <div style="display:grid; grid-template-columns:repeat(2, 1fr); gap:15px; margin-bottom:30px;">
-                    <div class="stat-box"><b>${p.trophies}</b><small>TROFÉUS</small></div>
-                    <div class="stat-box"><b>${p.highestTrophies}</b><small>RECORDE</small></div>
-                    <div class="stat-box"><b>${hrs}h</b><small>TEMPO DE JOGO</small></div>
-                    <div class="stat-box"><b>${p.expLevel}</b><small>NÍVEL EXP</small></div>
+                <div style="background:rgba(0,0,0,0.2); padding:25px; border-radius:20px; border:1px solid var(--border); margin-bottom:30px;">
+                    <h3 style="font-family:var(--font-t); font-size:0.7rem; margin-bottom:20px; color:var(--primary);">PROGRESSÃO 24H (ESTIMADA)</h3>
+                    <canvas id="chart24" height="100"></canvas>
                 </div>
 
-                <div style="background:var(--input-bg); padding:20px; border-radius:15px; border:1px solid var(--border); margin-bottom:30px;">
-                    <h3 style="font-size:0.8rem; margin-bottom:15px; color:var(--primary);">TROFÉUS NAS ÚLTIMAS 24H</h3>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:1.5rem; font-weight:900; color:#00ff88;">+${Math.floor(Math.random()*120)}</span>
-                        <div style="width:60%; height:40px;"><canvas id="miniChart"></canvas></div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:20px;">
+                    <div class="stats-box" style="text-align:left;">
+                        <h4 style="color:var(--primary); margin-bottom:10px;">VITÓRIAS</h4>
+                        <div style="display:flex; justify-content:space-between;"><span>3 VS 3</span> <b>${p['3vs3Victories']}</b></div>
+                        <div style="display:flex; justify-content:space-between;"><span>SOLO</span> <b>${p.soloVictories}</b></div>
+                        <div style="display:flex; justify-content:space-between;"><span>DUO</span> <b>${p.duoVictories}</b></div>
+                    </div>
+                    <div class="stats-box">
+                        <canvas id="radarSkill" height="200"></canvas>
                     </div>
                 </div>
-
-                <h3 style="font-family:'Orbitron'; font-size:0.8rem; margin-bottom:15px;">BRAWLERS (${p.brawlers.length})</h3>
-                <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px;">
-                    ${p.brawlers.slice(0, 12).map(b => `
-                        <div class="stat-box" style="padding:10px;">
-                            <div style="font-size:0.5rem; font-weight:800;">${b.name}</div>
-                            <div style="color:var(--primary); font-size:0.6rem;">🏆${b.trophies}</div>
-                        </div>
-                    `).join('')}
-                </div>
             `;
-            renderMiniChart();
+
+            renderCharts(p);
         }
 
-        // --- X1 BATTLE SYSTEM ---
-        async function startBattle() {
-            if(selectedVS.length < 2) return;
-            document.getElementById('masterModal').style.display = 'block';
-            document.getElementById('masterContent').innerHTML = `<h2 style="text-align:center; color:var(--primary);">CALCULANDO BATALHA...</h2>`;
+        function addX1(e, tag, name) {
+            e.stopPropagation();
+            const exists = selX1.findIndex(x => x.tag === tag);
+            if(exists > -1) selX1.splice(exists, 1);
+            else if(selX1.length < 2) selX1.push({tag, name});
             
-            const p1Res = await fetch(`/api/player/${selectedVS[0].tag.replace('#', '%23')}`);
-            const p2Res = await fetch(`/api/player/${selectedVS[1].tag.replace('#', '%23')}`);
-            const p1 = await p1Res.json();
-            const p2 = await p2Res.json();
+            document.getElementById('x1Control').style.display = selX1.length > 0 ? 'block' : 'none';
+            document.getElementById('xCount').innerText = selX1.length;
+        }
 
-            const compare = (v1, v2) => v1 > v2 ? 'winner' : '';
-
-            document.getElementById('masterContent').innerHTML = `
-                <h1 style="text-align:center; font-family:'Orbitron'; color:var(--accent); margin-bottom:30px;">X1 COMPARATIVO</h1>
-                <div class="battle-grid">
-                    <h3 style="color:var(--primary)">${p1.name}</h3>
-                    <span style="font-weight:900; opacity:0.3;">VS</span>
-                    <h3 style="color:var(--secondary)">${p2.name}</h3>
+        async function openX1() {
+            if(selX1.length < 2) return;
+            document.getElementById('modal').style.display = 'block';
+            document.getElementById('mTitle').innerHTML = `<h1 style="font-family:var(--font-t); color:var(--accent);">MODO BATALHA</h1>`;
+            
+            const [p1, p2] = await Promise.all(selX1.map(x => fetch(`/api/player/${x.tag.replace('#', '%23')}`).then(r => r.json())));
+            
+            const row = (label, v1, v2) => `
+                <div style="text-align:center; font-size:0.6rem; opacity:0.4; margin-top:15px;">${label}</div>
+                <div class="vs-screen">
+                    <div class="vs-val ${v1 > v2 ? 'win-glow' : ''}">${v1}</div>
+                    <div style="opacity:0.2;">|</div>
+                    <div class="vs-val ${v2 > v1 ? 'win-glow' : ''}">${v2}</div>
                 </div>
+            `;
 
-                <div style="margin-top:30px;">
-                    ${renderBattleRow("TROFÉUS ATUAIS", p1.trophies, p2.trophies)}
-                    ${renderBattleRow("RECORDE HISTÓRICO", p1.highestTrophies, p2.highestTrophies)}
-                    ${renderBattleRow("VITÓRIAS 3V3", p1['3vs3Victories'], p2['3vs3Victories'])}
-                    ${renderBattleRow("VITÓRIAS SOLO", p1.soloVictories, p2.soloVictories)}
-                    ${renderBattleRow("NÍVEL DE EXP", p1.expLevel, p2.expLevel)}
-                    ${renderBattleRow("BRAWLERS", p1.brawlers.length, p2.brawlers.length)}
+            document.getElementById('mBody').innerHTML = `
+                <div class="vs-screen">
+                    <h2 style="color:var(--primary)">${p1.name}</h2>
+                    <span style="font-family:var(--font-t); color:var(--accent);">VS</span>
+                    <h2 style="color:var(--primary)">${p2.name}</h2>
                 </div>
-
-                <div class="stat-box" style="margin-top:30px; border-color:var(--accent);">
-                    <h2 style="color:var(--accent)">VENCEDOR TÉCNICO</h2>
-                    <h1 style="font-family:'Orbitron';">${p1.trophies > p2.trophies ? p1.name : p2.name}</h1>
+                ${row("TROFÉUS TOTAIS", p1.trophies, p2.trophies)}
+                ${row("VITÓRIAS 3V3", p1['3vs3Victories'], p2['3vs3Victories'])}
+                ${row("BRAWLERS DESBLOQUEADOS", p1.brawlers.length, p2.brawlers.length)}
+                ${row("MÉDIA TROFÉUS/BRAWLER", (p1.trophies/p1.brawlers.length).toFixed(0), (p2.trophies/p2.brawlers.length).toFixed(0))}
+                
+                <div class="stats-box" style="margin-top:40px; border-color:var(--accent);">
+                    <p style="font-size:0.7rem;">VENCEDOR ANALÍTICO</p>
+                    <h1 style="font-family:var(--font-t); color:var(--accent);">${p1.trophies > p2.trophies ? p1.name : p2.name}</h1>
                 </div>
             `;
         }
 
-        function renderBattleRow(label, v1, v2) {
-            return `
-                <div style="text-align:center; font-size:0.6rem; opacity:0.5; margin-top:10px;">${label}</div>
-                <div class="battle-row">
-                    <div class="${v1 > v2 ? 'winner' : ''}">${v1}</div>
-                    <div style="opacity:0.3">|</div>
-                    <div class="${v2 > v1 ? 'winner' : ''}">${v2}</div>
-                </div>
-            `;
-        }
-
-        function renderMiniChart() {
-            const ctx = document.getElementById('miniChart').getContext('2d');
-            new Chart(ctx, {
+        function renderCharts(p) {
+            new Chart(document.getElementById('chart24'), {
                 type: 'line',
-                data: { labels: [1,2,3,4,5,6], datasets: [{ data: [10,25,15,40,35,60], borderColor: '#00ff88', borderWidth: 2, fill: false, pointRadius: 0 }] },
-                options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+                data: { labels: ['00h','04h','08h','12h','16h','20h','24h'], datasets: [{ label: 'Troféus', data: [p.trophies-50, p.trophies-30, p.trophies-40, p.trophies-10, p.trophies+20, p.trophies+5, p.trophies], borderColor: '#00f2ff', tension: 0.4, fill: true, backgroundColor: 'rgba(0, 242, 255, 0.1)' }] },
+                options: { plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' } }, x: { grid: { display: false } } } }
+            });
+
+            new Chart(document.getElementById('radarSkill'), {
+                type: 'radar',
+                data: { labels: ['3v3','Solo','Duo','Exp','Trophies'], datasets: [{ data: [p['3vs3Victories']/10, p.soloVictories, p.duoVictories, p.expLevel, p.trophies/100], borderColor: '#ff007a', backgroundColor: 'rgba(255, 0, 122, 0.2)' }] },
+                options: { scales: { r: { grid: { color: 'rgba(255,255,255,0.1)' }, angleLines: { color: 'rgba(255,255,255,0.1)' }, ticks: { display: false } } }, plugins: { legend: { display: false } } }
             });
         }
 
-        function closeModal() { document.getElementById('masterModal').style.display = 'none'; }
-        function logout() { localStorage.clear(); location.reload(); }
-        window.onload = () => { if(localStorage.getItem('hz_session')) doLogin(); };
+        function notify(m) {
+            const t = document.getElementById('toast');
+            t.innerText = m; t.style.top = "20px";
+            setTimeout(() => t.style.top = "-100px", 3000);
+        }
+
+        function closeModal() { document.getElementById('modal').style.display = 'none'; }
+        function logout() { localStorage.removeItem('hz_user'); location.reload(); }
+        window.onload = () => { if(localStorage.getItem('hz_user')) init(); };
     </script>
 </body>
 </html>
