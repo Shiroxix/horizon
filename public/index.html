@@ -74,9 +74,6 @@
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 12px; background: var(--accent); color: white; z-index: 10000; display: none; font-weight: 700; }
         .icon-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--input-bg); cursor: pointer; border: 1px solid var(--border); }
         .btn-whatsapp { background: #25d366 !important; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        
-        /* TIMER STYLE */
-        .last-update-tag { font-size: 0.65rem; color: #64748b; font-weight: 500; background: var(--input-bg); padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border); white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -114,10 +111,7 @@
             </div>
         </nav>
         <div class="main-container">
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                <h2 style="margin-bottom: 0;">Database membros</h2>
-                <span id="githubTimer" class="last-update-tag">Loading update info...</span>
-            </div>
+            <h2 style="margin-bottom: 5px;">Database Operatives</h2>
             <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Sincronizado com API Oficial</p>
             <div id="clubGrid"></div>
         </div>
@@ -156,24 +150,6 @@
         let cachedMembers = [];
         let currentPlayerBrawlers = [];
 
-        // LÓGICA DO TIMER DE ATUALIZAÇÃO GITHUB
-        function updateGithubTimer() {
-            const lastModified = new Date(document.lastModified);
-            const now = new Date();
-            const diffMs = now - lastModified;
-            const diffMin = Math.floor(diffMs / 60000);
-            const diffHrs = Math.floor(diffMin / 60);
-            const diffDays = Math.floor(diffHrs / 24);
-
-            let timeStr = "";
-            if (diffMin < 1) timeStr = "just now";
-            else if (diffMin < 60) timeStr = `${diffMin}m ago`;
-            else if (diffHrs < 24) timeStr = `${diffHrs}h ago`;
-            else timeStr = `${diffDays}d ago`;
-
-            document.getElementById('githubTimer').innerText = `Last update ${timeStr}`;
-        }
-
         function toggleTheme() {
             document.body.classList.toggle('amoled');
             const icon = document.querySelector('.icon-btn i.fa-moon, .icon-btn i.fa-sun');
@@ -199,7 +175,6 @@
             document.getElementById('authWrapper').style.display = 'none';
             document.getElementById('app').classList.remove('hidden');
             loadClub();
-            updateGithubTimer(); // Inicia o timer ao logar
         }
 
         async function loadClub() {
@@ -278,6 +253,7 @@
             `;
         }
 
+        // LÓGICA DE ATUALIZAÇÃO CONSTANTE PELA API
         function getApiDiff(tag, current) {
             const key = `api_last_${tag}`;
             const last = localStorage.getItem(key);
@@ -286,7 +262,7 @@
                 return 0;
             }
             const diff = current - parseInt(last);
-            localStorage.setItem(key, current);
+            localStorage.setItem(key, current); // Salva o novo valor como referência
             return diff;
         }
 
