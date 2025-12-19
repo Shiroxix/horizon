@@ -22,6 +22,12 @@
             --gold: #fbbf24;
             --border: rgba(255,255,255,0.1);
             --input-bg: rgba(255,255,255,0.05);
+            
+            /* TIER COLORS */
+            --tier-elite: #fbbf24;
+            --tier-veteran: #a855f7;
+            --tier-op: #3b82f6;
+            --tier-rookie: #64748b;
         }
 
         body.amoled {
@@ -51,11 +57,25 @@
         .main-container { max-width: 1000px; margin: 90px auto; padding: 0 20px; }
         
         .player-card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; position: relative; overflow: hidden; }
-        .player-card.mvp-card { border: 1px solid var(--gold); background: linear-gradient(145deg, var(--card-bg) 60%, rgba(251, 191, 36, 0.1)); }
         
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 8px; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
-        .status-online { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-        .status-offline { background: #64748b; }
+        /* TIER STYLES */
+        .tier-badge { font-size: 0.55rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; text-transform: uppercase; margin-top: 5px; display: inline-block; letter-spacing: 0.5px; border: 1px solid transparent; }
+        
+        /* ELITE (>60k) */
+        .card-elite { border-left: 4px solid var(--tier-elite); background: linear-gradient(90deg, rgba(251, 191, 36, 0.05), var(--card-bg) 30%); }
+        .badge-elite { color: var(--tier-elite); background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.2); }
+        
+        /* VETERAN (40k-60k) */
+        .card-veteran { border-left: 4px solid var(--tier-veteran); background: linear-gradient(90deg, rgba(168, 85, 247, 0.05), var(--card-bg) 30%); }
+        .badge-veteran { color: var(--tier-veteran); background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.2); }
+        
+        /* OPERATIVE (20k-40k) */
+        .card-operative { border-left: 4px solid var(--tier-op); }
+        .badge-operative { color: var(--tier-op); background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.2); }
+        
+        /* ROOKIE (<20k) */
+        .card-rookie { border-left: 4px solid var(--tier-rookie); opacity: 0.9; }
+        .badge-rookie { color: var(--tier-rookie); background: rgba(100, 116, 139, 0.1); border-color: rgba(100, 116, 139, 0.2); }
 
         .mvp-crown { animation: float 3s ease-in-out infinite; color: var(--gold); filter: drop-shadow(0 0 5px rgba(251,191,36,0.6)); margin-left: 6px; }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-3px); } 100% { transform: translateY(0px); } }
@@ -125,10 +145,10 @@
         </nav>
         <div class="main-container">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                <h2 style="margin-bottom: 0;">Club Operatives</h2>
+                <h2 style="margin-bottom: 0;">Club Roster</h2>
                 <span id="githubTimer" class="last-update-tag">Loading update info...</span>
             </div>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Rankings em tempo real</p>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Divisão hierárquica por troféus</p>
             <div id="clubGrid"></div>
         </div>
     </div>
@@ -215,9 +235,8 @@
             try {
                 const res = await fetch(`${API_BASE}/api/stats`);
                 const data = await res.json();
-                cachedMembers = data.club.members.sort((a,b) => b.trophies - a.trophies); // Sort by trophies descending
+                cachedMembers = data.club.members.sort((a,b) => b.trophies - a.trophies);
                 
-                // Identify TOP PLAYER (MVP)
                 const topPlayerTag = cachedMembers[0].tag;
 
                 const selects = [document.getElementById('p1Sel'), document.getElementById('p2Sel')];
@@ -228,23 +247,34 @@
                 
                 document.getElementById('clubGrid').innerHTML = cachedMembers.map(m => {
                     const isMvp = m.tag === topPlayerTag;
-                    const mvpClass = isMvp ? 'mvp-card' : '';
                     const mvpIcon = isMvp ? '<i class="fas fa-crown mvp-crown" title="Líder do Clube"></i>' : '';
-                    const statusClass = (Math.random() > 0.3) ? 'status-online' : 'status-offline'; // Mocked Status
                     
+                    // LÓGICA DE TIERS
+                    let tierClass = 'card-rookie';
+                    let tierName = 'ROOKIE';
+                    let badgeClass = 'badge-rookie';
+
+                    if (m.trophies >= 60000) {
+                        tierClass = 'card-elite'; tierName = 'ELITE'; badgeClass = 'badge-elite';
+                    } else if (m.trophies >= 40000) {
+                        tierClass = 'card-veteran'; tierName = 'VETERAN'; badgeClass = 'badge-veteran';
+                    } else if (m.trophies >= 20000) {
+                        tierClass = 'card-operative'; tierName = 'OPERATIVE'; badgeClass = 'badge-operative';
+                    }
+
                     return `
-                    <div class="player-card ${mvpClass}" onclick="openProfile('${m.tag}')">
+                    <div class="player-card ${tierClass}" onclick="openProfile('${m.tag}')">
                         <div style="display:flex; align-items:center;">
-                            <div class="status-dot ${statusClass}"></div>
                             <div>
                                 <div style="font-weight:700; display:flex; align-items:center;">
                                     ${m.name} ${mvpIcon}
                                 </div>
                                 <div style="font-size:0.7rem; color:#64748b;">${m.tag}</div>
+                                <div class="tier-badge ${badgeClass}">${tierName}</div>
                             </div>
                         </div>
                         <div style="text-align:right">
-                            <div style="font-weight:800; color:${isMvp ? 'var(--gold)' : 'var(--primary)'};">${m.trophies}</div>
+                            <div style="font-weight:800; color:${isMvp ? 'var(--gold)' : 'var(--text)'};">${m.trophies}</div>
                             <div style="font-size:0.6rem; opacity:0.6;">TROFÉUS</div>
                         </div>
                     </div>
