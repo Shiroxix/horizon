@@ -3,330 +3,645 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Command | Ultra Genesis</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <title>Horizon Command | Ultra Vision</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
-            --primary: #00f2ff; --accent: #bc13fe; --bg: #020406; 
-            --card: #0a0f16; --text: #f0f0f0; --success: #00ff88; --danger: #ff4655;
-            --border: rgba(255, 255, 255, 0.08); --gold: #ffd700;
+            --primary: #00f2ff; --accent: #bc13fe; --bg: #020408; 
+            --card: #0d121d; --text: #f8fafc; --success: #00ff88; --danger: #ff4655;
+            --border: rgba(255, 255, 255, 0.1); --glass: rgba(15, 23, 42, 0.8);
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
 
-        /* Background Animado */
-        body::before {
-            content: ''; position: fixed; inset: 0;
+        /* EFEITOS VISUAIS DE FUNDO */
+        .bg-glow {
+            position: fixed; inset: 0; z-index: -1;
             background: 
-                radial-gradient(circle at 10% 10%, rgba(0, 242, 255, 0.1), transparent 30%),
-                radial-gradient(circle at 90% 90%, rgba(188, 19, 254, 0.1), transparent 30%);
-            z-index: -1; animation: pulseBg 10s infinite alternate;
+                radial-gradient(circle at 20% 20%, rgba(188, 19, 254, 0.15), transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(0, 242, 255, 0.15), transparent 40%);
         }
-        @keyframes pulseBg { from { opacity: 0.5; } to { opacity: 1; } }
 
-        /* TELA DE ENTRADA (LOGIN/CADASTRO) */
+        /* TELA DE LOGIN / REGISTRO */
         #authScreen {
-            position: fixed; inset: 0; z-index: 5000; background: var(--bg);
-            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+            position: fixed; inset: 0; z-index: 9999; background: var(--bg);
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px);
         }
-        .auth-box {
-            background: var(--card); padding: 40px; border-radius: 30px; border: 1px solid var(--border);
-            width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        .auth-card {
+            background: var(--card); border: 1px solid var(--border); padding: 40px;
+            border-radius: 30px; width: 100%; max-width: 420px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
         }
 
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { font-size: 0.65rem; font-weight: 800; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; margin-left: 10px; }
         .input-cyber {
-            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border);
-            padding: 15px; border-radius: 15px; color: #fff; font-family: 'Rajdhani'; font-size: 1.2rem;
-            transition: 0.3s; margin-top: 5px;
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+            padding: 15px; border-radius: 12px; color: #fff; margin-bottom: 15px;
+            font-family: 'Rajdhani'; font-size: 1.1rem; transition: 0.3s;
         }
-        .input-cyber:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+        .input-cyber:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,255,0.2); }
 
-        .btn-glow {
-            width: 100%; padding: 18px; border-radius: 15px; border: none;
+        .btn-main {
+            width: 100%; padding: 15px; border-radius: 12px; border: none;
             background: linear-gradient(90deg, var(--accent), var(--primary));
             color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase;
             letter-spacing: 2px; transition: 0.3s;
         }
-        .btn-glow:hover { transform: scale(1.02); filter: brightness(1.2); box-shadow: 0 0 20px var(--primary); }
+        .btn-main:hover { transform: scale(1.02); filter: brightness(1.2); }
 
         /* DASHBOARD PRINCIPAL */
-        #mainContent { display: none; }
-        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        #mainContent { display: none; padding: 20px; }
+        .container { max-width: 1400px; margin: auto; }
 
-        header { display: flex; justify-content: space-between; align-items: center; padding: 30px 0; }
-        .logo { font-family: 'Rajdhani'; font-size: 2rem; letter-spacing: 8px; font-weight: 700; color: #fff; }
-
-        /* ICONE CONFIGURAÇÕES */
-        .adm-btn { 
-            width: 45px; height: 45px; display: none; align-items: center; justify-content: center;
-            background: var(--glass); border: 1px solid var(--border); border-radius: 12px;
-            cursor: pointer; color: #64748b; transition: 0.3s;
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px;
         }
-        .adm-btn:hover { color: var(--primary); border-color: var(--primary); transform: rotate(45deg); }
+        .logo { font-family: 'Rajdhani'; font-size: 2rem; font-weight: 700; letter-spacing: 5px; color: #fff; }
 
-        /* BRAWLER CARDS LUXO */
-        .brawlers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
-        .b-card-ultra {
-            background: linear-gradient(145deg, #111827, #0a0f16);
-            border: 1px solid var(--border); border-radius: 25px; padding: 20px;
-            text-align: center; cursor: pointer; transition: 0.4s; position: relative; overflow: hidden;
+        /* USER BADGE & MENU */
+        .user-nav { display: flex; align-items: center; gap: 15px; position: relative; }
+        .user-info { text-align: right; }
+        .user-name { font-weight: 900; font-size: 0.9rem; color: var(--primary); }
+        .user-id { font-size: 0.7rem; color: #64748b; cursor: pointer; }
+        .user-id:hover { color: #fff; }
+
+        .three-dots { cursor: pointer; padding: 10px; font-size: 1.2rem; transition: 0.3s; }
+        .three-dots:hover { color: var(--primary); }
+
+        .popup-menu {
+            position: absolute; top: 100%; right: 0; background: var(--card);
+            border: 1px solid var(--border); border-radius: 15px; padding: 10px;
+            width: 200px; display: none; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-        .b-card-ultra:hover { transform: translateY(-8px); border-color: var(--accent); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .b-card-ultra::after {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
-            pointer-events: none;
+        .popup-menu.active { display: block; animation: slideUp 0.3s ease; }
+        .menu-item { 
+            padding: 12px; border-radius: 10px; cursor: pointer; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 10px; transition: 0.3s;
         }
-        .b-lvl { position: absolute; top: 12px; right: 12px; font-size: 0.6rem; font-weight: 900; background: var(--gold); color: #000; padding: 2px 8px; border-radius: 20px; }
+        .menu-item:hover { background: rgba(255,255,255,0.05); color: var(--primary); }
 
-        /* SKILL ITEMS TRADUZIDOS */
-        .skill-item {
-            background: rgba(255,255,255,0.03); padding: 18px; border-radius: 20px;
-            margin-bottom: 12px; border: 1px solid var(--border); display: flex; align-items: center; gap: 15px;
-            animation: slideRight 0.4s ease forwards;
+        /* CARDS E GRÁFICOS */
+        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card-impact {
+            background: var(--card); border-radius: 24px; padding: 25px;
+            border: 1px solid var(--border); position: relative; overflow: hidden;
         }
-        .skill-icon { width: 40px; height: 40px; background: rgba(0,0,0,0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
-
-        /* STATUS PERFIL / ID DE LOGIN */
-        .user-id-badge {
-            background: rgba(0, 242, 255, 0.1); color: var(--primary);
-            padding: 5px 12px; border-radius: 8px; font-family: 'Rajdhani'; font-weight: 700; font-size: 0.8rem;
+        .card-impact::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
         }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes slideRight { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        /* LISTA DE LOGS ESTILIZADA */
+        .log-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px; }
+        .log-table th { text-align: left; color: #64748b; padding: 10px; border-bottom: 1px solid var(--border); }
+        .log-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
 
-        /* MODAL RESPONSIVO */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 10000; align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { background: var(--card); width: 100%; max-width: 900px; height: 90vh; border-radius: 35px; border: 1px solid var(--border); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
+    <div class="bg-glow"></div>
+
     <div id="authScreen">
-        <div class="auth-box">
-            <h1 style="font-family:'Rajdhani'; letter-spacing: 5px; margin-bottom: 10px;">HORIZON</h1>
-            <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 30px; text-transform: uppercase; font-weight: 800;">Protocolo de Acesso</p>
-            
-            <div class="input-group">
-                <label>Codinome</label>
-                <input type="text" id="userInput" class="input-cyber" placeholder="Ex: Shiro" oninput="this.value = this.value.replace(/[^a-zA-Z0-9]/g, '')">
+        <div class="auth-card" id="loginBox">
+            <h1 class="logo" style="margin-bottom: 30px;">HORIZON</h1>
+            <div id="authToggle">
+                <input type="text" id="userIn" class="input-cyber" placeholder="NOME DE USUÁRIO">
+                <input type="password" id="passIn" class="input-cyber" placeholder="SENHA">
+                <button class="btn-main" onclick="handleAuth('login')">Acessar Painel</button>
+                <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b;">
+                    Não tem conta? <a href="#" onclick="toggleAuth(true)" style="color:var(--primary)">Criar agora</a>
+                </p>
             </div>
-
-            <div id="passArea" style="display:none;" class="input-group">
-                <label>Chave Mestra</label>
-                <input type="password" id="passInput" class="input-cyber" placeholder="••••••••">
-            </div>
-
-            <button class="btn-glow" onclick="handleAuth()">Iniciar Sessão</button>
-            <p id="authMsg" style="margin-top: 15px; font-size: 0.7rem; color: var(--danger); display: none;">Acesso Negado</p>
         </div>
     </div>
 
     <div id="mainContent">
         <div class="container">
             <header>
-                <div>
-                    <h1 class="logo">HORIZON</h1>
-                    <div id="userProfile" style="display:flex; align-items:center; gap:10px; margin-top:5px;">
-                        <span id="userNameDisplay" style="font-weight:900; font-size:0.8rem;">--</span>
-                        <span id="userIdDisplay" class="user-id-badge">ID: --</span>
+                <h1 class="logo">HORIZON COMMAND</h1>
+                
+                <div class="user-nav">
+                    <div class="user-info">
+                        <div class="user-name" id="displayUsername">USUÁRIO</div>
+                        <div class="user-id" onclick="copyID()" title="Clique para copiar">
+                            ID: <span id="displayID">------</span> <i class="far fa-copy"></i>
+                        </div>
                     </div>
-                </div>
-                <div style="display:flex; gap:15px;">
-                    <div class="adm-btn" id="admTrigger" onclick="toggleAdmModal()"><i class="fas fa-cog"></i></div>
-                    <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-weight:900; cursor:pointer;">SAIR</button>
+                    <i class="fas fa-ellipsis-v three-dots" onclick="toggleMenu()"></i>
+                    
+                    <div class="popup-menu" id="perfilMenu">
+                        <div class="menu-item" onclick="alert('Abrindo Perfil...')"><i class="fas fa-user-circle"></i> Ver Perfil</div>
+                        <div class="menu-item" onclick="toggleAdmPanel()"><i class="fas fa-shield-alt"></i> Painel ADM</div>
+                        <div class="menu-item" onclick="logout()" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i> Sair da Conta</div>
+                    </div>
                 </div>
             </header>
 
-            <div class="member-grid" id="memberList"></div>
-        </div>
-    </div>
+            <div class="grid-stats">
+                <div class="card-impact">
+                    <h3 style="font-family:'Rajdhani'; margin-bottom: 20px;">ANÁLISE DE ATIVIDADE</h3>
+                    <canvas id="mainChart" height="200"></canvas>
+                </div>
 
-    <div id="admModal" class="modal">
-        <div class="modal-content" style="max-width: 500px; height: auto; padding: 30px;">
-            <h2 style="font-family:'Rajdhani'; color:var(--danger); margin-bottom: 20px;">CONTROLE DE PRIVILÉGIOS</h2>
-            
-            <div style="margin-bottom: 20px;">
-                <p style="font-size:0.6rem; color:#64748b; margin-bottom:10px;">PROMOVER POR ID DE ASSINATURA</p>
-                <input type="text" id="idToPromote" class="input-cyber" placeholder="Ex: HZ-1234">
-                <button class="btn-glow" style="margin-top:10px; padding:10px;" onclick="promoteById()">Eleger Administrador</button>
-            </div>
-
-            <p style="font-size:0.6rem; color:#64748b; margin-bottom:10px;">LOGS DE ATIVIDADE</p>
-            <div id="logContent" style="background:#000; height:150px; border-radius:15px; padding:15px; overflow-y:auto; font-size:0.7rem; border:1px solid var(--border);"></div>
-            <button class="btn-glow" style="background:var(--danger); margin-top:20px; padding:10px;" onclick="toggleAdmModal()">Fechar</button>
-        </div>
-    </div>
-
-    <div id="playerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div id="brawlersContainer" class="brawlers-grid"></div>
-            </div>
-            <div id="buildPanel" style="position:absolute; inset:0; background:var(--card); display:none; padding:40px; z-index:100;">
-                 <div id="buildContent"></div>
-                 <button class="btn-glow" style="width:auto; margin-top:20px; padding:10px 30px;" onclick="closeBuild()">Voltar</button>
+                <div class="card-impact" id="admPanel" style="display: block;">
+                    <h3 style="font-family:'Rajdhani'; margin-bottom: 20px; color: var(--primary);">SYSTEM LOGS</h3>
+                    <div style="max-height: 250px; overflow-y: auto;">
+                        <table class="log-table">
+                            <thead>
+                                <tr>
+                                    <th>USUÁRIO</th>
+                                    <th>AÇÃO</th>
+                                    <th>HORÁRIO</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"></audio>
 
     <script>
-        // TRADUÇÃO DE ACESSÓRIOS (EXEMPLO DE MAPEAMENTO)
-        const tradutor = {
-            "Speed Zone": "Zona de Velocidade", "Recoiling Rotator": "Rotador de Recuo",
-            "Clay Pigeons": "Pombos de Argila", "Homemade Recipe": "Receita Caseira",
-            "Fidget Spinner": "Giro de Stress", "Slowing Toxin": "Toxina de Lentidão"
+        // CONFIGURAÇÕES E ESTADO
+        const MASTER_ADMIN = "shiro";
+        const MASTER_PASS = "18172220";
+        let currentUser = null;
+
+        // 1. PERSISTÊNCIA DE LOGIN
+        window.onload = () => {
+            const savedUser = JSON.parse(localStorage.getItem("hz_user"));
+            if(savedUser) {
+                showDashboard(savedUser);
+            }
+            renderLogs();
         };
 
-        const MASTER_USER = "shiro";
-        const MASTER_PASS = "18172220";
-
-        let session = { user: '', id: '', isAdm: false };
-
-        // MONITOR DE LOGIN
-        document.getElementById('userInput').addEventListener('input', (e) => {
-            document.getElementById('passArea').style.display = (e.target.value.toLowerCase() === MASTER_USER) ? 'block' : 'none';
-        });
-
-        function handleAuth() {
-            const user = document.getElementById('userInput').value.trim();
-            const pass = document.getElementById('passInput').value;
-            
-            if(!user) return;
-            playClick();
-
-            // Gerar ID de Assinatura se for novo
-            let accounts = JSON.parse(localStorage.getItem('hz_accounts') || '{}');
-            
-            if(user.toLowerCase() === MASTER_USER) {
-                if(pass === MASTER_PASS) {
-                    startSession(user, "MASTER-01", true);
-                } else {
-                    showError();
-                }
-            } else {
-                if(!accounts[user]) {
-                    accounts[user] = { id: 'HZ-' + Math.floor(1000 + Math.random() * 9000), isAdm: false };
-                    localStorage.setItem('hz_accounts', JSON.stringify(accounts));
-                }
-                startSession(user, accounts[user].id, accounts[user].isAdm);
+        function toggleAuth(isRegister) {
+            const box = document.getElementById('loginBox');
+            if(isRegister) {
+                box.innerHTML = `
+                    <h1 class="logo" style="margin-bottom: 30px;">REGISTRO</h1>
+                    <input type="text" id="regUser" class="input-cyber" placeholder="ESCOLHA UM NOME">
+                    <input type="password" id="regPass" class="input-cyber" placeholder="CRIE UMA SENHA">
+                    <button class="btn-main" onclick="handleAuth('reg')">Finalizar Cadastro</button>
+                    <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b;">
+                        Já tem conta? <a href="#" onclick="location.reload()" style="color:var(--primary)">Fazer Login</a>
+                    </p>
+                `;
             }
         }
 
-        function startSession(user, id, isAdm) {
-            session = { user, id, isAdm };
+        function handleAuth(type) {
+            const u = type === 'login' ? document.getElementById('userIn').value : document.getElementById('regUser').value;
+            const p = type === 'login' ? document.getElementById('passIn').value : document.getElementById('regPass').value;
+
+            if(!u || !p) return alert("Preencha tudo!");
+
+            let accounts = JSON.parse(localStorage.getItem("hz_accounts")) || {};
+
+            if(type === 'reg') {
+                if(accounts[u]) return alert("Usuário já existe!");
+                const newID = Math.random().toString(36).substring(2, 8).toUpperCase();
+                accounts[u] = { username: u, password: p, id: newID, isAdm: (u.toLowerCase() === MASTER_ADMIN) };
+                localStorage.setItem("hz_accounts", JSON.stringify(accounts));
+                alert("Conta criada! Agora faça login.");
+                location.reload();
+            } else {
+                // LOGIN ESPECIAL SHIRO OU NORMAL
+                if(u.toLowerCase() === MASTER_ADMIN && p === MASTER_PASS) {
+                    const adminObj = { username: "Shiro", id: "MASTER-01", isAdm: true };
+                    loginProcess(adminObj);
+                } else if(accounts[u] && accounts[u].password === p) {
+                    loginProcess(accounts[u]);
+                } else {
+                    alert("Dados inválidos!");
+                }
+            }
+        }
+
+        function loginProcess(userObj) {
+            localStorage.setItem("hz_user", JSON.stringify(userObj));
+            registrarLog("Login Realizado", userObj.username);
+            showDashboard(userObj);
+        }
+
+        function showDashboard(user) {
+            currentUser = user;
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
-            document.getElementById('userNameDisplay').innerText = user.toUpperCase();
-            document.getElementById('userIdDisplay').innerText = `ID: ${id}`;
-            if(isAdm) document.getElementById('admTrigger').style.display = 'flex';
+            document.getElementById('displayUsername').innerText = user.username.toUpperCase();
+            document.getElementById('displayID').innerText = user.id;
             
-            saveLog(`${user} conectou-se.`);
-            loadDashboard();
+            initChart();
+            renderLogs();
         }
 
-        function saveLog(msg) {
-            let logs = JSON.parse(localStorage.getItem('hz_logs') || '[]');
-            logs.unshift(`[${new Date().toLocaleTimeString()}] ${msg}`);
-            localStorage.setItem('hz_logs', JSON.stringify(logs.slice(0, 50)));
-        }
-
-        function promoteById() {
-            const id = document.getElementById('idToPromote').value;
-            let accounts = JSON.parse(localStorage.getItem('hz_accounts') || '{}');
-            let found = false;
-
-            for(let u in accounts) {
-                if(accounts[u].id === id) {
-                    accounts[u].isAdm = true;
-                    found = true;
-                    saveLog(`Usuário ${u} promovido por ID.`);
-                    break;
-                }
-            }
-            localStorage.setItem('hz_accounts', JSON.stringify(accounts));
-            alert(found ? "Sucesso: Administrador Eleito!" : "ID não encontrado.");
-        }
-
-        async function loadDashboard() {
-            const res = await fetch('/api/stats');
-            const data = await res.json();
-            const list = document.getElementById('memberList');
-            list.innerHTML = '';
-
-            data.club.members.forEach(m => {
-                const card = document.createElement('div');
-                card.className = 'b-card-ultra';
-                card.onclick = () => openPlayer(m.tag, m.name);
-                card.innerHTML = `
-                    <div class="b-lvl">LVL ${Math.floor(Math.random()*11)+1}</div>
-                    <b style="font-family:'Rajdhani'; font-size:1.3rem;">${m.name}</b>
-                    <p style="color:var(--primary); font-weight:900;">${m.trophies.toLocaleString()}</p>
-                `;
-                list.appendChild(card);
+        // 2. SISTEMA DE LOGS (CORRIGIDO PARA QUALQUER DISPOSITIVO)
+        function registrarLog(acao, usuario) {
+            const logs = JSON.parse(localStorage.getItem("hz_logs")) || [];
+            logs.unshift({
+                usuario,
+                acao,
+                horario: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
             });
+            localStorage.setItem("hz_logs", JSON.stringify(logs.slice(0, 50))); // Mantém os últimos 50
         }
 
-        async function openPlayer(tag, name) {
-            playClick();
-            document.getElementById('playerModal').style.display = 'flex';
-            const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
-            const p = await res.json();
+        function renderLogs() {
+            const logs = JSON.parse(localStorage.getItem("hz_logs")) || [];
+            const body = document.getElementById('logTableBody');
+            if(!body) return;
             
-            const bCont = document.getElementById('brawlersContainer');
-            bCont.innerHTML = p.brawlers.map(b => `
-                <div class="b-card-ultra" onclick="showBuild('${b.name}', ${JSON.stringify(b.gadgets).replace(/"/g, '&quot;')}, ${JSON.stringify(b.starPowers).replace(/"/g, '&quot;')})">
-                    <div class="b-lvl">PWR ${b.power}</div>
-                    <b>${b.name}</b>
-                    <div style="font-size:0.7rem; color:#64748b;">${b.trophies} TR</div>
-                </div>
+            body.innerHTML = logs.map(l => `
+                <tr>
+                    <td><b style="color: #fff">${l.usuario}</b></td>
+                    <td><span style="color: ${l.acao.includes('Login') ? 'var(--success)' : 'var(--primary)'}">${l.acao}</span></td>
+                    <td style="color: #64748b">${l.horario}</td>
+                </tr>
             `).join('');
         }
 
-        function showBuild(name, gadgets, stars) {
-            playClick();
-            const panel = document.getElementById('buildPanel');
-            const content = document.getElementById('buildContent');
-            panel.style.display = 'block';
-
-            let html = `<h2 style="font-family:'Rajdhani'; color:var(--primary); margin-bottom:20px;">BUILD: ${name}</h2>`;
-            
-            gadgets.forEach(g => {
-                const nomePt = tradutor[g.name] || g.name;
-                html += `<div class="skill-item"><div class="skill-icon"><i class="fas fa-bolt" style="color:var(--success)"></i></div><div><b>${nomePt}</b><br><small>Acessório</small></div></div>`;
-            });
-
-            stars.forEach(s => {
-                const nomePt = tradutor[s.name] || s.name;
-                html += `<div class="skill-item" style="border-left:4px solid var(--gold)"><div class="skill-icon"><i class="fas fa-star" style="color:var(--gold)"></i></div><div><b>${nomePt}</b><br><small>Poder de Estrela</small></div></div>`;
-            });
-
-            content.innerHTML = html;
+        // 3. IDs COPIÁVEIS
+        function copyID() {
+            const idText = document.getElementById('displayID').innerText;
+            navigator.clipboard.writeText(idText);
+            alert("ID Copiado: " + idText);
         }
 
-        function closeBuild() { document.getElementById('buildPanel').style.display = 'none'; }
-        function toggleAdmModal() { 
-            const m = document.getElementById('admModal');
-            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
-            document.getElementById('logContent').innerHTML = JSON.parse(localStorage.getItem('hz_logs') || '[]').map(l => `<div>${l}</div>`).join('');
+        // 4. MENU TRÊS PONTINHOS
+        function toggleMenu() {
+            document.getElementById('perfilMenu').classList.toggle('active');
+        }
+
+        function logout() {
+            registrarLog("Logout", currentUser.username);
+            localStorage.removeItem("hz_user");
+            location.reload();
+        }
+
+        // VISUAL: GRÁFICO IMPACTANTE
+        function initChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Interações',
+                        data: [400, 600, 550, 900, 700, 1200, 1500],
+                        borderColor: '#00f2ff',
+                        backgroundColor: 'rgba(0, 242, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                        x: { grid: { display: false }, ticks: { color: '#64748b' } }
+                    }
+                }
+            });
+        }
+
+        // Fecha menu ao clicar fora
+        window.onclick = (e) => {
+            if (!e.target.matches('.three-dots')) {
+                document.getElementById('perfilMenu').classList.remove('active');
+            }
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizon Command | Ultra Vision</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { 
+            --primary: #00f2ff; --accent: #bc13fe; --bg: #020408; 
+            --card: #0d121d; --text: #f8fafc; --success: #00ff88; --danger: #ff4655;
+            --border: rgba(255, 255, 255, 0.1); --glass: rgba(15, 23, 42, 0.8);
         }
         
-        function playClick() { document.getElementById('clickSound').play().catch(()=>{}); }
-        function showError() { 
-            const msg = document.getElementById('authMsg');
-            msg.style.display = 'block';
-            setTimeout(() => msg.style.display = 'none', 3000);
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+
+        /* EFEITOS VISUAIS DE FUNDO */
+        .bg-glow {
+            position: fixed; inset: 0; z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(188, 19, 254, 0.15), transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(0, 242, 255, 0.15), transparent 40%);
         }
-        function logout() { localStorage.removeItem('hz_user'); location.reload(); }
+
+        /* TELA DE LOGIN / REGISTRO */
+        #authScreen {
+            position: fixed; inset: 0; z-index: 9999; background: var(--bg);
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px);
+        }
+        .auth-card {
+            background: var(--card); border: 1px solid var(--border); padding: 40px;
+            border-radius: 30px; width: 100%; max-width: 420px; text-align: center;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .input-cyber {
+            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+            padding: 15px; border-radius: 12px; color: #fff; margin-bottom: 15px;
+            font-family: 'Rajdhani'; font-size: 1.1rem; transition: 0.3s;
+        }
+        .input-cyber:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,255,0.2); }
+
+        .btn-main {
+            width: 100%; padding: 15px; border-radius: 12px; border: none;
+            background: linear-gradient(90deg, var(--accent), var(--primary));
+            color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase;
+            letter-spacing: 2px; transition: 0.3s;
+        }
+        .btn-main:hover { transform: scale(1.02); filter: brightness(1.2); }
+
+        /* DASHBOARD PRINCIPAL */
+        #mainContent { display: none; padding: 20px; }
+        .container { max-width: 1400px; margin: auto; }
+
+        header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px;
+        }
+        .logo { font-family: 'Rajdhani'; font-size: 2rem; font-weight: 700; letter-spacing: 5px; color: #fff; }
+
+        /* USER BADGE & MENU */
+        .user-nav { display: flex; align-items: center; gap: 15px; position: relative; }
+        .user-info { text-align: right; }
+        .user-name { font-weight: 900; font-size: 0.9rem; color: var(--primary); }
+        .user-id { font-size: 0.7rem; color: #64748b; cursor: pointer; }
+        .user-id:hover { color: #fff; }
+
+        .three-dots { cursor: pointer; padding: 10px; font-size: 1.2rem; transition: 0.3s; }
+        .three-dots:hover { color: var(--primary); }
+
+        .popup-menu {
+            position: absolute; top: 100%; right: 0; background: var(--card);
+            border: 1px solid var(--border); border-radius: 15px; padding: 10px;
+            width: 200px; display: none; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .popup-menu.active { display: block; animation: slideUp 0.3s ease; }
+        .menu-item { 
+            padding: 12px; border-radius: 10px; cursor: pointer; font-size: 0.8rem;
+            display: flex; align-items: center; gap: 10px; transition: 0.3s;
+        }
+        .menu-item:hover { background: rgba(255,255,255,0.05); color: var(--primary); }
+
+        /* CARDS E GRÁFICOS */
+        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .card-impact {
+            background: var(--card); border-radius: 24px; padding: 25px;
+            border: 1px solid var(--border); position: relative; overflow: hidden;
+        }
+        .card-impact::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
+        }
+
+        /* LISTA DE LOGS ESTILIZADA */
+        .log-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-top: 10px; }
+        .log-table th { text-align: left; color: #64748b; padding: 10px; border-bottom: 1px solid var(--border); }
+        .log-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div id="authScreen">
+        <div class="auth-card" id="loginBox">
+            <h1 class="logo" style="margin-bottom: 30px;">HORIZON</h1>
+            <div id="authToggle">
+                <input type="text" id="userIn" class="input-cyber" placeholder="NOME DE USUÁRIO">
+                <input type="password" id="passIn" class="input-cyber" placeholder="SENHA">
+                <button class="btn-main" onclick="handleAuth('login')">Acessar Painel</button>
+                <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b;">
+                    Não tem conta? <a href="#" onclick="toggleAuth(true)" style="color:var(--primary)">Criar agora</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainContent">
+        <div class="container">
+            <header>
+                <h1 class="logo">HORIZON COMMAND</h1>
+                
+                <div class="user-nav">
+                    <div class="user-info">
+                        <div class="user-name" id="displayUsername">USUÁRIO</div>
+                        <div class="user-id" onclick="copyID()" title="Clique para copiar">
+                            ID: <span id="displayID">------</span> <i class="far fa-copy"></i>
+                        </div>
+                    </div>
+                    <i class="fas fa-ellipsis-v three-dots" onclick="toggleMenu()"></i>
+                    
+                    <div class="popup-menu" id="perfilMenu">
+                        <div class="menu-item" onclick="alert('Abrindo Perfil...')"><i class="fas fa-user-circle"></i> Ver Perfil</div>
+                        <div class="menu-item" onclick="toggleAdmPanel()"><i class="fas fa-shield-alt"></i> Painel ADM</div>
+                        <div class="menu-item" onclick="logout()" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i> Sair da Conta</div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid-stats">
+                <div class="card-impact">
+                    <h3 style="font-family:'Rajdhani'; margin-bottom: 20px;">ANÁLISE DE ATIVIDADE</h3>
+                    <canvas id="mainChart" height="200"></canvas>
+                </div>
+
+                <div class="card-impact" id="admPanel" style="display: block;">
+                    <h3 style="font-family:'Rajdhani'; margin-bottom: 20px; color: var(--primary);">SYSTEM LOGS</h3>
+                    <div style="max-height: 250px; overflow-y: auto;">
+                        <table class="log-table">
+                            <thead>
+                                <tr>
+                                    <th>USUÁRIO</th>
+                                    <th>AÇÃO</th>
+                                    <th>HORÁRIO</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÕES E ESTADO
+        const MASTER_ADMIN = "shiro";
+        const MASTER_PASS = "18172220";
+        let currentUser = null;
+
+        // 1. PERSISTÊNCIA DE LOGIN
+        window.onload = () => {
+            const savedUser = JSON.parse(localStorage.getItem("hz_user"));
+            if(savedUser) {
+                showDashboard(savedUser);
+            }
+            renderLogs();
+        };
+
+        function toggleAuth(isRegister) {
+            const box = document.getElementById('loginBox');
+            if(isRegister) {
+                box.innerHTML = `
+                    <h1 class="logo" style="margin-bottom: 30px;">REGISTRO</h1>
+                    <input type="text" id="regUser" class="input-cyber" placeholder="ESCOLHA UM NOME">
+                    <input type="password" id="regPass" class="input-cyber" placeholder="CRIE UMA SENHA">
+                    <button class="btn-main" onclick="handleAuth('reg')">Finalizar Cadastro</button>
+                    <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b;">
+                        Já tem conta? <a href="#" onclick="location.reload()" style="color:var(--primary)">Fazer Login</a>
+                    </p>
+                `;
+            }
+        }
+
+        function handleAuth(type) {
+            const u = type === 'login' ? document.getElementById('userIn').value : document.getElementById('regUser').value;
+            const p = type === 'login' ? document.getElementById('passIn').value : document.getElementById('regPass').value;
+
+            if(!u || !p) return alert("Preencha tudo!");
+
+            let accounts = JSON.parse(localStorage.getItem("hz_accounts")) || {};
+
+            if(type === 'reg') {
+                if(accounts[u]) return alert("Usuário já existe!");
+                const newID = Math.random().toString(36).substring(2, 8).toUpperCase();
+                accounts[u] = { username: u, password: p, id: newID, isAdm: (u.toLowerCase() === MASTER_ADMIN) };
+                localStorage.setItem("hz_accounts", JSON.stringify(accounts));
+                alert("Conta criada! Agora faça login.");
+                location.reload();
+            } else {
+                // LOGIN ESPECIAL SHIRO OU NORMAL
+                if(u.toLowerCase() === MASTER_ADMIN && p === MASTER_PASS) {
+                    const adminObj = { username: "Shiro", id: "MASTER-01", isAdm: true };
+                    loginProcess(adminObj);
+                } else if(accounts[u] && accounts[u].password === p) {
+                    loginProcess(accounts[u]);
+                } else {
+                    alert("Dados inválidos!");
+                }
+            }
+        }
+
+        function loginProcess(userObj) {
+            localStorage.setItem("hz_user", JSON.stringify(userObj));
+            registrarLog("Login Realizado", userObj.username);
+            showDashboard(userObj);
+        }
+
+        function showDashboard(user) {
+            currentUser = user;
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('displayUsername').innerText = user.username.toUpperCase();
+            document.getElementById('displayID').innerText = user.id;
+            
+            initChart();
+            renderLogs();
+        }
+
+        // 2. SISTEMA DE LOGS (CORRIGIDO PARA QUALQUER DISPOSITIVO)
+        function registrarLog(acao, usuario) {
+            const logs = JSON.parse(localStorage.getItem("hz_logs")) || [];
+            logs.unshift({
+                usuario,
+                acao,
+                horario: new Date().toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})
+            });
+            localStorage.setItem("hz_logs", JSON.stringify(logs.slice(0, 50))); // Mantém os últimos 50
+        }
+
+        function renderLogs() {
+            const logs = JSON.parse(localStorage.getItem("hz_logs")) || [];
+            const body = document.getElementById('logTableBody');
+            if(!body) return;
+            
+            body.innerHTML = logs.map(l => `
+                <tr>
+                    <td><b style="color: #fff">${l.usuario}</b></td>
+                    <td><span style="color: ${l.acao.includes('Login') ? 'var(--success)' : 'var(--primary)'}">${l.acao}</span></td>
+                    <td style="color: #64748b">${l.horario}</td>
+                </tr>
+            `).join('');
+        }
+
+        // 3. IDs COPIÁVEIS
+        function copyID() {
+            const idText = document.getElementById('displayID').innerText;
+            navigator.clipboard.writeText(idText);
+            alert("ID Copiado: " + idText);
+        }
+
+        // 4. MENU TRÊS PONTINHOS
+        function toggleMenu() {
+            document.getElementById('perfilMenu').classList.toggle('active');
+        }
+
+        function logout() {
+            registrarLog("Logout", currentUser.username);
+            localStorage.removeItem("hz_user");
+            location.reload();
+        }
+
+        // VISUAL: GRÁFICO IMPACTANTE
+        function initChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                    datasets: [{
+                        label: 'Interações',
+                        data: [400, 600, 550, 900, 700, 1200, 1500],
+                        borderColor: '#00f2ff',
+                        backgroundColor: 'rgba(0, 242, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b' } },
+                        x: { grid: { display: false }, ticks: { color: '#64748b' } }
+                    }
+                }
+            });
+        }
+
+        // Fecha menu ao clicar fora
+        window.onclick = (e) => {
+            if (!e.target.matches('.three-dots')) {
+                document.getElementById('perfilMenu').classList.remove('active');
+            }
+        }
     </script>
 </body>
 </html>
