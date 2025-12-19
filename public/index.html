@@ -101,7 +101,7 @@
         </nav>
         <div class="main-container">
             <h2 style="margin-bottom: 5px;">Database Operatives</h2>
-            <p style="color: #64748b; font-size: 0.8rem; margin-bottom: 20px;">Atualização Instantânea via API</p>
+            <p id="apiStatus" style="color: #64748b; font-size: 0.8rem; margin-bottom: 20px;">Verificando conexão...</p>
             <div id="clubGrid"></div>
         </div>
     </div>
@@ -112,7 +112,9 @@
 
     <script>
         AOS.init();
-        const API_BASE = "https://brawlproxy.vercel.app"; // Proxy padrão para testes
+        // Substitua pela URL do seu proxy ou use um público para teste
+        const API_BASE = "https://brawlproxy.vercel.app"; 
+        const CLUB_TAG = "%232G0RC0G89"; // TAG DO SEU CLUBE
 
         function switchTab(mode) {
             const isLogin = mode === 'login';
@@ -146,34 +148,32 @@
             loadClub();
         }
 
-        // --- SISTEMA DE PROGRESSÃO INSTANTÂNEA ---
         function getLiveGain(tag, currentTrophies) {
             const key = `live_${tag}`;
             const lastTrophies = localStorage.getItem(key);
-            
             if (lastTrophies === null) {
                 localStorage.setItem(key, currentTrophies);
                 return 0;
             }
-
             const diff = currentTrophies - parseInt(lastTrophies);
-            // Se o valor mudou, atualiza o histórico para a próxima comparação
-            if (diff !== 0) {
-                localStorage.setItem(key, currentTrophies);
-            }
+            if (diff !== 0) localStorage.setItem(key, currentTrophies);
             return diff;
         }
 
         async function loadClub() {
+            const status = document.getElementById('apiStatus');
             try {
-                const res = await fetch(`${API_BASE}/api/stats`);
+                const res = await fetch(`${API_BASE}/api/club/${CLUB_TAG}`);
+                if (!res.ok) throw new Error("Falha ao acessar Proxy");
                 const data = await res.json();
-                const members = data.club.members.sort((a,b) => b.trophies - a.trophies);
+                
+                status.innerHTML = "Sincronizado com API Oficial";
+                const members = data.members.sort((a,b) => b.trophies - a.trophies);
                 
                 document.getElementById('clubGrid').innerHTML = members.map(m => {
                     const tier = m.trophies >= 60000 ? 'elite' : (m.trophies >= 40000 ? 'veteran' : (m.trophies >= 20000 ? 'operative' : 'rookie'));
                     return `
-                    <div class="player-card card-${tier}" onclick="openProfile('${m.tag}')">
+                    <div class="player-card card-${tier}" onclick="openProfile('${m.tag.replace('#', '%23')}')">
                         <div>
                             <div style="font-weight:700;">${m.name}</div>
                             <div style="font-size:0.65rem; color:#64748b; text-transform:uppercase;">Tier ${tier}</div>
@@ -184,16 +184,18 @@
                         </div>
                     </div>`;
                 }).join('');
-            } catch(e) { showToast("ERRO API: " + e.message); }
+            } catch(e) { 
+                status.innerHTML = "<span style='color:var(--accent)'>Erro de Conexão: Verifique o Proxy</span>";
+                showToast("ERRO DE FETCH: " + e.message); 
+            }
         }
 
         async function openProfile(tag) {
-            const modal = document.getElementById('playerModal');
-            modal.style.display = 'block';
+            document.getElementById('playerModal').style.display = 'block';
             document.body.style.overflow = 'hidden';
             
             try {
-                const res = await fetch(`${API_BASE}/api/player/${tag.replace('#', '%23')}`);
+                const res = await fetch(`${API_BASE}/api/player/${tag}`);
                 const p = await res.json();
                 const gain = getLiveGain(p.tag, p.trophies);
 
@@ -203,27 +205,23 @@
                         <span style="font-weight:800; font-size:0.7rem; opacity:0.5;">PLAYER ANALYTICS</span>
                         <i></i>
                     </div>
-
                     <h1 style="font-size:1.8rem;">${p.name}</h1>
                     <div style="display:flex; gap:8px; align-items:center; margin-bottom:15px;">
                         <span style="background:var(--primary); padding:2px 8px; border-radius:4px; font-size:0.7rem;">${p.tag}</span>
                         <div class="gain-badge ${gain >= 0 ? 'gain-pos' : 'gain-neg'}">
-                            ${gain > 0 ? '+' : ''}${gain} (Sincronizado agora)
+                            ${gain > 0 ? '+' : ''}${gain} (Diferença detectada)
                         </div>
                     </div>
-
                     <div class="stats-grid">
                         <div class="stat-box"><small>3V3</small><br><b>${p['3vs3Victories']}</b></div>
                         <div class="stat-box"><small>EXP</small><br><b>${p.expLevel}</b></div>
                     </div>
-
                     <div style="background:var(--card-bg); border-radius:16px; padding:15px; border:1px solid var(--border); margin-bottom:20px;">
                          <canvas id="pChart" style="max-height:150px;"></canvas>
                     </div>
-
-                    <h3>Brawlers (${p.brawlers.length})</h3>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-top:10px; padding-bottom:40px;">
-                        ${p.brawlers.sort((a,b) => b.trophies - a.trophies).slice(0,20).map(b => `
+                    <h3 style="margin-bottom:10px">Arsenal Rankeado</h3>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-bottom:40px;">
+                        ${p.brawlers.sort((a,b) => b.trophies - a.trophies).slice(0,14).map(b => `
                             <div class="stat-box" style="padding:10px; display:flex; justify-content:space-between; font-size:0.8rem;">
                                 <span>${b.name}</span>
                                 <span style="color:#fbbf24;">🏆${b.trophies}</span>
@@ -241,7 +239,7 @@
                     options: { cutout: '70%', plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } } }
                 });
 
-            } catch(e) { showToast("ERRO PERFIL"); }
+            } catch(e) { showToast("ERRO AO CARREGAR PERFIL"); }
         }
 
         function showToast(m) {
