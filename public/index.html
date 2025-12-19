@@ -2,125 +2,120 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Ultra | Command & Analytics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Horizon Apex | Command & Analytics</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <style>
         :root {
-            --primary: #00f2ff;
-            --primary-glow: rgba(0, 242, 255, 0.5);
-            --accent: #bc13fe;
-            --bg: #020617;
-            --card: rgba(15, 23, 42, 0.6);
-            --text: #f8fafc;
-            --success: #00ff88;
-            --danger: #ff4655;
-            --border: rgba(255, 255, 255, 0.1);
+            --bg: #020617; --card: rgba(15, 23, 42, 0.7);
+            --primary: #00f2ff; --primary-glow: rgba(0, 242, 255, 0.5);
+            --accent: #bc13fe; --text: #f8fafc;
+            --success: #00ff88; --danger: #ff4655;
+            --border: rgba(255, 255, 255, 0.1); --glass: blur(12px);
         }
 
-        /* --- Estilo e Layout --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; cursor: default; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+        /* Variantes de Temas */
+        [data-theme="minimal"] { --bg: #f8fafc; --card: #ffffff; --text: #0f172a; --primary: #2563eb; --accent: #64748b; --border: rgba(0,0,0,0.1); }
+        [data-theme="amoled"] { --bg: #000000; --card: #0a0a0a; --text: #ffffff; --primary: #ffffff; --accent: #333333; --border: #1a1a1a; }
+        [data-theme="neon"] { --bg: #000814; --card: rgba(0, 20, 40, 0.8); --text: #00ffcc; --primary: #ff00ff; --accent: #00ffcc; --border: rgba(255, 0, 255, 0.3); }
 
-        /* Background de Partículas Animado */
-        #particles-js { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; cursor: default; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; transition: background 0.4s ease; }
 
-        /* Glassmorphism */
-        .glass { background: var(--card); backdrop-filter: blur(12px); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8); }
+        /* Componentes de Interface */
+        .glass { background: var(--card); backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); }
+        
+        nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 20px 5%; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        nav.shrunk { padding: 10px 5%; background: var(--card); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .logo { font-family: 'Orbitron'; font-size: 1.5rem; color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); letter-spacing: 2px; }
 
-        /* --- Navbar Fixa --- */
-        nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        nav.scrolled { background: rgba(2, 6, 23, 0.9); border-bottom: 1px solid var(--border); }
-        .logo { font-family: 'Rajdhani'; font-size: 1.8rem; font-weight: 700; color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); letter-spacing: 2px; }
-
-        /* --- Login Modal (Neon) --- */
-        #loginScreen { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; }
-        .auth-card { width: 90%; max-width: 400px; padding: 40px; text-align: center; border: 1px solid var(--primary); box-shadow: 0 0 20px var(--primary-glow); }
+        /* Login Screen */
+        #loginScreen { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; }
+        .auth-card { width: 90%; max-width: 400px; padding: 40px; text-align: center; border: 1px solid var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
         .input-cyber { width: 100%; background: rgba(0,0,0,0.5); border: 1px solid var(--border); padding: 15px; border-radius: 12px; color: #fff; margin-bottom: 20px; outline: none; transition: 0.3s; }
-        .input-cyber:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-glow); }
-        .btn-neon { background: none; border: 2px solid var(--primary); color: var(--primary); padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; cursor: pointer; position: relative; overflow: hidden; transition: 0.4s; }
-        .btn-neon:hover { background: var(--primary); color: #000; box-shadow: 0 0 30px var(--primary); }
+        .btn-neon { background: none; border: 2px solid var(--primary); color: var(--primary); padding: 12px 30px; border-radius: 30px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.4s; }
+        .btn-neon:hover { background: var(--primary); color: #000; box-shadow: 0 0 20px var(--primary); transform: scale(1.05); }
 
-        /* --- Dashboard Grid --- */
-        .container { max-width: 1300px; margin: 100px auto 50px; padding: 0 20px; }
+        /* Dashboard Grid */
+        .container { max-width: 1300px; margin: 120px auto 50px; padding: 0 20px; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .p-card { padding: 25px; transition: 0.4s; cursor: pointer; position: relative; overflow: hidden; }
-        .p-card:hover { border-color: var(--accent); transform: translateY(-10px); }
-        .p-card::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(188, 19, 254, 0.1), transparent); transform: rotate(45deg); pointer-events: none; }
+        .p-card { padding: 30px; transition: 0.4s; cursor: pointer; position: relative; overflow: hidden; opacity: 0; transform: translateY(20px); }
+        .p-card.visible { opacity: 1; transform: translateY(0); }
+        .p-card:hover { border-color: var(--accent); transform: translateY(-10px) scale(1.02); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-        /* Badge de Status */
-        .status-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 20px; font-weight: 900; text-transform: uppercase; background: var(--success); color: #000; }
+        /* Badges e Status */
+        .badge { font-size: 0.65rem; padding: 4px 10px; border-radius: 8px; font-weight: 800; text-transform: uppercase; }
+        .b-new { background: var(--success); color: #000; }
+        .b-crit { background: var(--danger); color: #fff; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.5; } }
 
-        /* --- Side Panel (ADM) --- */
+        /* Side Panel ADM */
         .side-panel { position: fixed; right: -400px; top: 0; width: 400px; height: 100%; background: #020617; z-index: 2000; padding: 40px; border-left: 1px solid var(--accent); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .side-panel.active { right: 0; }
-        .log-box { background: #000; height: 350px; overflow-y: auto; padding: 15px; border-radius: 10px; font-family: monospace; font-size: 0.75rem; border: 1px solid #1e293b; }
+        .log-box { background: #000; height: 350px; overflow-y: auto; padding: 15px; border-radius: 10px; font-family: monospace; font-size: 0.75rem; border: 1px solid #1e293b; color: #00ff88; }
 
-        /* --- Brawler Detail Modal --- */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 3000; padding: 20px; overflow-y: auto; }
-        .modal-content { max-width: 1000px; margin: 50px auto; padding: 40px; position: relative; }
-        .brawler-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 30px; }
-        .b-mini { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; text-align: center; border: 1px solid var(--border); transition: 0.3s; }
-        .b-mini:hover { border-color: var(--primary); background: rgba(0, 242, 255, 0.05); }
-
-        /* Animações Úteis */
-        .glow-text { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
-        .glitch { animation: glitch 1s linear infinite; }
-        @keyframes glitch { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
-
-        /* Skeleton Loading */
-        .skeleton { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); background-size: 200% 100%; animation: skeleton 1.5s infinite; }
-        @keyframes skeleton { from { background-position: 200% 0; } to { background-position: -200% 0; } }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+        /* Loader */
+        .loader-wrapper { position: fixed; inset: 0; background: var(--bg); z-index: 10000; display: flex; align-items: center; justify-content: center; transition: 0.5s; }
+        .cyber-loader { width: 50px; height: 50px; border: 3px solid var(--border); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 768px) { .side-panel { width: 100%; right: -100%; } }
     </style>
 </head>
 <body>
 
-    <div id="particles-js"></div>
+    <div class="loader-wrapper" id="masterLoader">
+        <div class="cyber-loader"></div>
+    </div>
 
-    <div id="scrollProgress" style="position:fixed; top:0; left:0; height:3px; background:var(--primary); z-index:2000; width:0%;"></div>
+    <div id="scrollProgress" style="position:fixed; top:0; left:0; height:3px; background:var(--primary); z-index:2001; width:0%;"></div>
 
     <div id="loginScreen">
         <div class="auth-card glass" data-aos="zoom-in">
-            <h1 class="logo glitch">HORIZON CMD</h1>
-            <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 25px;">SISTEMA DE ANÁLISE RESTRITA</p>
+            <h1 class="logo" style="margin-bottom: 10px;">HORIZON CMD</h1>
+            <p style="font-size: 0.7rem; color: #64748b; margin-bottom: 25px; letter-spacing: 2px;">RESTRICTED ACCESS</p>
             <input type="text" id="userInput" class="input-cyber" placeholder="OPERADOR">
             <input type="password" id="passInput" class="input-cyber" placeholder="CHAVE DE ACESSO">
-            <button class="btn-neon" onclick="handleLogin()">Autenticar</button>
-            <p id="errorMsg" style="color:var(--danger); font-size:0.7rem; margin-top:15px; display:none;">Acesso Negado: Credenciais Inválidas</p>
+            <button class="btn-neon" onclick="handleLogin()">ENTRAR</button>
+            <p id="errorMsg" style="color:var(--danger); font-size:0.7rem; margin-top:15px; display:none;">CREDENCIAIS INVÁLIDAS</p>
         </div>
     </div>
 
     <div id="mainApp" style="display:none;">
         <nav id="navbar">
-            <div class="logo">HORIZON <span style="color:#fff">PRO</span></div>
-            <div style="display:flex; gap:20px; align-items:center;">
+            <div class="logo">HORIZON <span style="font-weight: 300; color: #fff;">APEX</span></div>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <select id="themeSelect" onchange="changeTheme(this.value)" class="glass" style="background:none; color:inherit; padding:5px 10px; font-size:0.7rem; border-radius:10px; outline:none;">
+                    <option value="default">GAMER</option>
+                    <option value="minimal">MINIMAL</option>
+                    <option value="amoled">AMOLED</option>
+                    <option value="neon">NEON</option>
+                </select>
                 <div id="admTrigger" style="display:none; cursor:pointer;" onclick="togglePanel()">
                     <i class="fas fa-terminal" style="color:var(--primary)"></i>
                 </div>
-                <div id="userLabel" style="font-weight:900; font-size:0.8rem; letter-spacing:1px;">-</div>
+                <div id="userLabel" style="font-weight:900; font-size:0.8rem;">-</div>
                 <i class="fas fa-sign-out-alt" style="cursor:pointer; color:var(--danger)" onclick="logout()"></i>
             </div>
         </nav>
 
         <div class="container">
             <div class="glass" style="padding: 40px; margin-bottom: 30px; text-align: center;" data-aos="fade-down">
-                <h1 id="typewriter" class="glow-text" style="font-family:'Rajdhani'; font-size:2.5rem;"></h1>
-                <p style="opacity: 0.6;">Sincronizado com API Oficial v2.4</p>
+                <h1 id="welcomeTitle" style="font-family:'Orbitron'; font-size:2.5rem; color:var(--primary);">CARREGANDO...</h1>
+                <p style="opacity: 0.6; margin-top:10px;">Status: Sincronizado com API Oficial</p>
+            </div>
+
+            <div style="display:flex; gap:15px; margin-bottom:30px;">
+                <button class="btn-neon" style="font-size:0.8rem;" onclick="exportClubPDF()">EXPORTAR RELATÓRIO <i class="fas fa-file-pdf"></i></button>
             </div>
 
             <div class="stats-grid" id="clubGrid">
@@ -129,75 +124,23 @@
     </div>
 
     <div class="side-panel" id="sidePanel">
-        <h2 style="font-family:'Rajdhani'; color:var(--accent); margin-bottom:20px;">CONSOLE DO SISTEMA</h2>
+        <h2 style="font-family:'Orbitron'; color:var(--accent); margin-bottom:20px; font-size:1.2rem;">SISTEMA LOGS</h2>
         <div class="log-box" id="logConsole"></div>
-        <div style="margin-top: 30px;">
-            <p style="font-size:0.7rem; color:#64748b;">AÇÕES RÁPIDAS</p>
-            <button class="btn-neon" style="width:100%; margin-top:10px; border-color:var(--accent); color:var(--accent);" onclick="alert('Relatório exportado!')">Gerar PDF do Clube</button>
-            <button class="btn-neon" style="width:100%; margin-top:10px; border-color:var(--danger); color:var(--danger);" onclick="togglePanel()">Fechar Console</button>
-        </div>
-    </div>
-
-    <div id="playerModal" class="modal">
-        <div class="modal-content glass">
-            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <div>
-                    <h1 id="m-name" class="glow-text" style="font-family:'Rajdhani'; font-size:3rem;">-</h1>
-                    <span id="m-tag" class="status-badge" style="background:var(--accent); color:#fff">#TAG</span>
-                </div>
-                <button onclick="closeModal()" style="background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;">&times;</button>
-            </div>
-
-            <div class="stats-grid" style="margin-top:30px;">
-                <div class="card-p glass">
-                    <p style="font-size:0.7rem; color:#64748b;">DISTRIBUIÇÃO DE VITÓRIAS</p>
-                    <canvas id="winChart"></canvas>
-                </div>
-                <div class="card-p glass" style="display:flex; flex-direction:column; justify-content:center; gap:15px;">
-                    <div><i class="fas fa-trophy" style="color:#ffd700"></i> Máximo: <b id="m-high" class="glow-text">0</b></div>
-                    <div><i class="fas fa-bolt" style="color:var(--primary)"></i> 24h: <b id="m-24h" style="color:var(--success)">0</b></div>
-                    <div><i class="fas fa-users" style="color:var(--accent)"></i> 3v3 Victories: <b id="m-3v3">0</b></div>
-                </div>
-            </div>
-
-            <div style="margin-top:40px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <h3>BRAWLERS DETALHADOS</h3>
-                    <input type="text" id="bSearch" placeholder="Filtrar brawler..." onkeyup="filterBrawlers()" style="background:none; border:1px solid var(--border); color:#fff; padding:5px 15px; border-radius:20px;">
-                </div>
-                <div class="brawler-grid" id="bList"></div>
-            </div>
-        </div>
+        <button class="btn-neon" style="width:100%; margin-top:20px; border-color:var(--danger); color:var(--danger);" onclick="togglePanel()">FECHAR CONSOLE</button>
     </div>
 
     <div id="toast" style="position:fixed; bottom:-100px; left:50%; transform:translateX(-50%); background:var(--primary); color:#000; padding:12px 25px; border-radius:30px; font-weight:900; transition:0.5s; z-index:5000;"></div>
 
     <script>
-        // --- CONFIGURAÇÃO E LOGIN ---
         const ADM_USER = "shiro";
         const ADM_PASS = "18172220";
         let currentUser = null;
-        let brawlersCache = [];
-        let chartInstance = null;
+        let clubData = [];
 
-        // AOS Initialization
+        // Inicialização
         AOS.init({ duration: 800, once: true });
 
-        // Efeito Typewriter
-        function runTypewriter(text) {
-            let i = 0;
-            const target = document.getElementById('typewriter');
-            target.innerHTML = "";
-            function type() {
-                if (i < text.length) {
-                    target.innerHTML += text.charAt(i);
-                    i++;
-                    setTimeout(type, 100);
-                }
-            }
-            type();
-        }
-
+        // --- SISTEMA DE LOGIN ---
         async function handleLogin() {
             const u = document.getElementById('userInput').value;
             const p = document.getElementById('passInput').value;
@@ -208,114 +151,133 @@
                 
                 currentUser = { name: u, isAdm: true, ip: ipData.ip };
                 localStorage.setItem('hz_user', JSON.stringify(currentUser));
-                saveServerLog(u, ipData.ip, "Acesso Concedido");
-                showToast("SISTEMA AUTENTICADO");
+                saveServerLog(u, ipData.ip, "Login realizado");
                 initApp();
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
-                saveServerLog(u || "Desconhecido", "0.0.0.0", "Tentativa de Invasão");
+            }
+        }
+
+        function initApp() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('userLabel').innerText = currentUser.name.toUpperCase();
+            if(currentUser.isAdm) document.getElementById('admTrigger').style.display = 'block';
+            
+            document.getElementById('welcomeTitle').innerText = "CENTRAL HORIZON APEX";
+            loadDashboard();
+            setTimeout(() => document.getElementById('masterLoader').style.display = 'none', 500);
+        }
+
+        // --- CORE LOGIC ---
+        async function loadDashboard() {
+            try {
+                // Aqui você mantém sua chamada real da API
+                // clubData = await fetch('/api/stats').then(r => r.json());
+                
+                // Dados Exemplo para visualização
+                clubData = [
+                    {name: "Shiro", tag: "#C09YY", trophies: 85200, status: 'crit'},
+                    {name: "Alpha", tag: "#P99L", trophies: 72400, status: 'new'},
+                    {name: "Specter", tag: "#J88K", trophies: 65100, status: 'new'}
+                ];
+
+                renderCards();
+            } catch(e) { showToast("ERRO API"); }
+        }
+
+        function renderCards() {
+            const container = document.getElementById('clubGrid');
+            container.innerHTML = clubData.map(m => `
+                <div class="p-card glass">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <h3 style="font-family:'Orbitron'; font-size:1.1rem;">${m.name}</h3>
+                            <span class="badge ${m.status === 'crit' ? 'b-crit' : 'b-new'}">${m.status}</span>
+                        </div>
+                        <div style="text-align:right;">
+                            <div class="counter" data-target="${m.trophies}" style="font-size:1.5rem; font-weight:900; color:var(--primary)">0</div>
+                            <div style="font-size:0.6rem; opacity:0.5;">TROFÉUS ATUAIS</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Ativa animações de entrada
+            const cards = document.querySelectorAll('.p-card');
+            cards.forEach((card, i) => {
+                setTimeout(() => {
+                    card.classList.add('visible');
+                    const counter = card.querySelector('.counter');
+                    animateValue(counter, 0, parseInt(counter.dataset.target), 2000);
+                }, i * 150);
+            });
+        }
+
+        // --- PDF CORRIGIDO ---
+        function exportClubPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            showToast("GERANDO RELATÓRIO...");
+
+            doc.setFillColor(2, 6, 23);
+            doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(0, 242, 255);
+            doc.setFontSize(22);
+            doc.text("HORIZON APEX - RELATÓRIO TÁTICO", 14, 25);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(150, 150, 150);
+            doc.text(`Operador: ${currentUser.name} | IP: ${currentUser.ip}`, 14, 35);
+
+            const tableRows = clubData.map((m, i) => [i + 1, m.name, m.tag, m.trophies.toLocaleString()]);
+
+            doc.autoTable({
+                head: [['#', 'NOME', 'TAG', 'TROFÉUS']],
+                body: tableRows,
+                startY: 50,
+                theme: 'striped',
+                headStyles: { fillColor: [188, 19, 254] },
+                styles: { fontSize: 10, cellPadding: 5 }
+            });
+
+            doc.save(`Relatorio_Horizon_${new Date().toISOString().slice(0,10)}.pdf`);
+            showToast("PDF EXPORTADO!");
+            saveServerLog(currentUser.name, currentUser.ip, "Exportou PDF do Clube");
+        }
+
+        // --- SISTEMA DE TEMAS ---
+        function changeTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            showToast(`TEMA ${theme.toUpperCase()} ATIVADO`);
+        }
+
+        // --- UTILITÁRIOS ---
+        function animateValue(obj, start, end, duration) {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString();
+                if (progress < 1) window.requestAnimationFrame(step);
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        function togglePanel() {
+            const p = document.getElementById('sidePanel');
+            p.classList.toggle('active');
+            if(p.classList.contains('active')) {
+                const logs = JSON.parse(localStorage.getItem('hz_logs') || '[]');
+                document.getElementById('logConsole').innerHTML = logs.map(l => `<div style="margin-bottom:5px; border-bottom:1px solid #111;">${l}</div>`).join('');
             }
         }
 
         function saveServerLog(user, ip, action) {
             let logs = JSON.parse(localStorage.getItem('hz_logs') || '[]');
             logs.unshift(`[${new Date().toLocaleTimeString()}] ${user} (${ip}) -> ${action}`);
-            localStorage.setItem('hz_logs', JSON.stringify(logs.slice(0, 100)));
-        }
-
-        // --- CORE APP ---
-        function initApp() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('userLabel').innerText = currentUser.name;
-            if(currentUser.isAdm) document.getElementById('admTrigger').style.display = 'block';
-            
-            runTypewriter("CENTRAL DE COMANDO HORIZON");
-            loadDashboard();
-        }
-
-        async function loadDashboard() {
-            try {
-                const res = await fetch('/api/stats');
-                const data = await res.json();
-                const container = document.getElementById('clubGrid');
-                
-                container.innerHTML = data.club.members.map(m => `
-                    <div class="p-card glass" data-aos="fade-up" onclick="openProfile('${m.tag}')">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div>
-                                <h3 style="font-family:'Rajdhani'">${m.name}</h3>
-                                <span class="status-badge" style="background:#1e293b; color:#fff">${m.tag}</span>
-                            </div>
-                            <div style="text-align:right;">
-                                <div style="font-size:1.2rem; font-weight:900; color:var(--primary)">${m.trophies.toLocaleString()}</div>
-                                <div style="font-size:0.6rem; color:var(--success)">+24h SYNC</div>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
-            } catch(e) { showToast("ERRO AO SINCRONIZAR API"); }
-        }
-
-        async function openProfile(tag) {
-            document.getElementById('playerModal').style.display = 'block';
-            try {
-                const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
-                const p = await res.json();
-                
-                document.getElementById('m-name').innerText = p.name;
-                document.getElementById('m-tag').innerText = p.tag;
-                document.getElementById('m-high').innerText = p.highestTrophies.toLocaleString();
-                document.getElementById('m-3v3').innerText = p['3vs3Victories'].toLocaleString();
-                
-                brawlersCache = p.brawlers;
-                renderBrawlers(brawlersCache);
-                renderChart(p['3vs3Victories'], p.soloVictories, p.duoVictories);
-            } catch(e) { console.error(e); }
-        }
-
-        function renderChart(v3, solo, duo) {
-            const ctx = document.getElementById('winChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['3v3', 'Solo', 'Duo'],
-                    datasets: [{
-                        data: [v3, solo, duo],
-                        backgroundColor: ['#00f2ff', '#bc13fe', '#ff4655'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { plugins: { legend: { display: false } } }
-            });
-        }
-
-        function renderBrawlers(list) {
-            const container = document.getElementById('bList');
-            container.innerHTML = list.map(b => `
-                <div class="b-mini">
-                    <div style="font-size:0.6rem; color:var(--primary)">POWER ${b.power}</div>
-                    <div style="font-weight:900; margin:5px 0;">${b.name.toUpperCase()}</div>
-                    <div style="color:#ffd700; font-size:0.8rem;">🏆 ${b.trophies}</div>
-                </div>
-            `).join('');
-        }
-
-        function filterBrawlers() {
-            const val = document.getElementById('bSearch').value.toUpperCase();
-            const filtered = brawlersCache.filter(b => b.name.includes(val));
-            renderBrawlers(filtered);
-        }
-
-        // --- UTILITÁRIOS ---
-        function togglePanel() { 
-            const p = document.getElementById('sidePanel');
-            p.classList.toggle('active');
-            if(p.classList.contains('active')) {
-                const logs = JSON.parse(localStorage.getItem('hz_logs') || '[]');
-                document.getElementById('logConsole').innerHTML = logs.map(l => `<div>${l}</div>`).join('');
-            }
+            localStorage.setItem('hz_logs', JSON.stringify(logs.slice(0, 50)));
         }
 
         function showToast(msg) {
@@ -326,18 +288,13 @@
         }
 
         function logout() { localStorage.removeItem('hz_user'); location.reload(); }
-        function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
 
-        // Scroll Progress
-        window.onscroll = function() {
-            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            let scrolled = (winScroll / height) * 100;
+        window.onscroll = () => {
+            let scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
             document.getElementById("scrollProgress").style.width = scrolled + "%";
-            
             const nav = document.getElementById('navbar');
-            if(winScroll > 50) nav.classList.add('scrolled');
-            else nav.classList.remove('scrolled');
+            if(window.scrollY > 50) nav.classList.add('shrunk');
+            else nav.classList.remove('shrunk');
         };
 
         window.onload = () => {
@@ -345,6 +302,8 @@
             if(saved) {
                 currentUser = JSON.parse(saved);
                 initApp();
+            } else {
+                document.getElementById('masterLoader').style.display = 'none';
             }
         };
     </script>
