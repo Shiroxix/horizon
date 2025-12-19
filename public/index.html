@@ -16,20 +16,14 @@
         :root {
             --primary: #00f2ff;
             --primary-rgb: 0, 242, 255;
-            --secondary: #7000ff;
             --accent: #ff007a;
             --bg: #030712;
-            --card: rgba(15, 23, 42, 0.6);
-            --border: rgba(255, 255, 255, 0.08);
+            --card: rgba(15, 23, 42, 0.7);
+            --border: rgba(255, 255, 255, 0.1);
             --text: #f8fafc;
             --text-dim: #94a3b8;
-            --glow: 0 0 20px rgba(var(--primary-rgb), 0.3);
-            --glass: blur(12px) saturate(160%);
+            --glass: blur(15px) saturate(160%);
         }
-
-        /* Temas */
-        [data-theme="neon"] { --primary: #39ff14; --primary-rgb: 57, 255, 20; --bg: #000814; }
-        [data-theme="gamer"] { --primary: #ff4655; --primary-rgb: 255, 70, 85; --bg: #0f0f0f; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
@@ -38,10 +32,9 @@
             overflow: hidden; min-height: 100vh;
         }
 
-        /* --- SISTEMA DE LOGIN --- */
+        /* LOGIN OVERLAY */
         #auth-overlay {
-            position: fixed; inset: 0; z-index: 9999;
-            background: var(--bg);
+            position: fixed; inset: 0; z-index: 9999; background: var(--bg);
             display: flex; align-items: center; justify-content: center;
             transition: 0.8s cubic-bezier(0.86, 0, 0.07, 1);
         }
@@ -56,254 +49,287 @@
             width: 100%; padding: 15px; margin: 20px 0;
             background: rgba(0,0,0,0.3); border: 1px solid var(--border);
             border-radius: 12px; color: var(--primary); font-family: 'Orbitron';
-            text-align: center; font-size: 1.1rem; outline: none; transition: 0.3s;
+            text-align: center; font-size: 1.1rem; outline: none;
         }
 
-        .key-input:focus { border-color: var(--primary); box-shadow: var(--glow); }
-
-        .btn-auth {
-            width: 100%; padding: 15px; border-radius: 12px; border: none;
-            background: var(--primary); color: #000; font-family: 'Orbitron';
-            font-weight: 900; cursor: pointer; transition: 0.3s;
-        }
-
-        .btn-auth:hover { transform: scale(1.02); filter: brightness(1.1); }
-
-        /* Animação de Erro */
-        .shake { animation: shake 0.4s ease-in-out; border-color: var(--accent) !important; }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
-
-        /* --- DASHBOARD (Oculto inicialmente) --- */
+        /* MAIN LAYOUT */
         #main-content { opacity: 0; pointer-events: none; transition: 1s; }
         body.authenticated { overflow-y: auto; }
         body.authenticated #main-content { opacity: 1; pointer-events: all; }
         body.authenticated #auth-overlay { transform: translateY(-100%); pointer-events: none; }
 
-        /* Estilos Originais Otimizados */
-        .bg-glow { position: fixed; inset: 0; background: radial-gradient(circle at 50% -20%, rgba(var(--primary-rgb), 0.12), transparent 70%); z-index: -1; }
-        nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 6%; display: flex; justify-content: space-between; align-items: center; background: rgba(var(--bg), 0.8); backdrop-filter: var(--glass); border-bottom: 1px solid var(--border); }
-        .glass-panel { background: var(--card); backdrop-filter: var(--glass); border: 1px solid var(--border); border-radius: 20px; }
-        main { max-width: 1200px; margin: 90px auto 100px; padding: 0 20px; }
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            padding: 15px 6%; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(var(--bg), 0.8); backdrop-filter: var(--glass);
+            border-bottom: 1px solid var(--border);
+        }
+
+        main { max-width: 1200px; margin: 90px auto 120px; padding: 0 20px; }
+
+        /* STATISTICS CARDS */
         .stats-overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { padding: 20px; border-radius: 18px; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
-        .search-bar { width: 100%; padding: 14px 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; color: #fff; margin-bottom: 20px; outline: none; }
-        .player-table { width: 100%; border-collapse: separate; border-spacing: 0 6px; }
-        .player-row td { padding: 15px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-        .player-row td:first-child { border-left: 1px solid var(--border); border-top-left-radius: 12px; border-bottom-left-radius: 12px; }
-        .player-row td:last-child { border-right: 1px solid var(--border); border-top-right-radius: 12px; border-bottom-right-radius: 12px; text-align: right; }
-        .brawlers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; max-height: 50vh; overflow-y: auto; padding: 5px; }
-        .brawler-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px 8px; border-radius: 12px; text-align: center; }
-        .nav-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 380px; height: 65px; display: flex; justify-content: space-around; align-items: center; z-index: 2000; }
-        .dock-item { color: var(--text-dim); text-align: center; font-size: 0.6rem; cursor: pointer; flex: 1; }
-        .dock-item.active { color: var(--primary); }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 5000; align-items: center; justify-content: center; padding: 15px; }
-        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: var(--primary); color: #000; padding: 12px 25px; border-radius: 50px; font-weight: 800; z-index: 10000; transition: 0.5s; font-size: 0.8rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .stat-card { padding: 20px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); }
+        .stat-card b { font-family: 'Orbitron'; font-size: 1.8rem; display: block; color: var(--primary); }
+
+        /* BRAWLER VISUAL IMPROVEMENTS */
+        .brawlers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .brawler-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+
+        .brawler-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+
+        .brawler-rank {
+            position: absolute; top: 8px; right: 8px;
+            font-size: 0.6rem; font-family: 'Orbitron';
+            background: var(--accent); color: #fff;
+            padding: 2px 6px; border-radius: 4px;
+        }
+
+        .brawler-name { font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 900; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .brawler-stats { font-size: 0.7rem; color: var(--text-dim); margin-top: 8px; }
+        
+        .progress-bar {
+            width: 100%; height: 4px; background: rgba(255,255,255,0.1);
+            border-radius: 10px; margin-top: 8px; overflow: hidden;
+        }
+        .progress-fill { height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+
+        /* MODAL FULLSCREEN MOBILE */
+        .modal-content {
+            width: 95%; max-width: 900px; max-height: 90vh;
+            overflow-y: auto; padding: 25px; border-radius: 24px;
+            position: relative;
+        }
+
+        .profile-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0;
+        }
+        .mini-stat { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
+        .mini-stat span { display: block; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; }
+        .mini-stat b { font-family: 'Orbitron'; font-size: 0.9rem; color: #fff; }
+
+        /* TABLES */
+        .player-row td { padding: 18px 15px; cursor: pointer; transition: 0.2s; }
+        .player-row:hover td { background: rgba(var(--primary-rgb), 0.1); }
+
+        /* NAVIGATION DOCK */
+        .nav-dock { 
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); 
+            width: 90%; max-width: 400px; height: 70px; display: flex; 
+            justify-content: space-around; align-items: center; z-index: 2000;
+        }
+
+        @media (max-width: 768px) {
+            .brawlers-container { grid-template-columns: repeat(2, 1fr); }
+            .profile-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
         <div class="login-card">
-            <div style="font-family: 'Orbitron'; color: var(--primary); font-size: 1.5rem; letter-spacing: 5px; margin-bottom: 10px;">SECURE ACCESS</div>
-            <p style="font-size: 0.7rem; color: var(--text-dim);">INSIRA SUA KEY PARA DESBLOQUEAR O PAINEL</p>
-            <input type="password" id="accessKey" class="key-input" placeholder="••••••••••••">
-            <button onclick="checkKey()" class="btn-auth">ESTABELECER CONEXÃO</button>
-            <div style="margin-top: 20px; font-size: 0.6rem; opacity: 0.3; font-family: 'JetBrains Mono';">ENCRYPTION: AES-256-GCM</div>
+            <h2 style="font-family:'Orbitron'; color:var(--primary); margin-bottom:10px;">HORIZON ACCESS</h2>
+            <input type="password" id="accessKey" class="key-input" placeholder="ACCESS KEY">
+            <button onclick="checkKey()" class="btn-auth" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:12px; font-family:'Orbitron'; font-weight:900; cursor:pointer;">DECRYPT</button>
         </div>
     </div>
 
     <div id="main-content">
-        <div id="toast">NOTIFICAÇÃO</div>
-        <div class="bg-glow"></div>
-
-        <nav id="navbar">
-            <div class="logo">HORIZON <span style="color: #fff">ULTRA</span></div>
-            <div style="display: flex; gap: 10px; align-items: center;">
-                <select onchange="changeTheme(this.value)" class="glass-panel" style="background:none; color:inherit; border:none; padding:5px; font-size:0.6rem; font-weight:700;">
-                    <option value="default">FUTURE</option>
-                    <option value="neon">NEON</option>
-                    <option value="gamer">GAMER</option>
-                </select>
-                <i class="fas fa-sign-out-alt" onclick="logout()" style="cursor: pointer; opacity: 0.6;"></i>
-            </div>
+        <nav>
+            <div style="font-family:'Orbitron'; font-weight:900; color:var(--primary);">HORIZON <span style="color:#fff">ULTRA</span></div>
+            <i class="fas fa-power-off" onclick="logout()" style="cursor:pointer;"></i>
         </nav>
 
         <main>
             <section id="tab-dash" class="tab-content active">
-                <div class="section-header">
-                    <p class="section-title">Global Analysis</p>
-                    <h1 style="font-family: 'Orbitron'; font-size: 1.4rem;">Central de Comando</h1>
-                </div>
                 <div class="stats-overview">
-                    <div class="stat-card glass-panel">
-                        <small style="color:var(--text-dim); font-size:0.6rem;">MEMBROS</small>
+                    <div class="stat-card">
+                        <small>MEMBROS ATIVOS</small>
                         <b id="stat-members">--</b>
                     </div>
-                    <div class="stat-card glass-panel">
-                        <small style="color:var(--text-dim); font-size:0.6rem;">TOTAL TROFÉUS</small>
+                    <div class="stat-card">
+                        <small>TROFÉUS CLUBE</small>
                         <b id="stat-trophies">--</b>
                     </div>
                 </div>
-                <div class="glass-panel" style="padding: 20px;">
-                    <canvas id="mainChart" height="150"></canvas>
+                <div class="stat-card" style="width:100%; margin-bottom: 20px;">
+                    <p style="font-family:'Orbitron'; font-size:0.7rem; margin-bottom:15px;">DISTRIBUIÇÃO DE PODER NO CLUBE</p>
+                    <canvas id="mainChart" height="180"></canvas>
                 </div>
             </section>
 
             <section id="tab-clube" class="tab-content">
-                <div class="section-header">
-                    <p class="section-title">Operators List</p>
-                    <h1 style="font-family: 'Orbitron'; font-size: 1.4rem;">Elite Squad</h1>
-                </div>
-                <input type="text" id="playerSearch" class="search-bar" placeholder="Buscar operador..." onkeyup="filterPlayers()">
-                <div class="glass-panel" style="overflow-x: auto;">
-                    <table class="player-table">
+                <input type="text" id="playerSearch" class="search-bar" placeholder="Filtrar por nome ou tag..." onkeyup="filterPlayers()" style="width:100%; padding:15px; border-radius:12px; background:var(--card); border:1px solid var(--border); color:#fff; margin-bottom:15px; outline:none;">
+                <div class="stat-card" style="padding:0; overflow:hidden;">
+                    <table style="width:100%; border-collapse:collapse;">
                         <tbody id="playerList"></tbody>
                     </table>
                 </div>
             </section>
         </main>
 
-        <div class="nav-dock glass-panel">
-            <div class="dock-item active" onclick="switchTab('tab-dash', this)"><i class="fas fa-chart-pie"></i><span>Geral</span></div>
-            <div class="dock-item" onclick="switchTab('tab-clube', this)"><i class="fas fa-users"></i><span>Clube</span></div>
+        <div class="nav-dock stat-card" style="backdrop-filter: var(--glass);">
+            <div onclick="switchTab('tab-dash', this)" class="active" style="cursor:pointer; text-align:center; color:var(--primary); flex:1;"><i class="fas fa-th-large"></i></div>
+            <div onclick="switchTab('tab-clube', this)" style="cursor:pointer; text-align:center; color:var(--text-dim); flex:1;"><i class="fas fa-users"></i></div>
         </div>
     </div>
 
-    <div id="playerModal" class="modal">
-        <div class="modal-content glass-panel" id="modalData"></div>
+    <div id="playerModal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:5000; align-items:center; justify-content:center;">
+        <div class="modal-content stat-card" id="modalData"></div>
     </div>
 
     <script>
-        const MASTER_KEY = "HORIZON-2025"; // ALTERE SUA KEY AQUI
+        const MASTER_KEY = "HORIZON-2025";
         let clubData = [];
         let mainChart = null;
 
-        // --- SISTEMA DE AUTENTICAÇÃO ---
         function checkKey() {
-            const input = document.getElementById('accessKey');
-            if(input.value === MASTER_KEY) {
+            if(document.getElementById('accessKey').value === MASTER_KEY) {
                 localStorage.setItem('horizon_auth', 'true');
                 unlockSite();
-                notify("ACESSO CONCEDIDO - BEM VINDO");
-            } else {
-                input.classList.add('shake');
-                notify("CHAVE INVÁLIDA", "danger");
-                setTimeout(() => input.classList.remove('shake'), 400);
-            }
+            } else { alert("KEY INCORRETA"); }
         }
 
         function unlockSite() {
             document.body.classList.add('authenticated');
-            fetchData();
+            fetchClubData();
         }
 
-        function logout() {
-            localStorage.removeItem('horizon_auth');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('horizon_auth'); location.reload(); }
 
-        // --- INICIALIZAÇÃO ---
-        window.addEventListener('load', () => {
-            if(localStorage.getItem('horizon_auth') === 'true') {
-                unlockSite();
-            }
-            AOS.init({ duration: 400, once: true });
-        });
-
-        // --- DADOS E RENDERS ---
-        async function fetchData() {
+        async function fetchClubData() {
             try {
                 const res = await fetch('/api/stats');
                 const data = await res.json();
                 clubData = data.club.members;
-                updateStats();
-                renderPlayerList();
+                renderClub();
                 renderMainChart();
-            } catch (e) { notify("ERRO NA API", "danger"); }
+            } catch (e) { console.error(e); }
         }
 
-        function updateStats() {
-            const totalTro = clubData.reduce((a, b) => a + b.trophies, 0);
+        function renderClub() {
+            const total = clubData.reduce((a, b) => a + b.trophies, 0);
             document.getElementById('stat-members').innerText = clubData.length;
-            document.getElementById('stat-trophies').innerText = totalTro.toLocaleString();
-        }
+            document.getElementById('stat-trophies').innerText = total.toLocaleString();
 
-        function renderPlayerList() {
-            const container = document.getElementById('playerList');
-            container.innerHTML = clubData.map(p => `
-                <tr class="player-row" onclick="openProfile('${p.tag}')">
+            document.getElementById('playerList').innerHTML = clubData.sort((a,b) => b.trophies - a.trophies).map((p, i) => `
+                <tr class="player-row" onclick="openProfile('${p.tag}')" style="border-bottom:1px solid var(--border)">
+                    <td style="width:50px; text-align:center; opacity:0.5;">#${i+1}</td>
                     <td>
-                        <div style="font-weight:700; font-size:0.9rem;">${p.name}</div>
-                        <div style="font-size:0.6rem; color:var(--text-dim);">${p.tag}</div>
+                        <div style="font-weight:800; font-size:0.9rem;">${p.name}</div>
+                        <div style="font-size:0.6rem; color:var(--text-dim)">${p.tag}</div>
                     </td>
-                    <td><b style="color:var(--primary)">${p.trophies.toLocaleString()}</b></td>
+                    <td style="text-align:right; font-family:'Orbitron'; color:var(--primary)">${p.trophies.toLocaleString()}</td>
                 </tr>
             `).join('');
         }
 
         async function openProfile(tag) {
             const modal = document.getElementById('playerModal');
-            const dataBox = document.getElementById('modalData');
             modal.style.display = 'flex';
-            dataBox.innerHTML = '<div class="loader-ring" style="margin:50px auto;"></div>';
+            document.getElementById('modalData').innerHTML = '<div style="text-align:center; padding:50px;">SINCRONIZANDO COM API...</div>';
 
             try {
                 const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
                 const p = await res.json();
-                dataBox.innerHTML = `
-                    <i class="fas fa-times" onclick="closeModal()" style="position:absolute; top:20px; right:20px; cursor:pointer;"></i>
-                    <h2 style="font-family: 'Orbitron'; color:var(--primary);">${p.name}</h2>
-                    <p style="font-size:0.7rem; opacity:0.5; margin-bottom:20px;">TAG: ${p.tag}</p>
-                    <div class="brawlers-grid">
-                        ${p.brawlers.map(b => `
-                            <div class="brawler-card">
-                                <div style="font-size:0.5rem; color:var(--primary);">NV ${b.power}</div>
-                                <div style="font-size:0.7rem; font-weight:700; margin:4px 0;">${b.name.toUpperCase()}</div>
-                                <div style="font-size:0.65rem; color:#ffd700;">🏆 ${b.trophies}</div>
-                            </div>
-                        `).join('')}
+                
+                document.getElementById('modalData').innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h2 style="font-family:'Orbitron'; color:var(--primary);">${p.name}</h2>
+                        <i class="fas fa-times" onclick="closeModal()" style="cursor:pointer; font-size:1.2rem;"></i>
+                    </div>
+                    
+                    <div class="profile-grid">
+                        <div class="mini-stat"><span>Troféus Atuais</span><b>${p.trophies.toLocaleString()}</b></div>
+                        <div class="mini-stat"><span>Recorde</span><b>${p.highestTrophies.toLocaleString()}</b></div>
+                        <div class="mini-stat"><span>Vitórias 3v3</span><b>${p['3vs3Victories']}</b></div>
+                        <div class="mini-stat"><span>Nível Exp</span><b>${p.expLevel}</b></div>
+                    </div>
+
+                    <p style="font-family:'Orbitron'; font-size:0.7rem; color:var(--primary); margin:20px 0 10px;">TACTICAL ARSENAL (${p.brawlers.length})</p>
+                    
+                    <div class="brawlers-container">
+                        ${p.brawlers.sort((a,b) => b.trophies - a.trophies).map(b => {
+                            const percent = Math.min((b.trophies / 1250) * 100, 100);
+                            return `
+                                <div class="brawler-card">
+                                    <div class="brawler-rank">RANK ${b.rank}</div>
+                                    <div class="brawler-name">${b.name.toUpperCase()}</div>
+                                    <div class="brawler-stats">
+                                        <div style="display:flex; justify-content:space-between">
+                                            <span>LVL ${b.power}</span>
+                                            <span style="color:#ffd700;">🏆 ${b.trophies}</span>
+                                        </div>
+                                    </div>
+                                    <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                 `;
-            } catch (e) { notify("ERRO NO PERFIL", "danger"); }
+            } catch (e) { closeModal(); }
         }
 
         function renderMainChart() {
             const ctx = document.getElementById('mainChart').getContext('2d');
+            const sorted = [...clubData].sort((a,b) => b.trophies - a.trophies);
+            
             if(mainChart) mainChart.destroy();
             mainChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
-                    labels: ['Sáb', 'Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Hoje'],
+                    labels: sorted.slice(0, 10).map(p => p.name),
                     datasets: [{
-                        data: [15000, 15500, 14800, 16000, 16200, 17500, 18000],
-                        borderColor: '#00f2ff', tension: 0.4, fill: true, backgroundColor: 'rgba(0,242,255,0.05)', pointRadius: 0
+                        label: 'Troféus',
+                        data: sorted.slice(0, 10).map(p => p.trophies),
+                        backgroundColor: 'rgba(0, 242, 255, 0.2)',
+                        borderColor: '#00f2ff',
+                        borderWidth: 2,
+                        borderRadius: 5
                     }]
                 },
-                options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9 } } }
+                    }
+                }
             });
         }
 
         function switchTab(id, el) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.dock-item').forEach(d => d.classList.remove('active'));
+            document.querySelectorAll('.nav-dock div').forEach(d => { d.style.color = 'var(--text-dim)'; });
             document.getElementById(id).classList.add('active');
-            el.classList.add('active');
+            el.style.color = 'var(--primary)';
         }
 
-        function changeTheme(t) { document.documentElement.setAttribute('data-theme', t); }
-        function notify(m, type) { 
-            const t = document.getElementById('toast'); 
-            t.innerText = m; t.style.background = type === "danger" ? "var(--accent)" : "var(--primary)";
-            t.style.top = "30px"; setTimeout(() => t.style.top = "-100px", 3000);
-        }
         function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
+        
+        window.addEventListener('load', () => {
+            if(localStorage.getItem('horizon_auth') === 'true') unlockSite();
+            AOS.init();
+        });
+
         function filterPlayers() {
             const val = document.getElementById('playerSearch').value.toLowerCase();
             document.querySelectorAll('.player-row').forEach(row => {
