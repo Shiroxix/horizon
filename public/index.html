@@ -2,8 +2,8 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Horizon Command | Mobile Elite</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horizon Command Center | Ultra Update</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -11,245 +11,239 @@
         :root { 
             --primary: #00f2ff; --accent: #bc13fe; --bg: #020408; 
             --card: #0d121d; --text: #f8fafc; --success: #00ff88; --danger: #ff4655;
-            --border: rgba(255, 255, 255, 0.1);
+            --border: rgba(255, 255, 255, 0.1); --glass: rgba(15, 23, 42, 0.8);
         }
         
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { 
-            font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); 
-            overflow-x: hidden; line-height: 1.4;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; scroll-behavior: smooth; }
 
-        /* --- OTIMIZAÇÃO MOBILE (TOUCH & VIEWPORT) --- */
-        .container { width: 100%; max-width: 100%; padding: 15px; margin: auto; }
+        /* --- LOGIN SCREEN --- */
+        #authScreen { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px); }
+        .auth-card { background: var(--card); border: 1px solid var(--border); padding: 40px; border-radius: 30px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 0 50px rgba(0,242,255,0.1); }
+        .input-cyber { width: 100%; background: #000; border: 1px solid var(--border); padding: 15px; border-radius: 12px; color: #fff; margin-bottom: 15px; font-weight: 600; }
+        .btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(90deg, var(--accent), var(--primary)); color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase; }
+
+        /* --- HEADER & NAV --- */
+        header { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--glass); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        .logo { font-family: 'Rajdhani'; font-size: 1.8rem; font-weight: 700; color: var(--primary); letter-spacing: 3px; }
         
-        header { 
-            padding: 15px 20px; background: rgba(13, 18, 29, 0.95);
-            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border);
-        }
+        /* --- DASHBOARD --- */
+        .container { max-width: 1400px; margin: auto; padding: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .card-p { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid var(--border); transition: 0.3s; position: relative; overflow: hidden; }
+        .card-p:hover { border-color: var(--primary); transform: translateY(-5px); }
+        
+        .trophy-gain { font-size: 0.8rem; font-weight: 900; padding: 4px 8px; border-radius: 6px; background: rgba(0,255,136,0.1); color: var(--success); }
 
-        .logo { font-family: 'Rajdhani'; font-size: 1.5rem; font-weight: 700; color: var(--primary); letter-spacing: 2px; }
+        /* --- MODAL PERFIL (SLAA STYLE) --- */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; overflow-y: auto; padding: 15px; }
+        .modal-content { max-width: 1100px; margin: 40px auto; background: var(--card); border: 1px solid var(--border); border-radius: 30px; padding: 30px; animation: slideUp 0.4s ease; }
+        
+        .brawler-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; margin-top: 20px; }
+        .b-card { background: rgba(255,255,255,0.03); border-radius: 15px; padding: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.05); cursor: pointer; }
+        .b-card:hover { background: rgba(0,242,255,0.05); border-color: var(--primary); }
 
-        /* --- GRID RESPONSIVO --- */
-        .member-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); /* 1 coluna no mobile */
-            gap: 12px; 
-        }
-        @media (min-width: 768px) { .member-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+        /* --- ADMIN PANEL --- */
+        .log-box { background: #000; border: 1px solid var(--accent); border-radius: 10px; height: 300px; overflow-y: auto; padding: 15px; font-family: monospace; font-size: 0.8rem; }
+        .log-line { border-bottom: 1px solid #111; padding: 5px 0; display: flex; justify-content: space-between; }
 
-        .p-card { 
-            background: var(--card); border-radius: 16px; padding: 18px; 
-            border: 1px solid var(--border); position: relative;
-        }
-
-        /* --- MODAL MOBILE FULLSCREEN --- */
-        .modal { 
-            display: none; position: fixed; inset: 0; background: var(--bg); 
-            z-index: 2000; overflow-y: auto; padding: 0; 
-        }
-        .modal-content { padding: 20px; min-height: 100vh; }
-
-        /* --- SISTEMA DE LOGS (ESTILO TERMINAL) --- */
-        .log-container { 
-            background: #000; border-radius: 12px; padding: 15px; 
-            height: 300px; overflow-y: auto; font-family: 'Courier New', monospace; 
-            font-size: 0.8rem; border: 1px solid var(--accent);
-        }
-        .log-entry { margin-bottom: 5px; border-left: 2px solid var(--accent); padding-left: 8px; }
-        .log-entry.geo { color: var(--primary); font-weight: bold; }
-
-        /* --- BOTÕES TÁTEIS --- */
-        .btn-action {
-            width: 100%; padding: 16px; border-radius: 12px; border: none;
-            background: linear-gradient(90deg, var(--accent), var(--primary));
-            color: #000; font-weight: 900; font-size: 1rem; text-transform: uppercase;
-            margin-top: 10px; cursor: pointer;
-        }
-
-        /* --- BRAWLERS MINI (MOBILE OPTIMIZED) --- */
-        .b-list-mobile { display: flex; flex-direction: column; gap: 8px; }
-        .b-item { 
-            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-
-        .close-modal {
-            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
-            background: var(--danger); border-radius: 50%; display: flex;
-            align-items: center; justify-content: center; font-size: 1.5rem;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 3000;
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 768px) {
+            .logo { font-size: 1.4rem; }
+            .modal-content { padding: 20px; margin: 10px auto; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">HORIZON PRO</div>
-        <div style="display:flex; gap:15px; align-items:center;">
-            <i class="fas fa-terminal" id="admIcon" style="display:none; color:var(--primary)" onclick="openLogs()"></i>
-            <div id="userNameNav" style="font-weight: 900; font-size: 0.8rem;">LOGIN</div>
+    <div id="authScreen">
+        <div class="auth-card">
+            <h1 class="logo" style="margin-bottom: 30px;">HORIZON ACCESS</h1>
+            <input type="text" id="userInput" class="input-cyber" placeholder="NOME DE USUÁRIO">
+            <input type="password" id="passInput" class="input-cyber" placeholder="SENHA">
+            <button class="btn-main" onclick="handleLogin()">Entrar</button>
+            <p id="errorMsg" style="color:var(--danger); font-size:0.8rem; margin-top:10px; display:none;">Credenciais Inválidas</p>
         </div>
-    </header>
-
-    <div class="container" id="mainApp" style="display:none;">
-        <div class="member-grid" id="clubGrid"></div>
     </div>
 
-    <div id="loginScreen" style="padding:40px; text-align:center; margin-top:50px;">
-        <h2 style="font-family:'Rajdhani'; margin-bottom:20px;">AUTENTICAÇÃO NECESSÁRIA</h2>
-        <input type="text" id="userIn" class="btn-action" style="background:#111; color:#fff; border:1px solid #333;" placeholder="USUÁRIO">
-        <button class="btn-action" onclick="doLogin()">ENTRAR NO SISTEMA</button>
+    <div id="app" style="display:none;">
+        <header>
+            <div class="logo">HORIZON <span style="color:#fff">ANALYTICS</span></div>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <i id="admGear" class="fas fa-cog" style="display:none; cursor:pointer; font-size:1.2rem; color:var(--primary)" onclick="openAdm()"></i>
+                <div id="userBadge" style="font-weight:900; font-size:0.9rem; text-transform:uppercase;">-</div>
+                <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-weight:bold; cursor:pointer;">SAIR</button>
+            </div>
+        </header>
+
+        <div class="container">
+            <div style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;">
+                <h2>MEMBROS DO CLUBE</h2>
+                <div id="syncTime" style="font-size:0.7rem; color:#64748b;">SINCRONIZADO AGORA</div>
+            </div>
+            <div class="stats-grid" id="memberList">
+                </div>
+        </div>
     </div>
 
     <div id="profileModal" class="modal">
         <div class="modal-content">
-            <h1 id="mName" style="font-family:'Rajdhani'; font-size:2.5rem; color:var(--primary)">-</h1>
-            <p id="mTag" style="opacity:0.5; margin-bottom:20px;">#TAG</p>
-            
-            <div style="background:var(--card); padding:20px; border-radius:15px; margin-bottom:20px;">
-                <canvas id="winChart"></canvas>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+                <h1 id="pName" style="font-family:'Rajdhani'; font-size:2.5rem; color:var(--primary);">-</h1>
+                <button onclick="closeModal()" style="background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;">&times;</button>
             </div>
 
-            <div class="b-list-mobile" id="brawlerContainer"></div>
+            <div class="stats-grid" style="margin-bottom:30px;">
+                <div class="card-p">
+                    <p style="font-size:0.7rem; color:#64748b;">VITÓRIAS 3V3</p>
+                    <h2 id="p3v3" style="color:var(--primary)">0</h2>
+                </div>
+                <div class="card-p">
+                    <p style="font-size:0.7rem; color:#64748b;">TROFÉUS MÁXIMOS</p>
+                    <h2 id="pMax" style="color:#ffd700">0</h2>
+                </div>
+            </div>
+
+            <div style="margin-top:40px;">
+                <h3>COLEÇÃO DE BRAWLERS</h3>
+                <div class="brawler-grid" id="pBrawlers"></div>
+            </div>
         </div>
-        <div class="close-modal" onclick="closeModal()"><i class="fas fa-times"></i></div>
     </div>
 
-    <div id="logModal" class="modal">
-        <div class="modal-content">
-            <h2 style="font-family:'Rajdhani'; color:var(--accent); margin-bottom:15px;">MONITORAMENTO GLOBAL</h2>
-            <div class="log-container" id="serverLogs"></div>
-            <button class="btn-action" style="background:var(--danger); margin-top:20px;" onclick="closeLogs()">FECHAR TERMINAL</button>
+    <div id="admModal" class="modal">
+        <div class="modal-content" style="max-width:700px;">
+            <h2 style="color:var(--accent); font-family:'Rajdhani'; margin-bottom:20px;">SISTEMA DE LOGS DO SERVIDOR</h2>
+            <div class="log-box" id="logItems"></div>
+            <button class="btn-main" style="margin-top:20px; background:var(--danger);" onclick="closeAdm()">FECHAR PAINEL</button>
         </div>
     </div>
 
     <script>
-        // CONFIGURAÇÕES MESTRE
-        const ADMIN_USER = "shiro";
+        // CONFIGURAÇÕES
+        const ADM_USER = "shiro";
+        const ADM_PASS = "18172220";
         let currentUser = null;
-        let chartInstance = null;
+        let initialTrophies = JSON.parse(localStorage.getItem('hz_start_trophies') || '{}');
 
-        // --- FUNÇÃO DE LOG "SERVIDOR" (VÊ AMIGOS DE OUTROS ESTADOS) ---
-        // Nota: Para ser 100% real entre PCs diferentes, você usaria Firebase ou MongoDB.
-        // Aqui simulamos a estrutura que capturaria o IP/Estado se houvesse backend.
-        async function registrarAtividade(usuario, acao) {
-            let logs = JSON.parse(localStorage.getItem('horizon_server_logs') || '[]');
-            
-            // Simulação de Geolocalização para o seu amigo
-            const estados = ["SP", "RJ", "MG", "PR", "SC", "BA", "RS"];
-            const estadoSimulado = estados[Math.floor(Math.random() * estados.length)];
-            
-            const novoLog = {
-                timestamp: new Date().toLocaleTimeString(),
-                usuario: usuario,
-                acao: acao,
-                origem: estadoSimulado,
-                id: Math.random().toString(36).substr(2, 5).toUpperCase()
-            };
+        // 1. SISTEMA DE LOGIN E LOGS
+        async function handleLogin() {
+            const u = document.getElementById('userInput').value;
+            const p = document.getElementById('passInput').value;
 
-            logs.unshift(novoLog);
-            localStorage.setItem('horizon_server_logs', JSON.stringify(logs.slice(0, 50)));
+            if (u === ADM_USER && p === ADM_PASS) {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                
+                currentUser = { name: u, isAdm: true, ip: ipData.ip };
+                saveLog(u, ipData.ip);
+                localStorage.setItem('hz_user', JSON.stringify(currentUser));
+                startApp();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
         }
 
-        function renderLogs() {
-            const logs = JSON.parse(localStorage.getItem('horizon_server_logs') || '[]');
-            const container = document.getElementById('serverLogs');
-            container.innerHTML = logs.map(l => `
-                <div class="log-entry">
-                    [${l.timestamp}] <b style="color:var(--success)">${l.usuario}</b> 
-                    acessou de <span class="log-entry geo">${l.origem}</span>: ${l.acao}
-                </div>
-            `).join('');
+        function saveLog(user, ip) {
+            let logs = JSON.parse(localStorage.getItem('hz_server_logs') || '[]');
+            logs.unshift({
+                user: user,
+                ip: ip,
+                date: new Date().toLocaleDateString(),
+                time: new Date().toLocaleTimeString()
+            });
+            localStorage.setItem('hz_server_logs', JSON.stringify(logs.slice(0, 100)));
         }
 
-        // --- LÓGICA DE INTERFACE ---
-        async function doLogin() {
-            const user = document.getElementById('userIn').value.toLowerCase();
-            if(!user) return;
-
-            currentUser = { name: user, isAdm: (user === ADMIN_USER) };
-            localStorage.setItem('horizon_current', JSON.stringify(currentUser));
-            
-            registrarAtividade(user, "Sessão Iniciada");
-            startApp();
-        }
+        // 2. INICIALIZAÇÃO DO APP
+        window.onload = () => {
+            const saved = localStorage.getItem('hz_user');
+            if(saved) {
+                currentUser = JSON.parse(saved);
+                startApp();
+            }
+        };
 
         function startApp() {
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
-            document.getElementById('userNameNav').innerText = currentUser.name.toUpperCase();
-            if(currentUser.isAdm) document.getElementById('admIcon').style.display = 'block';
-            loadClub();
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('app').style.display = 'block';
+            document.getElementById('userBadge').innerText = currentUser.name;
+            if(currentUser.isAdm) document.getElementById('admGear').style.display = 'block';
+            loadClubData();
         }
 
-        async function loadClub() {
+        async function loadClubData() {
             try {
                 const res = await fetch('/api/stats');
                 const data = await res.json();
-                const grid = document.getElementById('clubGrid');
+                const container = document.getElementById('memberList');
                 
-                grid.innerHTML = data.club.members.map(m => `
-                    <div class="p-card" onclick="openProfile('${m.tag}')">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <h3 style="font-family:'Rajdhani'">${m.name}</h3>
-                            <span style="color:var(--primary); font-weight:900;">🏆 ${m.trophies}</span>
+                container.innerHTML = data.club.members.sort((a,b) => b.trophies - a.trophies).map(m => {
+                    const gain = m.trophies - (initialTrophies[m.tag] || m.trophies);
+                    // Salva troféus iniciais se não existirem
+                    if(!initialTrophies[m.tag]) initialTrophies[m.tag] = m.trophies;
+                    
+                    return `
+                        <div class="card-p" onclick="openProfile('${m.tag}')">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <h3 style="font-family:'Rajdhani'">${m.name}</h3>
+                                    <p style="font-size:0.6rem; color:#64748b;">${m.tag}</p>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div style="font-weight:900; color:var(--primary); font-size:1.2rem;">${m.trophies.toLocaleString()}</div>
+                                    <div class="trophy-gain">${gain >= 0 ? '+' : ''}${gain} 24h</div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
+                localStorage.setItem('hz_start_trophies', JSON.stringify(initialTrophies));
             } catch(e) { console.error("Erro API"); }
         }
 
+        // 3. PERFIL DETALHADO E BRAWLERS
         async function openProfile(tag) {
             document.getElementById('profileModal').style.display = 'block';
             try {
                 const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
                 const p = await res.json();
                 
-                document.getElementById('mName').innerText = p.name;
-                document.getElementById('mTag').innerText = p.tag;
+                document.getElementById('pName').innerText = p.name;
+                document.getElementById('p3v3').innerText = p['3vs3Victories'].toLocaleString();
+                document.getElementById('pMax').innerText = p.highestTrophies.toLocaleString();
 
-                initChart(p['3vs3Victories'], p.soloVictories, p.duoVictories);
-                
-                const bContainer = document.getElementById('brawlerContainer');
-                bContainer.innerHTML = p.brawlers.slice(0, 10).map(b => `
-                    <div class="b-item">
-                        <span><b>${b.name}</b> (Pwr ${b.power})</span>
-                        <span style="color:var(--success)">🏆 ${b.trophies}</span>
+                const bContainer = document.getElementById('pBrawlers');
+                bContainer.innerHTML = p.brawlers.map(b => `
+                    <div class="b-card">
+                        <div style="font-size:0.6rem; color:var(--primary); font-weight:bold;">POWER ${b.power}</div>
+                        <div style="font-weight:900; margin:10px 0;">${b.name.toUpperCase()}</div>
+                        <div style="color:var(--success); font-size:0.8rem;">🏆 ${b.trophies}</div>
                     </div>
                 `).join('');
-
-                registrarAtividade(currentUser.name, `Consultou Perfil: ${p.name}`);
-            } catch(e) { alert("Erro ao carregar"); }
+            } catch(e) { alert("Erro ao carregar dados do jogador"); }
         }
 
-        function initChart(v3, solo, duo) {
-            const ctx = document.getElementById('winChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-            chartInstance = new Chart(ctx, {
-                type: 'polarArea',
-                data: {
-                    labels: ['3v3', 'Solo', 'Duo'],
-                    datasets: [{ data: [v3, solo, duo], backgroundColor: ['#00f2ffaa', '#bc13feaa', '#ff4655aa'] }]
-                },
-                options: { plugins: { legend: { display: false } }, scales: { r: { ticks: { display: false } } } }
-            });
+        // 4. ADMIN E LOGS
+        function openAdm() {
+            document.getElementById('admModal').style.display = 'block';
+            const logs = JSON.parse(localStorage.getItem('hz_server_logs') || '[]');
+            document.getElementById('logItems').innerHTML = logs.map(l => `
+                <div class="log-line">
+                    <span><b>${l.user}</b> (${l.ip})</span>
+                    <span style="color:#64748b;">${l.date} - ${l.time}</span>
+                </div>
+            `).join('');
         }
 
-        function openLogs() { document.getElementById('logModal').style.display = 'block'; renderLogs(); }
-        function closeLogs() { document.getElementById('logModal').style.display = 'none'; }
-        function closeModal() { document.getElementById('profileModal').style.display = 'none'; }
+        function logout() {
+            localStorage.removeItem('hz_user');
+            location.reload();
+        }
 
-        // AUTO-LOAD
-        window.onload = () => {
-            const saved = localStorage.getItem('horizon_current');
-            if(saved) {
-                currentUser = JSON.parse(saved);
-                startApp();
-            }
-        };
+        function closeModal() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+        function closeAdm() { document.getElementById('admModal').style.display = 'none'; }
     </script>
 </body>
 </html>
