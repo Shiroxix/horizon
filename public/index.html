@@ -65,6 +65,9 @@
         .hidden { display: none !important; }
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 12px; background: var(--accent); color: white; z-index: 10000; display: none; font-weight: 700; }
         .icon-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--input-bg); cursor: pointer; border: 1px solid var(--border); }
+        
+        /* WHATSAPP BUTTON */
+        .btn-whatsapp { background: #25d366 !important; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
     </style>
 </head>
 <body>
@@ -119,14 +122,11 @@
                 <span style="font-weight:800; color: #fbbf24;">ARENA DE COMPARATIVO</span>
                 <div></div>
             </div>
-            
             <div class="x1-selector">
                 <select id="p1Sel" class="btn-action" style="background: var(--card-bg); font-size: 0.8rem;" onchange="updateX1()"></select>
                 <select id="p2Sel" class="btn-action" style="background: var(--card-bg); font-size: 0.8rem;" onchange="updateX1()"></select>
             </div>
-
             <div class="vs-circle">VS</div>
-
             <div id="x1Result" style="margin-top: 30px;">
                 <p style="text-align: center; opacity: 0.5;">Selecione dois jogadores para comparar</p>
             </div>
@@ -140,7 +140,7 @@
 
         function toggleTheme() {
             document.body.classList.toggle('amoled');
-            const icon = document.querySelector('.theme-toggle i');
+            const icon = document.querySelector('.icon-btn i.fa-moon, .icon-btn i.fa-sun');
             if(icon) { icon.classList.toggle('fa-moon'); icon.classList.toggle('fa-sun'); }
         }
 
@@ -170,14 +170,11 @@
                 const res = await fetch(`${API_BASE}/api/stats`);
                 const data = await res.json();
                 cachedMembers = data.club.members;
-                
-                // Preencher selects do X1
                 const selects = [document.getElementById('p1Sel'), document.getElementById('p2Sel')];
                 selects.forEach(s => {
                     s.innerHTML = '<option value="">Selecionar Jogador</option>' + 
                     cachedMembers.map(m => `<option value="${m.tag}">${m.name}</option>`).join('');
                 });
-
                 document.getElementById('clubGrid').innerHTML = cachedMembers.map(m => `
                     <div class="player-card" onclick="openProfile('${m.tag}')">
                         <div>
@@ -193,7 +190,6 @@
             } catch(e) { showToast("ERRO NA API"); }
         }
 
-        // --- SISTEMA X1 ---
         function openX1() { document.getElementById('x1Modal').style.display = 'block'; }
         function closeX1() { document.getElementById('x1Modal').style.display = 'none'; }
 
@@ -201,14 +197,12 @@
             const t1 = document.getElementById('p1Sel').value;
             const t2 = document.getElementById('p2Sel').value;
             if(!t1 || !t2) return;
-
             const res1 = await fetch(`${API_BASE}/api/player/${t1.replace('#', '%23')}`);
             const res2 = await fetch(`${API_BASE}/api/player/${t2.replace('#', '%23')}`);
             const p1 = await res1.json();
             const p2 = await res2.json();
-
             const createBar = (v1, v2, label) => {
-                const total = v1 + v2;
+                const total = (v1 + v2) || 1;
                 const p1w = (v1 / total) * 100;
                 return `
                     <div style="margin-bottom: 15px;">
@@ -222,10 +216,8 @@
                     </div>
                 `;
             };
-
             const b1 = p1.brawlers.sort((a,b)=>b.trophies-a.trophies)[0];
             const b2 = p2.brawlers.sort((a,b)=>b.trophies-a.trophies)[0];
-
             document.getElementById('x1Result').innerHTML = `
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; text-align:center; margin-bottom:30px;">
                     <div><h2 style="color:var(--primary)">${p1.name}</h2><small>${p1.tag}</small></div>
@@ -234,7 +226,6 @@
                 ${createBar(p1.trophies, p2.trophies, 'Troféus Atuais')}
                 ${createBar(p1.expLevel, p2.expLevel, 'Nível de Experiência')}
                 ${createBar(p1['3vs3Victories'], p2['3vs3Victories'], 'Vitórias 3v3')}
-                
                 <div class="stats-grid">
                     <div class="stat-box" style="border-left: 4px solid var(--primary)">
                         <div style="font-size:0.6rem; opacity:0.6;">MELHOR BRAWLER</div>
@@ -250,7 +241,32 @@
             `;
         }
 
-        // --- PERFIL ---
+        // --- HISTÓRICO LÓGICA ---
+        function getHistoricalDiff(tag, current, hours) {
+            const history = JSON.parse(localStorage.getItem(`hist_full_${tag}`) || '{}');
+            const now = Date.now();
+            const targetTime = now - (hours * 60 * 60 * 1000);
+            
+            // Salva o ponto atual se não houver nada
+            if(Object.keys(history).length === 0) {
+                history[now] = current;
+                localStorage.setItem(`hist_full_${tag}`, JSON.stringify(history));
+                return 0;
+            }
+
+            // Encontra o registro mais próximo do tempo alvo
+            const timestamps = Object.keys(history).map(Number).sort((a,b) => b-a);
+            const closest = timestamps.find(t => t <= targetTime);
+            
+            // Mantém apenas logs das últimas 48h para limpar o storage
+            const cleaned = {};
+            timestamps.filter(t => t > now - (48 * 60 * 60 * 1000)).forEach(t => cleaned[t] = history[t]);
+            cleaned[now] = current;
+            localStorage.setItem(`hist_full_${tag}`, JSON.stringify(cleaned));
+
+            return closest ? current - history[closest] : 0;
+        }
+
         async function openProfile(tag) {
             const modal = document.getElementById('playerModal');
             modal.style.display = 'block';
@@ -258,40 +274,93 @@
             try {
                 const res = await fetch(`${API_BASE}/api/player/${tag.replace('#', '%23')}`);
                 const p = await res.json();
+                
+                const d12 = getHistoricalDiff(p.tag, p.trophies, 12);
+                const d16 = getHistoricalDiff(p.tag, p.trophies, 16);
+                const d24 = getHistoricalDiff(p.tag, p.trophies, 24);
+
                 document.getElementById('mContent').innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
                         <i class="fas fa-arrow-left" onclick="closeModal()" style="font-size:1.2rem;"></i>
                         <span style="font-weight:800; font-size:0.7rem; opacity:0.5;">PLAYER ANALYTICS</span>
-                        <i class="fas fa-share-alt"></i>
+                        <i class="fas fa-ellipsis-v"></i>
                     </div>
                     <h1 style="font-size:2.2rem; margin-bottom:5px;">${p.name}</h1>
                     <span style="background:var(--primary); color:white; padding:3px 10px; border-radius:6px; font-size:0.7rem; font-weight:700;">${p.tag}</span>
                     
                     <div class="stats-grid">
                         <div class="stat-box">
-                            <div style="font-size:0.65rem; color:#94a3b8; text-transform:uppercase;">Vitórias 3v3</div>
-                            <div style="font-size:1.4rem; font-weight:800;">${p['3vs3Victories']}</div>
+                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Saldo 12h</div>
+                            <div style="font-size:1.1rem; font-weight:800; color:${d12 >= 0 ? '#22c55e' : '#ef4444'}">${d12 >= 0 ? '+' : ''}${d12} 🏆</div>
                         </div>
                         <div class="stat-box">
-                            <div style="font-size:0.65rem; color:#94a3b8; text-transform:uppercase;">Nível EXP</div>
-                            <div style="font-size:1.4rem; font-weight:800; color:var(--primary);">${p.expLevel}</div>
+                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Saldo 24h</div>
+                            <div style="font-size:1.1rem; font-weight:800; color:${d24 >= 0 ? '#22c55e' : '#ef4444'}">${d24 >= 0 ? '+' : ''}${d24} 🏆</div>
                         </div>
                     </div>
 
-                    <h3 style="margin:25px 0 15px; font-size:1rem;">Arsenal Completo (${p.brawlers.length})</h3>
-                    <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:10px; padding-bottom:40px;">
-                        ${p.brawlers.sort((a,b) => b.trophies - a.trophies).map(b => `
-                            <div class="stat-box" style="display:flex; justify-content:space-between; align-items:center; padding:12px;">
-                                <div>
-                                    <div style="font-size:0.75rem; font-weight:700;">${b.name}</div>
-                                    <div style="font-size:0.6rem; opacity:0.6;">PWR ${b.power}</div>
-                                </div>
-                                <div style="font-weight:800; color:#fbbf24; font-size:0.8rem;">🏆 ${b.trophies}</div>
+                    <div class="stat-box" style="margin-bottom:20px;">
+                        <div style="font-size:0.65rem; color:#94a3b8; margin-bottom:10px; text-align:center;">DISTRIBUIÇÃO DE TROFÉUS (TOP BRAWLERS)</div>
+                        <canvas id="profileChart" height="150"></canvas>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; font-size:0.8rem;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Saldo 16h:</span> <b style="color:#3b82f6">${d16 >= 0 ? '+' : ''}${d16}</b></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Total:</span> <b>${p.trophies} 🏆</b></div>
+                        <div style="display:flex; justify-content:space-between;"><span>Vitórias 3v3:</span> <b>${p['3vs3Victories']}</b></div>
+                    </div>
+
+                    <button class="btn-action btn-whatsapp" onclick="shareStats('${p.name}', '${p.trophies}', '${d12}', '${d16}', '${d24}')">
+                        <i class="fab fa-whatsapp"></i> COMPARTILHAR STATUS
+                    </button>
+
+                    <h3 style="margin:25px 0 15px; font-size:1rem;">Arsenal Detalhado</h3>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; padding-bottom:40px;">
+                        ${p.brawlers.slice(0, 10).map(b => `
+                            <div class="stat-box" style="padding:10px;">
+                                <div style="font-size:0.75rem; font-weight:700;">${b.name}</div>
+                                <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b.trophies}</div>
                             </div>
                         `).join('')}
                     </div>
                 `;
-            } catch(e) { showToast("ERRO AO CARREGAR PERFIL"); }
+
+                // Render Chart
+                const ctx = document.getElementById('profileChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: p.brawlers.slice(0,6).map(b => b.name),
+                        datasets: [{
+                            data: p.brawlers.slice(0,6).map(b => b.trophies),
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        plugins: { legend: { display: false } },
+                        scales: { 
+                            y: { display: false },
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 9 } } }
+                        },
+                        animation: { duration: 1500 }
+                    }
+                });
+
+            } catch(e) { showToast("ERRO AO CARREGAR PERFIL"); console.error(e); }
+        }
+
+        function shareStats(name, total, d12, d16, d24) {
+            const msg = `📊 *HORIZON INTELLIGENCE*\n\n` +
+                        `👤 *Jogador:* ${name}\n` +
+                        `🏆 *Total:* ${total} Troféus\n\n` +
+                        `📈 *DESEMPENHO:* \n` +
+                        `• Últimas 12h: ${d12 >= 0 ? '+' : ''}${d12}\n` +
+                        `• Últimas 16h: ${d16 >= 0 ? '+' : ''}${d16}\n` +
+                        `• Últimas 24h: ${d24 >= 0 ? '+' : ''}${d24}\n\n` +
+                        `🌐 _Sincronizado via Horizon Ultra_`;
+            
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         function showToast(m) {
