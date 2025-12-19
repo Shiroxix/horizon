@@ -253,17 +253,22 @@
             `;
         }
 
-        // LÓGICA DE ATUALIZAÇÃO CONSTANTE PELA API
-        function getApiDiff(tag, current) {
-            const key = `api_last_${tag}`;
-            const last = localStorage.getItem(key);
-            if(last === null) {
-                localStorage.setItem(key, current);
+        function getHistoricalDiff(tag, current, hours) {
+            const history = JSON.parse(localStorage.getItem(`hist_full_${tag}`) || '{}');
+            const now = Date.now();
+            const targetTime = now - (hours * 60 * 60 * 1000);
+            if(Object.keys(history).length === 0) {
+                history[now] = current;
+                localStorage.setItem(`hist_full_${tag}`, JSON.stringify(history));
                 return 0;
             }
-            const diff = current - parseInt(last);
-            localStorage.setItem(key, current); // Salva o novo valor como referência
-            return diff;
+            const timestamps = Object.keys(history).map(Number).sort((a,b) => b-a);
+            const closest = timestamps.find(t => t <= targetTime);
+            const cleaned = {};
+            timestamps.filter(t => t > now - (48 * 60 * 60 * 1000)).forEach(t => cleaned[t] = history[t]);
+            cleaned[now] = current;
+            localStorage.setItem(`hist_full_${tag}`, JSON.stringify(cleaned));
+            return closest ? current - history[closest] : 0;
         }
 
         async function openProfile(tag) {
@@ -275,25 +280,27 @@
                 const p = await res.json();
                 currentPlayerBrawlers = p.brawlers;
                 
-                const diff = getApiDiff(p.tag, p.trophies);
+                const d12 = getHistoricalDiff(p.tag, p.trophies, 12);
+                const d16 = getHistoricalDiff(p.tag, p.trophies, 16);
+                const d24 = getHistoricalDiff(p.tag, p.trophies, 24);
 
                 document.getElementById('mContent').innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
                         <i class="fas fa-arrow-left" onclick="closeModal()" style="font-size:1.2rem;"></i>
-                        <span style="font-weight:800; font-size:0.7rem; opacity:0.5;">LIVE ANALYTICS</span>
-                        <i class="fas fa-sync" onclick="openProfile('${tag}')"></i>
+                        <span style="font-weight:800; font-size:0.7rem; opacity:0.5;">PLAYER ANALYTICS</span>
+                        <i class="fas fa-ellipsis-v"></i>
                     </div>
                     <h1 style="font-size:2.2rem; margin-bottom:5px;">${p.name}</h1>
                     <span style="background:var(--primary); color:white; padding:3px 10px; border-radius:6px; font-size:0.7rem; font-weight:700;">${p.tag}</span>
                     
                     <div class="stats-grid">
                         <div class="stat-box">
-                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Variação API</div>
-                            <div style="font-size:1.1rem; font-weight:800; color:${diff >= 0 ? '#22c55e' : '#ef4444'}">${diff >= 0 ? '+' : ''}${diff} 🏆</div>
+                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Saldo 12h</div>
+                            <div style="font-size:1.1rem; font-weight:800; color:${d12 >= 0 ? '#22c55e' : '#ef4444'}">${d12 >= 0 ? '+' : ''}${d12} 🏆</div>
                         </div>
                         <div class="stat-box">
-                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Total Atual</div>
-                            <div style="font-size:1.1rem; font-weight:800; color:var(--primary)">${p.trophies} 🏆</div>
+                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Saldo 24h</div>
+                            <div style="font-size:1.1rem; font-weight:800; color:${d24 >= 0 ? '#22c55e' : '#ef4444'}">${d24 >= 0 ? '+' : ''}${d24} 🏆</div>
                         </div>
                     </div>
 
@@ -301,7 +308,12 @@
                         <canvas id="profileChart" height="150"></canvas>
                     </div>
 
-                    <button class="btn-action btn-whatsapp" onclick="shareStats('${p.name}', '${p.trophies}', '${diff}')">
+                    <div style="background:rgba(255,255,255,0.03); padding:15px; border-radius:12px; font-size:0.8rem;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Saldo 16h:</span> <b style="color:#3b82f6">${d16 >= 0 ? '+' : ''}${d16}</b></div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>Total:</span> <b>${p.trophies} 🏆</b></div>
+                    </div>
+
+                    <button class="btn-action btn-whatsapp" onclick="shareStats('${p.name}', '${p.trophies}', '${d12}', '${d16}', '${d24}')">
                         <i class="fab fa-whatsapp"></i> COMPARTILHAR
                     </button>
 
@@ -335,22 +347,25 @@
             content.innerHTML = `
                 <h2 style="color:var(--primary); margin-bottom:5px;">${b.name}</h2>
                 <p style="font-size:0.8rem; opacity:0.6; margin-bottom:20px;">Nível de Poder ${b.power}</p>
+                
                 <div style="margin-bottom:15px;">
                     <p style="font-size:0.7rem; font-weight:700; margin-bottom:8px; color:#94a3b8;">ACESSÓRIOS E PODERES</p>
                     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                        ${b.gadgets.map(g => `<div class="item-icon"><i class="fas fa-plug" style="color:#22c55e"></i></div>`).join('')}
-                        ${b.starPowers.map(s => `<div class="item-icon"><i class="fas fa-star" style="color:#fbbf24"></i></div>`).join('')}
+                        ${b.gadgets.map(g => `<div class="item-icon" title="${g.name}"><i class="fas fa-plug" style="color:#22c55e"></i></div>`).join('')}
+                        ${b.starPowers.map(s => `<div class="item-icon" title="${s.name}"><i class="fas fa-star" style="color:#fbbf24"></i></div>`).join('')}
                     </div>
                 </div>
+
                 <div style="margin-bottom:15px;">
                     <p style="font-size:0.7rem; font-weight:700; margin-bottom:8px; color:#94a3b8;">ENGRENAGENS</p>
                     <div style="display:flex; gap:8px;">
                         ${b.gears.map(g => `<div class="item-icon"><i class="fas fa-cog" style="color:#94a3b8"></i></div>`).join('') || '<span style="font-size:0.7rem; opacity:0.4;">Nenhuma</span>'}
                     </div>
                 </div>
+
                 <div>
                     <p style="font-size:0.7rem; font-weight:700; margin-bottom:8px; color:#94a3b8;">HIPERCARGA</p>
-                    <div class="item-icon" style="border-color:${b.power >= 11 ? '#8b5cf6' : 'var(--border)'}">
+                    <div class="item-icon" style="border-color:${b.power >= 11 ? 'var(--accent)' : 'var(--border)'}">
                         <i class="fas fa-bolt" style="color:${b.power >= 11 ? '#8b5cf6' : '#334155'}"></i>
                     </div>
                 </div>
@@ -359,10 +374,8 @@
         }
 
         function closeBrawlerPopup() { document.getElementById('brawlerPopup').style.display = 'none'; }
-        
-        function shareStats(name, total, diff) {
-            const status = diff >= 0 ? `+${diff} 📈` : `${diff} 📉`;
-            const msg = `📊 *HORIZON LIVE*\n👤 *${name}*\n🏆 *Total:* ${total}\n⚡ *Variação:* ${status}`;
+        function shareStats(name, total, d12, d16, d24) {
+            const msg = `📊 *HORIZON INTELLIGENCE*\n👤 *${name}*\n🏆 *Total:* ${total}\n📈 *Saldo 24h:* ${d24 >= 0 ? '+' : ''}${d24}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
