@@ -3,339 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Horizon Ultra | Analytical Intelligence</title>
+    <title>HORIZON ULTRA | INTELLIGENCE</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;700;900&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <style>
         :root {
             --primary: #00f2ff;
-            --primary-rgb: 0, 242, 255;
+            --primary-glow: rgba(0, 242, 255, 0.4);
             --accent: #ff007a;
-            --bg: #030712;
-            --card: rgba(15, 23, 42, 0.7);
+            --bg: #020617;
+            --card-bg: rgba(15, 23, 42, 0.8);
             --border: rgba(255, 255, 255, 0.1);
-            --text: #f8fafc;
+            --text-main: #f1f5f9;
             --text-dim: #94a3b8;
-            --glass: blur(15px) saturate(160%);
+            --glass: blur(20px) saturate(180%);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         
         body { 
-            background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; 
-            overflow: hidden; min-height: 100vh;
+            background: var(--bg); color: var(--text-main); 
+            font-family: 'Inter', sans-serif; overflow-x: hidden;
+            line-height: 1.5;
         }
 
-        /* LOGIN OVERLAY */
+        /* --- GATEKEEPER SYSTEM --- */
         #auth-overlay {
             position: fixed; inset: 0; z-index: 9999; background: var(--bg);
             display: flex; align-items: center; justify-content: center;
-            transition: 0.8s cubic-bezier(0.86, 0, 0.07, 1);
+            transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
         }
 
-        .login-card {
-            width: 90%; max-width: 400px; padding: 40px; text-align: center;
-            border: 1px solid var(--border); border-radius: 30px;
-            background: rgba(255,255,255,0.02); backdrop-filter: blur(20px);
+        .login-box {
+            width: 85%; max-width: 380px; padding: 40px 25px;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 35px; text-align: center; backdrop-filter: var(--glass);
         }
 
         .key-input {
-            width: 100%; padding: 15px; margin: 20px 0;
-            background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-            border-radius: 12px; color: var(--primary); font-family: 'Orbitron';
-            text-align: center; font-size: 1.1rem; outline: none;
+            width: 100%; padding: 18px; margin: 25px 0;
+            background: rgba(0,0,0,0.4); border: 1px solid var(--border);
+            border-radius: 15px; color: var(--primary); font-family: 'Orbitron';
+            text-align: center; font-size: 1.2rem; letter-spacing: 3px; outline: none;
         }
 
-        /* MAIN LAYOUT */
-        #main-content { opacity: 0; pointer-events: none; transition: 1s; }
-        body.authenticated { overflow-y: auto; }
-        body.authenticated #main-content { opacity: 1; pointer-events: all; }
-        body.authenticated #auth-overlay { transform: translateY(-100%); pointer-events: none; }
-
-        nav {
-            position: fixed; top: 0; width: 100%; z-index: 1000;
-            padding: 15px 6%; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(var(--bg), 0.8); backdrop-filter: var(--glass);
-            border-bottom: 1px solid var(--border);
+        /* --- DASHBOARD STRUCTURE --- */
+        #main-app { display: none; opacity: 0; will-change: opacity; transition: opacity 0.5s ease; }
+        
+        header {
+            position: fixed; top: 0; width: 100%; height: 80px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 25px; background: rgba(2, 6, 23, 0.7);
+            backdrop-filter: var(--glass); border-bottom: 1px solid var(--border); z-index: 100;
         }
 
-        main { max-width: 1200px; margin: 90px auto 120px; padding: 0 20px; }
+        .logo { font-family: 'Orbitron'; font-weight: 900; letter-spacing: 2px; font-size: 1.1rem; }
+        .logo span { color: var(--primary); text-shadow: 0 0 10px var(--primary-glow); }
 
-        /* STATISTICS CARDS */
-        .stats-overview { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .stat-card { padding: 20px; border-radius: 20px; border: 1px solid var(--border); background: var(--card); }
-        .stat-card b { font-family: 'Orbitron'; font-size: 1.8rem; display: block; color: var(--primary); }
+        main { padding: 100px 20px 120px; max-width: 1000px; margin: 0 auto; }
 
-        /* BRAWLER VISUAL IMPROVEMENTS */
-        .brawlers-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-            margin-top: 20px;
+        /* --- CARDS & STATS --- */
+        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        
+        .card-stat {
+            background: var(--card-bg); border: 1px solid var(--border);
+            padding: 20px; border-radius: 25px; position: relative; overflow: hidden;
+        }
+
+        .card-stat small { color: var(--text-dim); font-size: 0.65rem; font-weight: 800; text-transform: uppercase; }
+        .card-stat h3 { font-family: 'Orbitron'; font-size: 1.4rem; color: var(--primary); margin-top: 5px; }
+
+        /* --- BRAWLER ENGINE 2.0 --- */
+        .brawlers-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px; padding-top: 10px;
         }
 
         .brawler-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 15px;
-            position: relative;
-            overflow: hidden;
-            transition: 0.3s;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--border); border-radius: 22px; padding: 20px;
+            position: relative; transition: transform 0.3s ease;
         }
 
-        .brawler-card:hover { transform: translateY(-5px); border-color: var(--primary); }
-
-        .brawler-rank {
-            position: absolute; top: 8px; right: 8px;
-            font-size: 0.6rem; font-family: 'Orbitron';
-            background: var(--accent); color: #fff;
-            padding: 2px 6px; border-radius: 4px;
+        .rank-badge {
+            position: absolute; top: 15px; right: 15px;
+            background: var(--accent); color: white; padding: 2px 8px;
+            border-radius: 6px; font-family: 'Orbitron'; font-size: 0.6rem; font-weight: 900;
         }
 
-        .brawler-name { font-family: 'Orbitron'; font-size: 0.75rem; font-weight: 900; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .b-name { font-family: 'Orbitron'; font-size: 0.85rem; font-weight: 800; margin-bottom: 12px; display: block; }
         
-        .brawler-stats { font-size: 0.7rem; color: var(--text-dim); margin-top: 8px; }
-        
-        .progress-bar {
-            width: 100%; height: 4px; background: rgba(255,255,255,0.1);
-            border-radius: 10px; margin-top: 8px; overflow: hidden;
-        }
-        .progress-fill { height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary); }
+        .b-info { display: flex; justify-content: space-between; font-size: 0.7rem; margin-bottom: 8px; }
+        .b-info span { color: var(--text-dim); }
+        .b-info b { color: #fff; }
 
-        /* MODAL FULLSCREEN MOBILE */
+        .power-bar {
+            width: 100%; height: 6px; background: rgba(255,255,255,0.05);
+            border-radius: 10px; overflow: hidden;
+        }
+        .power-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary), #00a2ff);
+            box-shadow: 0 0 10px var(--primary-glow); border-radius: 10px;
+        }
+
+        /* --- MODAL SYSTEM --- */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+            z-index: 2000; display: none; align-items: flex-end; justify-content: center;
+        }
+
         .modal-content {
-            width: 95%; max-width: 900px; max-height: 90vh;
-            overflow-y: auto; padding: 25px; border-radius: 24px;
-            position: relative;
+            width: 100%; max-height: 92vh; background: var(--bg);
+            border-top: 2px solid var(--primary); border-radius: 40px 40px 0 0;
+            padding: 30px 20px; overflow-y: auto; position: relative;
         }
 
-        .profile-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 20px 0;
-        }
-        .mini-stat { background: rgba(0,0,0,0.2); padding: 10px; border-radius: 12px; border: 1px solid var(--border); }
-        .mini-stat span { display: block; font-size: 0.6rem; color: var(--text-dim); text-transform: uppercase; }
-        .mini-stat b { font-family: 'Orbitron'; font-size: 0.9rem; color: #fff; }
-
-        /* TABLES */
-        .player-row td { padding: 18px 15px; cursor: pointer; transition: 0.2s; }
-        .player-row:hover td { background: rgba(var(--primary-rgb), 0.1); }
-
-        /* NAVIGATION DOCK */
-        .nav-dock { 
-            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%); 
-            width: 90%; max-width: 400px; height: 70px; display: flex; 
-            justify-content: space-around; align-items: center; z-index: 2000;
+        /* --- NAVIGATION --- */
+        .dock {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 400px; height: 75px;
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: var(--glass);
+            border: 1px solid var(--border); border-radius: 25px;
+            display: flex; align-items: center; justify-content: space-around; z-index: 1000;
         }
 
-        @media (max-width: 768px) {
-            .brawlers-container { grid-template-columns: repeat(2, 1fr); }
-            .profile-grid { grid-template-columns: 1fr; }
+        .dock-btn { color: var(--text-dim); font-size: 1.2rem; cursor: pointer; transition: 0.3s; padding: 15px; }
+        .dock-btn.active { color: var(--primary); filter: drop-shadow(0 0 8px var(--primary-glow)); }
+
+        .tab-pane { display: none; animation: fadeIn 0.4s ease forwards; }
+        .tab-pane.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Shake animation for login error */
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; border-color: var(--accent) !important; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
+
+        @media (max-width: 500px) {
+            .brawlers-grid { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
 <body>
 
     <div id="auth-overlay">
-        <div class="login-card">
-            <h2 style="font-family:'Orbitron'; color:var(--primary); margin-bottom:10px;">HORIZON ACCESS</h2>
-            <input type="password" id="accessKey" class="key-input" placeholder="ACCESS KEY">
-            <button onclick="checkKey()" class="btn-auth" style="width:100%; padding:15px; background:var(--primary); border:none; border-radius:12px; font-family:'Orbitron'; font-weight:900; cursor:pointer;">DECRYPT</button>
+        <div class="login-box">
+            <h1 style="font-family:'Orbitron'; font-size: 1.2rem; letter-spacing: 4px;">SYSTEM <span style="color:var(--primary)">LOCKED</span></h1>
+            <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 5px;">ENTER MASTER ENCRYPTION KEY</p>
+            <input type="password" id="key-input" class="key-input" placeholder="••••••••">
+            <button onclick="validateAccess()" style="width:100%; padding:18px; border-radius:15px; border:none; background:var(--primary); color:#000; font-family:'Orbitron'; font-weight:900; cursor:pointer;">ACCESS TERMINAL</button>
         </div>
     </div>
 
-    <div id="main-content">
-        <nav>
-            <div style="font-family:'Orbitron'; font-weight:900; color:var(--primary);">HORIZON <span style="color:#fff">ULTRA</span></div>
-            <i class="fas fa-power-off" onclick="logout()" style="cursor:pointer;"></i>
-        </nav>
+    <div id="main-app">
+        <header>
+            <div class="logo">HORIZON <span>ULTRA</span></div>
+            <div onclick="logout()" style="opacity: 0.5; font-size: 0.8rem;"><i class="fas fa-power-off"></i></div>
+        </header>
 
         <main>
-            <section id="tab-dash" class="tab-content active">
-                <div class="stats-overview">
-                    <div class="stat-card">
-                        <small>MEMBROS ATIVOS</small>
-                        <b id="stat-members">--</b>
+            <section id="dash" class="tab-pane active">
+                <div class="grid-stats">
+                    <div class="card-stat">
+                        <small>Club Members</small>
+                        <h3 id="c-members">0</h3>
                     </div>
-                    <div class="stat-card">
-                        <small>TROFÉUS CLUBE</small>
-                        <b id="stat-trophies">--</b>
+                    <div class="card-stat">
+                        <small>Total Trophies</small>
+                        <h3 id="c-trophies">0</h3>
                     </div>
                 </div>
-                <div class="stat-card" style="width:100%; margin-bottom: 20px;">
-                    <p style="font-family:'Orbitron'; font-size:0.7rem; margin-bottom:15px;">DISTRIBUIÇÃO DE PODER NO CLUBE</p>
-                    <canvas id="mainChart" height="180"></canvas>
+
+                <div class="card-stat" style="margin-bottom: 25px;">
+                    <p style="font-family:'Orbitron'; font-size: 0.7rem; margin-bottom: 20px; color:var(--text-dim)">POWER DISTRIBUTION (TOP 10)</p>
+                    <canvas id="clubChart" height="220"></canvas>
                 </div>
             </section>
 
-            <section id="tab-clube" class="tab-content">
-                <input type="text" id="playerSearch" class="search-bar" placeholder="Filtrar por nome ou tag..." onkeyup="filterPlayers()" style="width:100%; padding:15px; border-radius:12px; background:var(--card); border:1px solid var(--border); color:#fff; margin-bottom:15px; outline:none;">
-                <div class="stat-card" style="padding:0; overflow:hidden;">
-                    <table style="width:100%; border-collapse:collapse;">
-                        <tbody id="playerList"></tbody>
-                    </table>
-                </div>
+            <section id="club" class="tab-pane">
+                <input type="text" id="search" placeholder="Search operator..." onkeyup="doSearch()" style="width:100%; padding:18px; background:var(--card-bg); border:1px solid var(--border); border-radius:18px; color:#fff; margin-bottom:20px; outline:none;">
+                <div id="player-list-container" style="display: flex; flex-direction: column; gap: 12px;">
+                    </div>
             </section>
         </main>
 
-        <div class="nav-dock stat-card" style="backdrop-filter: var(--glass);">
-            <div onclick="switchTab('tab-dash', this)" class="active" style="cursor:pointer; text-align:center; color:var(--primary); flex:1;"><i class="fas fa-th-large"></i></div>
-            <div onclick="switchTab('tab-clube', this)" style="cursor:pointer; text-align:center; color:var(--text-dim); flex:1;"><i class="fas fa-users"></i></div>
+        <nav class="dock">
+            <div class="dock-btn active" onclick="switchTab('dash', this)"><i class="fas fa-rocket"></i></div>
+            <div class="dock-btn" onclick="switchTab('club', this)"><i class="fas fa-user-shield"></i></div>
+        </nav>
+    </div>
+
+    <div id="p-modal" class="modal" onclick="if(event.target == this) closeModal()">
+        <div class="modal-content">
+            <div id="modal-body">
+                </div>
         </div>
     </div>
 
-    <div id="playerModal" class="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:5000; align-items:center; justify-content:center;">
-        <div class="modal-content stat-card" id="modalData"></div>
-    </div>
-
     <script>
-        const MASTER_KEY = "HORIZON-2025";
-        let clubData = [];
-        let mainChart = null;
+        const KEY = "HORIZON-2025";
+        let store = { club: [], chart: null };
 
-        function checkKey() {
-            if(document.getElementById('accessKey').value === MASTER_KEY) {
-                localStorage.setItem('horizon_auth', 'true');
-                unlockSite();
-            } else { alert("KEY INCORRETA"); }
+        // --- AUTH LOGIC ---
+        function validateAccess() {
+            const input = document.getElementById('key-input');
+            if(input.value === KEY) {
+                localStorage.setItem('auth', 'true');
+                startApp();
+            } else {
+                input.classList.add('shake');
+                setTimeout(() => input.classList.remove('shake'), 400);
+            }
         }
 
-        function unlockSite() {
-            document.body.classList.add('authenticated');
-            fetchClubData();
+        function logout() {
+            localStorage.removeItem('auth');
+            location.reload();
         }
 
-        function logout() { localStorage.removeItem('horizon_auth'); location.reload(); }
+        async function startApp() {
+            document.getElementById('auth-overlay').style.transform = 'translateY(-100%)';
+            document.getElementById('main-app').style.display = 'block';
+            setTimeout(() => document.getElementById('main-app').style.opacity = '1', 100);
+            await loadData();
+        }
 
-        async function fetchClubData() {
+        // --- DATA ENGINE ---
+        async function loadData() {
             try {
                 const res = await fetch('/api/stats');
                 const data = await res.json();
-                clubData = data.club.members;
-                renderClub();
-                renderMainChart();
-            } catch (e) { console.error(e); }
+                store.club = data.club.members.sort((a,b) => b.trophies - a.trophies);
+                renderHome();
+                renderList();
+            } catch(e) { console.error("API Link Failed", e); }
         }
 
-        function renderClub() {
-            const total = clubData.reduce((a, b) => a + b.trophies, 0);
-            document.getElementById('stat-members').innerText = clubData.length;
-            document.getElementById('stat-trophies').innerText = total.toLocaleString();
-
-            document.getElementById('playerList').innerHTML = clubData.sort((a,b) => b.trophies - a.trophies).map((p, i) => `
-                <tr class="player-row" onclick="openProfile('${p.tag}')" style="border-bottom:1px solid var(--border)">
-                    <td style="width:50px; text-align:center; opacity:0.5;">#${i+1}</td>
-                    <td>
-                        <div style="font-weight:800; font-size:0.9rem;">${p.name}</div>
-                        <div style="font-size:0.6rem; color:var(--text-dim)">${p.tag}</div>
-                    </td>
-                    <td style="text-align:right; font-family:'Orbitron'; color:var(--primary)">${p.trophies.toLocaleString()}</td>
-                </tr>
-            `).join('');
-        }
-
-        async function openProfile(tag) {
-            const modal = document.getElementById('playerModal');
-            modal.style.display = 'flex';
-            document.getElementById('modalData').innerHTML = '<div style="text-align:center; padding:50px;">SINCRONIZANDO COM API...</div>';
-
-            try {
-                const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
-                const p = await res.json();
-                
-                document.getElementById('modalData').innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h2 style="font-family:'Orbitron'; color:var(--primary);">${p.name}</h2>
-                        <i class="fas fa-times" onclick="closeModal()" style="cursor:pointer; font-size:1.2rem;"></i>
-                    </div>
-                    
-                    <div class="profile-grid">
-                        <div class="mini-stat"><span>Troféus Atuais</span><b>${p.trophies.toLocaleString()}</b></div>
-                        <div class="mini-stat"><span>Recorde</span><b>${p.highestTrophies.toLocaleString()}</b></div>
-                        <div class="mini-stat"><span>Vitórias 3v3</span><b>${p['3vs3Victories']}</b></div>
-                        <div class="mini-stat"><span>Nível Exp</span><b>${p.expLevel}</b></div>
-                    </div>
-
-                    <p style="font-family:'Orbitron'; font-size:0.7rem; color:var(--primary); margin:20px 0 10px;">TACTICAL ARSENAL (${p.brawlers.length})</p>
-                    
-                    <div class="brawlers-container">
-                        ${p.brawlers.sort((a,b) => b.trophies - a.trophies).map(b => {
-                            const percent = Math.min((b.trophies / 1250) * 100, 100);
-                            return `
-                                <div class="brawler-card">
-                                    <div class="brawler-rank">RANK ${b.rank}</div>
-                                    <div class="brawler-name">${b.name.toUpperCase()}</div>
-                                    <div class="brawler-stats">
-                                        <div style="display:flex; justify-content:space-between">
-                                            <span>LVL ${b.power}</span>
-                                            <span style="color:#ffd700;">🏆 ${b.trophies}</span>
-                                        </div>
-                                    </div>
-                                    <div class="progress-bar"><div class="progress-fill" style="width:${percent}%"></div></div>
-                                </div>
-                            `;
-                        }).join('')}
-                    </div>
-                `;
-            } catch (e) { closeModal(); }
-        }
-
-        function renderMainChart() {
-            const ctx = document.getElementById('mainChart').getContext('2d');
-            const sorted = [...clubData].sort((a,b) => b.trophies - a.trophies);
+        function renderHome() {
+            document.getElementById('c-members').innerText = store.club.length;
+            const total = store.club.reduce((a,b) => a + b.trophies, 0);
+            document.getElementById('c-trophies').innerText = total.toLocaleString();
             
-            if(mainChart) mainChart.destroy();
-            mainChart = new Chart(ctx, {
+            const ctx = document.getElementById('clubChart').getContext('2d');
+            if(store.chart) store.chart.destroy();
+            
+            const top10 = store.club.slice(0, 10);
+            store.chart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: sorted.slice(0, 10).map(p => p.name),
+                    labels: top10.map(p => p.name),
                     datasets: [{
-                        label: 'Troféus',
-                        data: sorted.slice(0, 10).map(p => p.trophies),
-                        backgroundColor: 'rgba(0, 242, 255, 0.2)',
-                        borderColor: '#00f2ff',
-                        borderWidth: 2,
-                        borderRadius: 5
+                        data: top10.map(p => p.trophies),
+                        backgroundColor: '#00f2ff',
+                        borderRadius: 8,
+                        barThickness: 12
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
+                    indexAxis: 'y',
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 10 } } },
-                        x: { grid: { display: false }, ticks: { color: '#64748b', font: { size: 9 } } }
+                        x: { display: false },
+                        y: { ticks: { color: '#94a3b8', font: { family: 'Orbitron', size: 9 } }, grid: { display: false } }
                     }
                 }
             });
         }
 
-        function switchTab(id, el) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.nav-dock div').forEach(d => { d.style.color = 'var(--text-dim)'; });
-            document.getElementById(id).classList.add('active');
-            el.style.color = 'var(--primary)';
+        function renderList() {
+            const container = document.getElementById('player-list-container');
+            container.innerHTML = store.club.map(p => `
+                <div class="card-stat" style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="openPlayer('${p.tag}')">
+                    <div>
+                        <div style="font-weight:800; font-size:0.9rem;">${p.name}</div>
+                        <div style="font-size:0.6rem; color:var(--text-dim)">${p.tag}</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-family:'Orbitron'; color:var(--primary); font-size:0.9rem;">${p.trophies}</div>
+                        <div style="font-size:0.5rem; color:var(--accent)">TROPHIES</div>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
-        
-        window.addEventListener('load', () => {
-            if(localStorage.getItem('horizon_auth') === 'true') unlockSite();
-            AOS.init();
-        });
+        async function openPlayer(tag) {
+            const modal = document.getElementById('p-modal');
+            const body = document.getElementById('modal-body');
+            modal.style.display = 'flex';
+            body.innerHTML = '<div style="padding:100px; text-align:center; font-family:Orbitron;">DECRYPTING...</div>';
 
-        function filterPlayers() {
-            const val = document.getElementById('playerSearch').value.toLowerCase();
-            document.querySelectorAll('.player-row').forEach(row => {
-                row.style.display = row.innerText.toLowerCase().includes(val) ? '' : 'none';
+            try {
+                const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
+                const p = await res.json();
+                
+                body.innerHTML = `
+                    <div style="text-align:center; margin-bottom:30px;">
+                        <h2 style="font-family:'Orbitron'; color:var(--primary); font-size:1.5rem;">${p.name}</h2>
+                        <span style="font-size:0.7rem; color:var(--text-dim)">${p.tag}</span>
+                    </div>
+
+                    <div class="grid-stats" style="margin-bottom:30px;">
+                        <div class="card-stat"><small>3v3 Wins</small><h3>${p['3vs3Victories']}</h3></div>
+                        <div class="card-stat"><small>Highest</small><h3>${p.highestTrophies}</h3></div>
+                    </div>
+
+                    <h4 style="font-family:'Orbitron'; font-size:0.7rem; margin-bottom:20px; color:var(--primary)">ARSENAL CONFIGURATION</h4>
+                    <div class="brawlers-grid">
+                        ${p.brawlers.sort((a,b) => b.trophies - a.trophies).map(b => `
+                            <div class="brawler-card">
+                                <div class="rank-badge">R${b.rank}</div>
+                                <span class="b-name">${b.name.toUpperCase()}</span>
+                                <div class="b-info"><span>POWER</span><b>${b.power}</b></div>
+                                <div class="b-info"><span>TROPHIES</span><b>${b.trophies}</b></div>
+                                <div class="power-bar">
+                                    <div class="power-fill" style="width:${(b.trophies/1250)*100}%"></div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch(e) { closeModal(); }
+        }
+
+        // --- UTILS ---
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            el.classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function doSearch() {
+            const q = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('#player-list-container .card-stat').forEach(card => {
+                card.style.display = card.innerText.toLowerCase().includes(q) ? 'flex' : 'none';
             });
         }
+
+        function closeModal() { document.getElementById('p-modal').style.display = 'none'; }
+
+        // Initial Auth Check
+        if(localStorage.getItem('auth') === 'true') startApp();
     </script>
 </body>
 </html>
