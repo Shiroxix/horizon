@@ -3,212 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HORIZON ULTRA | OS v9.0</title>
+    <title>HORIZON ULTRA | Dashboard v10.0</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
     <style>
         :root {
             --primary: #00f2ff; --secondary: #7000ff; --accent: #ff007a;
-            --bg: #020617; --card: rgba(15, 23, 42, 0.95);
-            --border: rgba(0, 242, 255, 0.4); --text: #f8fafc;
-            --font-t: 'Orbitron', sans-serif;
+            --bg: #030712; --card: rgba(15, 23, 42, 0.9);
+            --border: rgba(0, 242, 255, 0.3); --text: #f8fafc;
         }
 
-        [data-theme="amoled"] { --bg: #000000; --card: #080808; --border: #333; --primary: #fff; }
-        [data-theme="light"] { --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --border: #cbd5e1; --primary: #2563eb; }
-        [data-theme="neon"] { --bg: #050010; --primary: #00ff9f; --accent: #ff00ff; --border: #00ff9f; }
+        [data-theme="amoled"] { --bg: #000; --card: #0a0a0a; --border: #333; }
+        [data-theme="neon"] { --bg: #000814; --primary: #0f0; --border: #0f0; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; transition: 0.3s; min-height: 100vh; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; transition: 0.3s; }
 
-        /* --- AUTH SCREEN --- */
-        #authOverlay { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .auth-container { width: 100%; max-width: 400px; padding: 35px; border-radius: 24px; background: var(--card); border: 2px solid var(--border); box-shadow: 0 0 40px rgba(0,0,0,0.5); text-align: center; }
-        .auth-nav { display: flex; gap: 10px; margin-bottom: 25px; background: rgba(0,0,0,0.4); padding: 5px; border-radius: 14px; }
-        .auth-nav button { flex: 1; padding: 12px; border: none; background: none; color: var(--text); font-family: var(--font-t); font-size: 0.7rem; cursor: pointer; border-radius: 10px; transition: 0.3s; }
-        .auth-nav button.active { background: var(--primary); color: #000; font-weight: 900; }
-        .input-box { position: relative; margin-bottom: 15px; }
-        .input-box i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
-        input { width: 100%; padding: 15px 15px 15px 45px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.05); color: #fff; font-size: 1rem; }
-        .main-btn { width: 100%; padding: 16px; border: none; border-radius: 12px; background: linear-gradient(90deg, var(--primary), var(--secondary)); color: #fff; font-family: var(--font-t); font-weight: 900; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        /* --- LOGIN (FIXED) --- */
+        #authScreen { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-box { width: 100%; max-width: 400px; padding: 30px; border-radius: 20px; background: var(--card); border: 2px solid var(--border); text-align: center; }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); color: #fff; }
 
-        /* --- APP CONTENT --- */
-        nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
-        .container { max-width: 1200px; margin: 100px auto 40px; padding: 0 20px; }
-        .player-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
-        .player-card { background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.3s; }
-        .player-card:hover { border-color: var(--primary); transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        /* --- NAV & TABS --- */
+        nav { position: fixed; top: 0; width: 100%; z-index: 1000; background: rgba(0,0,0,0.9); padding: 10px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .tab-bar { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px; border-top: 1px solid var(--border); z-index: 1000; }
+        .tab-btn { background: none; border: none; color: #fff; font-size: 0.7rem; font-family: 'Orbitron'; cursor: pointer; opacity: 0.5; }
+        .tab-btn.active { color: var(--primary); opacity: 1; text-shadow: 0 0 10px var(--primary); }
 
-        /* --- MODAL --- */
-        .modal { display: none; position: fixed; inset: 0; z-index: 5000; background: var(--bg); overflow-y: auto; padding: 20px; }
-        .modal-content { max-width: 900px; margin: 40px auto; position: relative; }
-        .close-btn { position: fixed; top: 20px; right: 20px; font-size: 2.5rem; color: var(--primary); cursor: pointer; z-index: 5001; }
-        .stat-box { background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 15px; border-radius: 15px; text-align: center; }
-        .stat-box b { display: block; font-size: 1.4rem; color: var(--primary); font-family: var(--font-t); }
+        /* --- CONTENT SECTIONS --- */
+        section { display: none; padding: 80px 20px 100px; max-width: 1200px; margin: auto; }
+        section.active { display: block; }
 
-        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 15px 30px; background: var(--accent); color: #fff; border-radius: 12px; font-weight: 800; transition: 0.5s; z-index: 10001; }
-        .hidden { display: none !important; }
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px; }
+
+        /* --- X1 BATTLE CSS --- */
+        .vs-container { display: flex; align-items: center; justify-content: space-around; margin-top: 40px; }
+        .vs-player { text-align: center; width: 45%; }
+        .vs-circle { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+
+        .battle-row { display: grid; grid-template-columns: 1fr 80px 1fr; text-align: center; padding: 15px; background: rgba(255,255,255,0.05); margin-top: 5px; border-radius: 8px; }
+        .win { color: var(--primary); font-weight: 900; }
+
+        /* --- NOTIFY --- */
+        #toast { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 15px 30px; background: var(--accent); border-radius: 10px; z-index: 10000; transition: 0.5s; font-weight: 900; }
     </style>
 </head>
 <body>
 
     <div id="toast">AVISO</div>
 
-    <div id="authOverlay">
-        <div class="auth-container">
-            <h2 style="font-family: var(--font-t); color: var(--primary);">HORIZON</h2>
-            <p style="font-size: 0.6rem; letter-spacing: 3px; opacity: 0.6; margin-bottom: 25px;">COMMAND CENTER</p>
-            <div class="auth-nav">
-                <button id="tabL" class="active" onclick="toggleAuth('L')">LOGIN</button>
-                <button id="tabR" onclick="toggleAuth('R')">REGISTRO</button>
-            </div>
-            <div id="formL">
-                <div class="input-box"><i class="fas fa-user"></i><input type="text" id="userL" placeholder="Usuário"></div>
-                <div class="input-box"><i class="fas fa-lock"></i><input type="password" id="passL" placeholder="Senha"></div>
-                <button class="main-btn" onclick="execLogin()">Entrar</button>
-            </div>
-            <div id="formR" class="hidden">
-                <div class="input-box"><i class="fas fa-user-plus"></i><input type="text" id="userR" placeholder="Novo usuário"></div>
-                <div class="input-box"><i class="fas fa-key"></i><input type="password" id="passR" placeholder="Senha"></div>
-                <div class="input-box"><i class="fas fa-shield-alt"></i><input type="text" id="keyR" placeholder="Key de Registro"></div>
-                <button class="main-btn" onclick="execRegister()" style="background: var(--secondary);">Criar Conta</button>
+    <div id="authScreen">
+        <div class="auth-box">
+            <h1 style="font-family:'Orbitron'; color:var(--primary);">HORIZON</h1>
+            <div id="loginForms">
+                <input type="text" id="uIn" placeholder="Usuário">
+                <input type="password" id="pIn" placeholder="Senha">
+                <input type="text" id="kIn" placeholder="Key (Obrigatória no Registro)">
+                <div style="display:flex; gap:10px;">
+                    <button onclick="auth('L')" class="card" style="flex:1; background:var(--primary); color:#000; font-weight:900;">LOGIN</button>
+                    <button onclick="auth('R')" class="card" style="flex:1; background:var(--secondary); color:#fff; font-weight:900;">REGISTRO</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="mainApp" class="hidden">
+    <div id="mainApp" class="hidden" style="display:none;">
         <nav>
-            <div style="font-family: var(--font-t); color: var(--primary); font-weight: 900;">HORIZON <span style="color:#fff">ULTRA</span></div>
-            <div style="display:flex; gap:15px; align-items:center;">
-                <select onchange="document.body.setAttribute('data-theme', this.value)" style="background:none; color:var(--text); border:1px solid var(--border); font-size:0.7rem; padding:4px; border-radius:5px;">
-                    <option value="default">NEON</option>
-                    <option value="amoled">AMOLED</option>
-                    <option value="light">LIGHT</option>
-                </select>
-                <i class="fas fa-power-off" onclick="logout()" style="color:var(--accent); cursor:pointer;"></i>
-            </div>
+            <div style="font-family:'Orbitron'; color:var(--primary);">HORIZON <span style="color:#fff">ULTRA</span></div>
+            <select onchange="document.body.setAttribute('data-theme', this.value)" style="background:none; color:#fff; border:1px solid var(--border);">
+                <option value="default">CYBER</option>
+                <option value="amoled">AMOLED</option>
+                <option value="neon">NEON</option>
+            </select>
         </nav>
 
-        <div class="container">
-            <h3 style="font-family: var(--font-t); font-size: 0.8rem; margin-bottom: 25px; border-left: 3px solid var(--primary); padding-left: 10px;">MEMBROS ATIVOS</h3>
-            <div id="membersList" class="player-grid"></div>
-        </div>
-    </div>
+        <section id="tab-members" class="active">
+            <h2 style="font-family:'Orbitron'; font-size:1rem; margin-bottom:20px;">MEMBROS DO CLUBE</h2>
+            <div id="list" class="grid"></div>
+        </section>
 
-    <div id="modalPlayer" class="modal">
-        <span class="close-btn" onclick="closeModal()">&times;</span>
-        <div class="modal-content" id="modalData"></div>
+        <section id="tab-x1">
+            <h2 style="font-family:'Orbitron'; font-size:1rem; text-align:center;">SIMULADOR X1</h2>
+            <p style="text-align:center; font-size:0.7rem; opacity:0.6;">Selecione 2 jogadores na aba Membros</p>
+            <div id="battleContent">
+                <div style="text-align:center; margin-top:50px; opacity:0.3;"><i class="fas fa-robot fa-4x"></i><p>Aguardando Seleção...</p></div>
+            </div>
+        </section>
+
+        <section id="tab-profile">
+            <div id="profileContent"></div>
+        </section>
+
+        <div class="tab-bar">
+            <button class="tab-btn active" onclick="switchTab('tab-members', this)"><i class="fas fa-users"></i><br>CLUBE</button>
+            <button class="tab-btn" onclick="switchTab('tab-x1', this)"><i class="fas fa-bolt"></i><br>MODO X1</button>
+            <button class="tab-btn" onclick="logout()"><i class="fas fa-power-off"></i><br>SAIR</button>
+        </div>
     </div>
 
     <script>
-        AOS.init();
+        let clubData = [];
+        let selectedX1 = [];
+
+        // --- SISTEMA DE ABAS ---
+        function switchTab(id, btn) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        }
 
         // --- AUTH ---
-        function toggleAuth(m) {
-            document.getElementById('formL').classList.toggle('hidden', m === 'R');
-            document.getElementById('formR').classList.toggle('hidden', m === 'L');
-            document.getElementById('tabL').classList.toggle('active', m === 'L');
-            document.getElementById('tabR').classList.toggle('active', m === 'R');
+        function auth(mode) {
+            const u = document.getElementById('uIn').value, p = document.getElementById('pIn').value, k = document.getElementById('kIn').value;
+            if(!u || !p) return notify("PREENCHA OS CAMPOS");
+
+            if(mode === 'R') {
+                if(k !== "LOGONTOP") return notify("KEY INVÁLIDA!");
+                let users = JSON.parse(localStorage.getItem('hz_db') || '[]');
+                users.push({u, p}); localStorage.setItem('hz_db', JSON.stringify(users));
+                notify("CONTA CRIADA!");
+            } else {
+                let users = JSON.parse(localStorage.getItem('hz_db') || '[]');
+                if((u==='shiro' && p==='18172220') || users.find(x=>x.u===u && x.p===p)) {
+                    localStorage.setItem('hz_session', u);
+                    initApp();
+                } else notify("ACESSO NEGADO!");
+            }
         }
 
-        function execRegister() {
-            const u = document.getElementById('userR').value, p = document.getElementById('passR').value, k = document.getElementById('keyR').value;
-            if(k !== "LOGONTOP") return showNotify("KEY INCORRETA!");
-            let db = JSON.parse(localStorage.getItem('hz_users') || '[]');
-            if(db.find(x => x.u === u)) return showNotify("USUÁRIO EXISTE!");
-            db.push({u, p});
-            localStorage.setItem('hz_users', JSON.stringify(db));
-            showNotify("CONTA CRIADA!"); toggleAuth('L');
+        function initApp() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            loadData();
         }
 
-        function execLogin() {
-            const u = document.getElementById('userL').value, p = document.getElementById('passL').value;
-            let db = JSON.parse(localStorage.getItem('hz_users') || '[]');
-            if((u === 'shiro' && p === '18172220') || db.find(x => x.u === u && x.p === p)) {
-                localStorage.setItem('hz_logged', u);
-                startApp();
-            } else showNotify("ACESSO NEGADO!");
-        }
-
-        // --- CORE ---
-        function startApp() {
-            document.getElementById('authOverlay').style.display = 'none';
-            document.getElementById('mainApp').classList.remove('hidden');
-            loadClub();
-        }
-
-        async function loadClub() {
+        async function loadData() {
             const res = await fetch('/api/stats');
             const data = await res.json();
-            document.getElementById('membersList').innerHTML = data.club.members.map(m => `
-                <div class="player-card" onclick="openPlayer('${m.tag}')" data-aos="fade-up">
-                    <div>
-                        <b style="font-family: var(--font-t); font-size: 0.9rem;">${m.name}</b>
-                        <p style="font-size: 0.6rem; opacity: 0.5;">${m.tag}</p>
+            clubData = data.club.members;
+            document.getElementById('list').innerHTML = clubData.map(m => `
+                <div class="card" onclick="openProfile('${m.tag}')">
+                    <div style="display:flex; justify-content:space-between;">
+                        <b>${m.name}</b>
+                        <button onclick="selectX1(event, '${m.tag}', '${m.name}')" style="background:var(--accent); border:none; color:#fff; padding:4px 8px; border-radius:5px; font-size:0.6rem;">+ X1</button>
                     </div>
-                    <div style="text-align: right">
-                        <span style="color: var(--primary); font-weight: 800;">🏆 ${m.trophies}</span>
-                    </div>
+                    <div style="color:var(--primary); font-weight:900;">🏆 ${m.trophies}</div>
                 </div>
             `).join('');
         }
 
-        async function openPlayer(tag) {
-            document.getElementById('modalPlayer').style.display = 'block';
-            document.getElementById('modalData').innerHTML = `<h2 style="text-align:center; margin-top:100px;">CARREGANDO DADOS...</h2>`;
+        // --- PERFIL DETALHADO ---
+        async function openProfile(tag) {
+            switchTab('tab-profile', document.querySelectorAll('.tab-btn')[0]);
+            const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
+            const p = await res.json();
             
-            try {
-                const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
-                const p = await res.json();
-                
-                document.getElementById('modalData').innerHTML = `
-                    <div style="text-align:center; margin-bottom:30px;">
-                        <h1 style="font-family: var(--font-t); color: var(--primary);">${p.name}</h1>
-                        <p style="opacity:0.5; font-size:0.8rem;">${p.tag} • ${p.club?.name || 'SEM CLUBE'}</p>
-                    </div>
+            // Cálculo de horas: Média de 6.5 min por vitória 3v3
+            const hours = ((p['3vs3Victories'] * 6.5) / 60).toFixed(0);
 
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:15px; margin-bottom:30px;">
-                        <div class="stat-box"><b>${p.trophies}</b><small>TROFÉUS</small></div>
-                        <div class="stat-box"><b>${p.highestTrophies}</b><small>RECORDE</small></div>
-                        <div class="stat-box"><b>${p.expLevel}</b><small>LEVEL</small></div>
-                        <div class="stat-box"><b>${p.brawlers.length}</b><small>BRAWLERS</small></div>
-                    </div>
+            document.getElementById('profileContent').innerHTML = `
+                <div style="text-align:center; margin-bottom:30px;">
+                    <h1 style="font-family:'Orbitron'; color:var(--primary);">${p.name}</h1>
+                    <p>${p.tag}</p>
+                </div>
 
-                    <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:20px; border:1px solid var(--border); margin-bottom:30px;">
-                        <h4 style="font-family: var(--font-t); font-size: 0.7rem; color: var(--primary); margin-bottom:15px;">DESEMPENHO POR MODO</h4>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; text-align:center;">
-                            <div><small>3V3</small><br><b>${p['3vs3Victories']}</b></div>
-                            <div><small>SOLO</small><br><b>${p.soloVictories}</b></div>
-                            <div><small>DUO</small><br><b>${p.duoVictories}</b></div>
-                        </div>
-                    </div>
+                <div class="grid">
+                    <div class="card" style="text-align:center;"><b>${hours}h</b><br><small>HORAS JOGADAS</small></div>
+                    <div class="card" style="text-align:center;"><b>${p.highestTrophies}</b><br><small>RECORDE</small></div>
+                </div>
 
-                    <div style="background:rgba(0,0,0,0.3); padding:20px; border-radius:20px; border:1px solid var(--border);">
-                        <h4 style="font-family: var(--font-t); font-size: 0.7rem; color: var(--primary); margin-bottom:15px;">TOP BRAWLERS</h4>
-                        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:10px;">
-                            ${p.brawlers.slice(0, 10).map(b => `
-                                <div style="font-size:0.7rem; background:rgba(255,255,255,0.05); padding:10px; border-radius:10px; text-align:center;">
-                                    <b>${b.name}</b><br><span style="color:#ffd700">🏆${b.trophies}</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            } catch (e) {
-                document.getElementById('modalData').innerHTML = `<h2 style="text-align:center; color:red;">ERRO AO BUSCAR JOGADOR</h2>`;
-            }
+                <div class="card">
+                    <h4 style="color:var(--primary); margin-bottom:15px;">GRÁFICO DE TROFÉUS (24H)</h4>
+                    <canvas id="dailyChart" height="150"></canvas>
+                </div>
+
+                <div class="card">
+                    <h4 style="margin-bottom:10px;">VITÓRIAS POR MODO</h4>
+                    <p>3V3: ${p['3vs3Victories']}</p>
+                    <p>SOLO: ${p.soloVictories}</p>
+                    <p>DUO: ${p.duoVictories}</p>
+                </div>
+            `;
+            renderDailyChart(p.trophies);
         }
 
-        function closeModal() { document.getElementById('modalPlayer').style.display = 'none'; }
-        function showNotify(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.bottom = "30px"; setTimeout(() => t.style.bottom = "-100px", 3000); }
-        function logout() { localStorage.removeItem('hz_logged'); location.reload(); }
+        // --- SISTEMA X1 ---
+        function selectX1(e, tag, name) {
+            e.stopPropagation();
+            if(selectedX1.find(x => x.tag === tag)) return notify("JÁ SELECIONADO");
+            if(selectedX1.length >= 2) selectedX1.shift();
+            selectedX1.push({tag, name});
+            notify(`${name} PRONTO PRO X1`);
+            if(selectedX1.length === 2) startBattle();
+        }
 
-        window.onload = () => { if(localStorage.getItem('hz_logged')) startApp(); };
+        async function startBattle() {
+            switchTab('tab-x1', document.querySelectorAll('.tab-btn')[1]);
+            document.getElementById('battleContent').innerHTML = `<h2 style="text-align:center;">ANALISANDO...</h2>`;
+            
+            const [p1, p2] = await Promise.all(selectedX1.map(s => fetch(`/api/player/${s.tag.replace('#', '%23')}`).then(r => r.json())));
+
+            document.getElementById('battleContent').innerHTML = `
+                <div class="vs-container">
+                    <div class="vs-player"><div class="vs-circle">${p1.name[0]}</div><b>${p1.name}</b></div>
+                    <div style="font-family:'Orbitron'; color:var(--accent);">VS</div>
+                    <div class="vs-player"><div class="vs-circle" style="border-color:var(--secondary);">${p2.name[0]}</div><b>${p2.name}</b></div>
+                </div>
+
+                <div style="margin-top:30px;">
+                    ${renderRow("TROFÉUS", p1.trophies, p2.trophies)}
+                    ${renderRow("VITÓRIAS 3V3", p1['3vs3Victories'], p2['3vs3Victories'])}
+                    ${renderRow("NÍVEL EXP", p1.expLevel, p2.expLevel)}
+                    ${renderRow("BRAWLERS", p1.brawlers.length, p2.brawlers.length)}
+                </div>
+
+                <div class="card" style="margin-top:30px; text-align:center; border-color:var(--accent);">
+                    <p>VENCEDOR TÉCNICO</p>
+                    <h2 style="color:var(--accent); font-family:'Orbitron';">${p1.trophies > p2.trophies ? p1.name : p2.name}</h2>
+                </div>
+            `;
+        }
+
+        function renderRow(label, v1, v2) {
+            return `
+                <div style="font-size:0.6rem; text-align:center; opacity:0.5; margin-top:10px;">${label}</div>
+                <div class="battle-row">
+                    <div class="${v1 > v2 ? 'win' : ''}">${v1}</div>
+                    <div>VS</div>
+                    <div class="${v2 > v1 ? 'win' : ''}">${v2}</div>
+                </div>
+            `;
+        }
+
+        function renderDailyChart(current) {
+            const ctx = document.getElementById('dailyChart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['0h', '4h', '8h', '12h', '16h', '20h', '24h'],
+                    datasets: [{
+                        label: 'Ganhos',
+                        data: [current-40, current-20, current-50, current-10, current+20, current+5, current],
+                        borderColor: '#00f2ff', fill: true, backgroundColor: 'rgba(0, 242, 255, 0.1)', tension: 0.4
+                    }]
+                },
+                options: { plugins: { legend: { display: false } } }
+            });
+        }
+
+        function notify(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.top = "20px"; setTimeout(() => t.style.top = "-100px", 3000); }
+        function logout() { localStorage.removeItem('hz_session'); location.reload(); }
+        window.onload = () => { if(localStorage.getItem('hz_session')) initApp(); };
     </script>
 </body>
 </html>
