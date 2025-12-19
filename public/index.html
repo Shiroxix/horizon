@@ -75,10 +75,26 @@
         .rank-crown { animation: float 3s ease-in-out infinite; margin-left: 6px; font-size: 0.9rem; }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-3px); } 100% { transform: translateY(0px); } }
 
-        /* MEDALS SYSTEM */
-        .medal-box { background: var(--input-bg); border: 1px solid var(--border); padding: 8px; border-radius: 10px; text-align: center; }
-        .medal-box i { font-size: 1.2rem; margin-bottom: 5px; display: block; }
-        .medal-box span { font-size: 0.5rem; font-weight: 800; text-transform: uppercase; color: #94a3b8; }
+        /* --- REDESIGNED MEDALS SYSTEM --- */
+        .medal-box { 
+            background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%); 
+            padding: 10px 5px; 
+            text-align: center; 
+            transition: 0.3s;
+        }
+        .medal-box i { 
+            font-size: 1.6rem; 
+            margin-bottom: 8px; 
+            display: block; 
+            filter: drop-shadow(0 0 8px currentColor);
+        }
+        .medal-box span { 
+            font-size: 0.55rem; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            color: #94a3b8; 
+            letter-spacing: 1px;
+        }
 
         /* --- MODAL --- */
         .modal { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); overflow-y: auto; }
@@ -97,6 +113,37 @@
         .vs-circle { background: var(--accent); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.8rem; margin: 0 auto -20px auto; position: relative; z-index: 2; border: 4px solid var(--bg); }
         .compare-bar-container { background: var(--input-bg); height: 12px; border-radius: 10px; overflow: hidden; display: flex; margin: 10px 0; }
         .compare-bar { height: 100%; transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+        /* --- REDESIGNED ACHIEVEMENTS SYSTEM --- */
+        .achievement-row { 
+            background: transparent; 
+            padding: 15px 0; 
+            margin-bottom: 5px; 
+            border-bottom: 1px solid var(--border); 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        .ach-icon { 
+            width: 45px; 
+            height: 45px; 
+            border-radius: 50%; 
+            background: rgba(255,255,255,0.03); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.2rem; 
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+        .ach-info { flex-grow: 1; }
+        .ach-progress-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; margin-top: 8px; overflow: hidden; }
+        .ach-progress-fill { height: 100%; background: var(--primary); border-radius: 10px; transition: 1s ease-out; }
+
+        .profile-tabs { display: flex; gap: 10px; margin: 20px 0; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .p-tab { padding: 8px 16px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; cursor: pointer; color: #64748b; transition: 0.3s; }
+        .p-tab.active { background: var(--primary); color: white; }
 
         .hidden { display: none !important; }
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 12px; background: var(--accent); color: white; z-index: 10000; display: none; font-weight: 700; }
@@ -142,10 +189,10 @@
         </nav>
         <div class="main-container">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                <h2 style="margin-bottom: 0;">Club Ranking</h2>
+                <h2 style="margin-bottom: 0;">Club Roster</h2>
                 <span id="githubTimer" class="last-update-tag">Loading update info...</span>
             </div>
-            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Divisão por troféus</p>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 25px;">Divisão hierárquica por troféus</p>
             <div id="clubGrid"></div>
         </div>
     </div>
@@ -206,6 +253,14 @@
             document.getElementById('box-reg').classList.toggle('hidden', isLogin);
             document.getElementById('t-login').classList.toggle('active', isLogin);
             document.getElementById('t-reg').classList.toggle('active', !isLogin);
+        }
+
+        function switchProfileTab(tab) {
+            document.querySelectorAll('.p-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('profile-main').classList.toggle('hidden', tab !== 'main');
+            document.getElementById('profile-achievements').classList.toggle('hidden', tab !== 'ach');
         }
 
         function doLogin() {
@@ -275,53 +330,90 @@
                 currentPlayerBrawlers = p.brawlers;
                 const diff = getApiDiff(p.tag, p.trophies);
 
-                // LOGICA DE MEDALHAS
                 const bestBrawler = p.brawlers.sort((a,b)=>b.trophies-a.trophies)[0];
                 const isSniper = ["PIPER", "BROCK", "BELLE", "MANDY"].includes(bestBrawler.name.toUpperCase());
                 const isTank = ["BULL", "EL PRIMO", "ROSA", "FRANK", "JACKY"].includes(bestBrawler.name.toUpperCase());
 
+                // Calculo de conquistas
+                const achs = [
+                    { name: 'Mestre de Troféus', cur: p.trophies, goal: 80000, icon: 'fa-trophy', color: '#fbbf24' },
+                    { name: 'Guerreiro 3v3', cur: p['3vs3Victories'], goal: 20000, icon: 'fa-users', color: '#3b82f6' },
+                    { name: 'Colecionador', cur: p.brawlers.length, goal: 84, icon: 'fa-box-open', color: '#a855f7' },
+                    { name: 'Solo Carry', cur: p.soloVictories, goal: 5000, icon: 'fa-user', color: '#ef4444' }
+                ];
+
                 document.getElementById('mContent').innerHTML = `
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:25px;">
                         <i class="fas fa-arrow-left" onclick="closeModal()" style="font-size:1.2rem;"></i>
-                        <span style="font-weight:800; font-size:0.7rem; opacity:0.5;">LIVE ANALYTICS</span>
+                        <span style="font-weight:800; font-size:0.7rem; opacity:0.5;">PLAYER INTELLIGENCE</span>
                         <i class="fas fa-sync" onclick="openProfile('${tag}')"></i>
                     </div>
+                    
                     <h1 style="font-size:2.2rem; margin-bottom:5px;">${p.name}</h1>
                     <span style="background:var(--primary); color:white; padding:3px 10px; border-radius:6px; font-size:0.7rem; font-weight:700;">${p.tag}</span>
                     
-                    <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:20px;">
-                        <div class="medal-box" style="opacity:${isSniper ? '1':'0.2'}"><i class="fas fa-crosshairs" style="color:#60a5fa"></i><span>Sniper</span></div>
-                        <div class="medal-box" style="opacity:${isTank ? '1':'0.2'}"><i class="fas fa-shield-alt" style="color:#f87171"></i><span>Tanque</span></div>
-                        <div class="medal-box" style="opacity:${p['3vs3Victories'] > 10000 ? '1':'0.2'}"><i class="fas fa-users" style="color:#4ad3ff"></i><span>Mestre 3v3</span></div>
-                        <div class="medal-box" style="opacity:${p.trophies >= 60000 ? '1':'0.2'}"><i class="fas fa-medal" style="color:var(--gold)"></i><span>Elite</span></div>
+                    <div class="profile-tabs">
+                        <div class="p-tab active" onclick="switchProfileTab('main')">Visão Geral</div>
+                        <div class="p-tab" onclick="switchProfileTab('ach')">Conquistas</div>
                     </div>
 
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Variação API</div>
-                            <div style="font-size:1.1rem; font-weight:800; color:${diff >= 0 ? '#22c55e' : '#ef4444'}">${diff >= 0 ? '+' : ''}${diff} 🏆</div>
+                    <div id="profile-main">
+                        <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:10px;">
+                            <div class="medal-box" style="color:#60a5fa; opacity:${isSniper ? '1':'0.2'}"><i class="fas fa-crosshairs"></i><span>Sniper</span></div>
+                            <div class="medal-box" style="color:#f87171; opacity:${isTank ? '1':'0.2'}"><i class="fas fa-shield-alt"></i><span>Tanque</span></div>
+                            <div class="medal-box" style="color:#4ad3ff; opacity:${p['3vs3Victories'] > 10000 ? '1':'0.2'}"><i class="fas fa-users"></i><span>3v3 King</span></div>
+                            <div class="medal-box" style="color:var(--gold); opacity:${p.trophies >= 60000 ? '1':'0.2'}"><i class="fas fa-medal"></i><span>Elite</span></div>
                         </div>
-                        <div class="stat-box">
-                            <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Total Atual</div>
-                            <div style="font-size:1.1rem; font-weight:800; color:var(--primary)">${p.trophies} 🏆</div>
-                        </div>
-                    </div>
 
-                    <div class="stat-box" style="margin-bottom:20px;"><canvas id="profileChart" height="150"></canvas></div>
-
-                    <button class="btn-action btn-whatsapp" onclick="shareStats('${p.name}', '${p.trophies}', '${diff}')">
-                        <i class="fab fa-whatsapp"></i> COMPARTILHAR
-                    </button>
-
-                    <h3 style="margin:25px 0 15px; font-size:1rem;">Arsenal Completo (${p.brawlers.length})</h3>
-                    <div class="brawler-grid">
-                        ${p.brawlers.sort((a,b)=>b.trophies-a.trophies).map((b, idx) => `
-                            <div class="stat-box" style="padding:10px; cursor:pointer;" onclick="openBrawlerDetails(${idx})">
-                                <div style="font-size:0.75rem; font-weight:700;">${b.name}</div>
-                                <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b.trophies}</div>
-                                <div style="font-size:0.6rem; opacity:0.5; margin-top:4px;">Poder ${b.power}</div>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Variação API</div>
+                                <div style="font-size:1.1rem; font-weight:800; color:${diff >= 0 ? '#22c55e' : '#ef4444'}">${diff >= 0 ? '+' : ''}${diff} 🏆</div>
                             </div>
-                        `).join('')}
+                            <div class="stat-box">
+                                <div style="font-size:0.6rem; color:#94a3b8; text-transform:uppercase;">Total Atual</div>
+                                <div style="font-size:1.1rem; font-weight:800; color:var(--primary)">${p.trophies} 🏆</div>
+                            </div>
+                        </div>
+
+                        <div class="stat-box" style="margin-bottom:20px;"><canvas id="profileChart" height="150"></canvas></div>
+
+                        <button class="btn-action btn-whatsapp" onclick="shareStats('${p.name}', '${p.trophies}', '${diff}')">
+                            <i class="fab fa-whatsapp"></i> COMPARTILHAR
+                        </button>
+
+                        <h3 style="margin:25px 0 15px; font-size:1rem;">Arsenal Completo (${p.brawlers.length})</h3>
+                        <div class="brawler-grid">
+                            ${p.brawlers.sort((a,b)=>b.trophies-a.trophies).map((b, idx) => `
+                                <div class="stat-box" style="padding:10px; cursor:pointer;" onclick="openBrawlerDetails(${idx})">
+                                    <div style="font-size:0.75rem; font-weight:700;">${b.name}</div>
+                                    <div style="color:#fbbf24; font-size:0.8rem;">🏆 ${b.trophies}</div>
+                                    <div style="font-size:0.6rem; opacity:0.5; margin-top:4px;">Poder ${b.power}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div id="profile-achievements" class="hidden">
+                        <h3 style="margin-bottom:20px; font-size: 0.9rem; opacity: 0.7; letter-spacing: 1px;">MILESTONES DO OPERATIVO</h3>
+                        ${achs.map(a => {
+                            const perc = Math.min((a.cur / a.goal) * 100, 100);
+                            return `
+                            <div class="achievement-row">
+                                <div class="ach-icon" style="color:${a.color}; border-color:${a.color}44"><i class="fas ${a.icon}"></i></div>
+                                <div class="ach-info">
+                                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; margin-bottom:4px;">
+                                        <span>${a.name}</span>
+                                        <span style="color:${a.color}">${Math.floor(perc)}%</span>
+                                    </div>
+                                    <div style="font-size:0.65rem; color:#64748b;">${a.cur.toLocaleString()} / ${a.goal.toLocaleString()}</div>
+                                    <div class="ach-progress-bg">
+                                        <div class="ach-progress-fill" style="width:${perc}%; background:${a.color}; box-shadow: 0 0 10px ${a.color}66"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
                     </div>
                 `;
 
@@ -335,6 +427,11 @@
                 });
 
             } catch(e) { showToast("ERRO AO CARREGAR PERFIL"); }
+        }
+
+        function closeModal() {
+            document.getElementById('playerModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
         function openX1() { document.getElementById('x1Modal').style.display = 'block'; }
@@ -419,19 +516,28 @@
         }
 
         function closeBrawlerPopup() { document.getElementById('brawlerPopup').style.display = 'none'; }
+        
         function shareStats(name, total, diff) {
             const status = diff >= 0 ? `+${diff} 📈` : `${diff} 📉`;
             const msg = `📊 *HORIZON LIVE*\n👤 *${name}*\n🏆 *Total:* ${total}\n⚡ *Variação:* ${status}`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
         }
+
+        function logout() {
+            localStorage.removeItem('hz_session');
+            location.reload();
+        }
+
         function showToast(m) {
             const t = document.getElementById('toast');
-            t.innerText = m; t.style.display = "block";
-            setTimeout(() => t.style.display = "none", 3000);
+            t.innerText = m; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
         }
-        function closeModal() { document.getElementById('playerModal').style.display = 'none'; document.body.style.overflow = 'auto'; }
-        function logout() { localStorage.removeItem('hz_session'); location.reload(); }
-        window.onload = () => { if(localStorage.getItem('hz_session')) loginOk(localStorage.getItem('hz_session')); };
+
+        window.onload = () => {
+            const session = localStorage.getItem('hz_session');
+            if(session) loginOk(session);
+        }
     </script>
 </body>
 </html>
