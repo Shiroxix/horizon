@@ -2,8 +2,8 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Ultra | Apex Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Horizon Ultra | Mobile Apex</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Orbitron:wght@700;900&family=Inter:wght@300;400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,108 +11,106 @@
 
     <style>
         :root {
-            --primary: #00f2ff; --primary-glow: rgba(0, 242, 255, 0.4);
-            --accent: #bc13fe; --bg: #020617;
-            --card: rgba(15, 23, 42, 0.8); --text: #f8fafc;
+            --primary: #00f2ff; --accent: #bc13fe; --bg: #020617;
+            --card: rgba(15, 23, 42, 0.9); --text: #f8fafc;
             --border: rgba(255, 255, 255, 0.1);
         }
 
-        /* Temas */
-        [data-theme="blood"] { --primary: #ff4655; --accent: #990000; --bg: #0a0000; }
-        [data-theme="emerald"] { --primary: #00ff88; --accent: #006633; --bg: #000a05; }
-        [data-theme="gold"] { --primary: #ffd700; --accent: #b8860b; --bg: #0a0a00; }
+        [data-theme="blood"] { --primary: #ff4655; --bg: #0a0000; }
+        [data-theme="emerald"] { --primary: #00ff88; --bg: #000a05; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; transition: 0.5s; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
         
-        .glass { background: var(--card); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 15px; }
+        .glass { background: var(--card); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 12px; }
 
-        /* Auth */
-        #authScreen { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; align-items: center; justify-content: center; }
-        .auth-card { width: 90%; max-width: 400px; padding: 40px; border: 1px solid var(--primary); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--border); color: #fff; border-radius: 5px; }
+        /* Login Responsivo */
+        #authScreen { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .auth-card { width: 100%; max-width: 400px; padding: 30px; border: 1px solid var(--primary); }
 
-        /* Nav */
-        nav { position: fixed; top: 0; width: 100%; padding: 20px 5%; display: flex; justify-content: space-between; z-index: 1000; background: rgba(0,0,0,0.8); }
+        /* Navbar Mobile */
+        nav { position: fixed; top: 0; width: 100%; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 1000; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--border); }
+        .logo { font-family: 'Orbitron'; font-size: 1.1rem; color: var(--primary); }
+
+        /* Container Principal */
+        .container { width: 100%; max-width: 1400px; margin: 80px auto 20px; padding: 15px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); gap: 15px; }
         
-        .container { max-width: 1400px; margin: 100px auto; padding: 20px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        @media (min-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+        }
+
+        /* Card Jogador */
+        .p-card { padding: 20px; position: relative; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .vs-btn { padding: 8px 12px; background: var(--accent); color: #fff; border: none; border-radius: 6px; font-family: 'Orbitron'; font-size: 0.7rem; }
+
+        /* Modal Fullscreen Mobile */
+        .modal { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 5000; overflow-y: auto; }
+        .modal-content { width: 100%; min-height: 100vh; padding: 20px; padding-top: 60px; }
+        .close-modal { position: fixed; top: 15px; right: 20px; font-size: 2rem; z-index: 5001; color: var(--primary); }
+
+        /* Info Blocks */
+        .info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .data-box { padding: 15px; text-align: center; background: rgba(255,255,255,0.03); border-radius: 8px; }
+        .data-box label { font-size: 0.6rem; text-transform: uppercase; opacity: 0.6; display: block; margin-bottom: 5px; }
+        .data-box span { font-weight: 900; font-size: 1.1rem; color: var(--primary); }
+
+        /* Brawlers Mobile Grid */
+        .b-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        @media (min-width: 768px) { .b-grid { grid-template-columns: repeat(6, 1fr); } }
         
-        /* Player Card */
-        .p-card { padding: 25px; position: relative; transition: 0.3s; cursor: pointer; border-left: 4px solid var(--primary); }
-        .p-card:hover { transform: scale(1.02); background: rgba(255,255,255,0.05); }
-        .vs-btn { position: absolute; right: 10px; bottom: 10px; padding: 5px 15px; background: var(--accent); color: #fff; border: none; border-radius: 5px; cursor: pointer; font-family: 'Orbitron'; font-size: 0.6rem; }
+        .b-card { background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
+        .b-card img { width: 40px; height: 40px; margin-bottom: 5px; }
+        .b-name { font-size: 0.7rem; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-        /* Modals */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 5000; padding: 20px; overflow-y: auto; }
-        .modal-content { max-width: 1100px; margin: 30px auto; padding: 40px; position: relative; }
-
-        .btn-action { padding: 10px 20px; border: 1px solid var(--primary); background: transparent; color: var(--primary); cursor: pointer; font-weight: bold; border-radius: 5px; }
-        .btn-action:hover { background: var(--primary); color: #000; }
-
-        .brawler-mini { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
-        
-        #x1FloatingBar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: none; gap: 20px; align-items: center; padding: 15px 30px; z-index: 4000; }
+        input, select { -webkit-appearance: none; border-radius: 8px; }
     </style>
 </head>
 <body>
 
     <div id="authScreen">
         <div class="auth-card glass" id="authBox">
-            <h1 style="font-family:'Orbitron'; color:var(--primary); text-align:center; margin-bottom:20px;">HORIZON LOGIN</h1>
-            
+            <h2 style="font-family:'Orbitron'; color:var(--primary); text-align:center; margin-bottom:20px;">HORIZON ACCESS</h2>
             <div id="loginFields">
-                <input type="text" id="userIn" placeholder="LOGIN">
-                <input type="password" id="passIn" placeholder="SENHA">
-                <button class="btn-action" style="width:100%; margin-top:10px;" onclick="handleAuth()">ENTRAR</button>
-                <p style="text-align:center; margin-top:15px; font-size:0.8rem;">Novo membro? <a href="#" onclick="showRegister(true)" style="color:var(--primary)">Criar Conta</a></p>
+                <input type="text" id="userIn" placeholder="LOGIN" style="width:100%; padding:15px; margin-bottom:10px;">
+                <input type="password" id="passIn" placeholder="SENHA" style="width:100%; padding:15px; margin-bottom:15px;">
+                <button onclick="handleAuth()" style="width:100%; padding:15px; background:var(--primary); border:none; font-weight:900;">ENTRAR</button>
+                <p onclick="showRegister(true)" style="text-align:center; margin-top:15px; font-size:0.8rem; color:var(--primary)">Criar conta de Membro</p>
             </div>
-
             <div id="registerFields" style="display:none;">
-                <input type="text" id="regUser" placeholder="ESCOLHA UM LOGIN">
-                <input type="password" id="regPass" placeholder="SUA SENHA">
-                <input type="text" id="regKey" placeholder="CHAVE DE CONVITE (KEY)">
-                <button class="btn-action" style="width:100%; border-color:var(--accent); color:var(--accent);" onclick="handleRegister()">REGISTRAR</button>
-                <p style="text-align:center; margin-top:15px; font-size:0.8rem;"><a href="#" onclick="showRegister(false)" style="color:#fff">Voltar</a></p>
+                <input type="text" id="regUser" placeholder="LOGIN">
+                <input type="password" id="regPass" placeholder="SENHA">
+                <input type="text" id="regKey" placeholder="KEY (LOGONTOP)">
+                <button onclick="handleRegister()" style="width:100%; padding:15px; background:var(--accent); border:none; font-weight:900; color:#fff;">REGISTRAR</button>
+                <p onclick="showRegister(false)" style="text-align:center; margin-top:15px; font-size:0.8rem;">Voltar</p>
             </div>
         </div>
     </div>
 
     <div id="app" style="display:none;">
         <nav>
-            <div style="font-family:'Orbitron'; font-size:1.5rem; color:var(--primary);">HORIZON <span style="color:#fff">APEX</span></div>
-            <div style="display:flex; gap:15px; align-items:center;">
-                <select onchange="changeTheme(this.value)" class="glass" style="color:#fff; padding:5px; border:none; font-size:0.7rem;">
-                    <option value="cyber">TEMA: CYBER</option>
-                    <option value="blood">TEMA: BLOOD</option>
-                    <option value="emerald">TEMA: EMERALD</option>
-                    <option value="gold">TEMA: GOLD</option>
-                </select>
-                <div id="admBadge" style="display:none; color:var(--accent); font-weight:900; font-size:0.7rem; border:1px solid var(--accent); padding:2px 8px;">ADMIN PANEL</div>
-                <button onclick="logout()" style="background:none; border:none; color:var(--danger); cursor:pointer;"><i class="fas fa-power-off"></i></button>
-            </div>
+            <div class="logo">HORIZON <span style="color:#fff">APEX</span></div>
+            <select onchange="document.documentElement.setAttribute('data-theme', this.value)" style="background:none; color:#fff; border:1px solid var(--border); padding:5px; font-size:0.7rem;">
+                <option value="default">CYBER</option>
+                <option value="blood">BLOOD</option>
+                <option value="emerald">EMERALD</option>
+            </select>
         </nav>
 
         <div class="container">
-            <div class="stats-grid" id="clubGrid"></div>
+            <div id="clubGrid" class="stats-grid"></div>
         </div>
     </div>
 
-    <div id="x1FloatingBar" class="glass" style="border: 2px solid var(--accent);">
-        <span id="x1Count" style="font-weight:900; color:var(--primary)">0/2 SELECIONADOS</span>
-        <button class="btn-action" style="border-color:var(--accent); color:var(--accent);" onclick="startComparison()">INICIAR COMPARATIVO X1</button>
-    </div>
-
     <div id="masterModal" class="modal">
-        <div class="modal-content glass" id="modalData"></div>
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <div class="modal-content" id="modalData"></div>
     </div>
 
     <script>
-        let currentUser = null;
-        let selectedX1 = [];
         let clubData = [];
 
-        // --- AUTH SYSTEM ---
+        // --- AUTH ---
         function showRegister(val) {
             document.getElementById('loginFields').style.display = val ? 'none' : 'block';
             document.getElementById('registerFields').style.display = val ? 'block' : 'none';
@@ -122,167 +120,90 @@
             const u = document.getElementById('regUser').value;
             const p = document.getElementById('regPass').value;
             const k = document.getElementById('regKey').value;
-
-            if(k !== "LOGONTOP") return alert("KEY INVÁLIDA!");
-            if(!u || !p) return alert("PREENCHA TUDO!");
-
+            if(k !== "LOGONTOP") return alert("KEY INCORRETA");
             let users = JSON.parse(localStorage.getItem('hz_users') || '[]');
             users.push({u, p});
             localStorage.setItem('hz_users', JSON.stringify(users));
-            alert("CONTA CRIADA COM SUCESSO!");
-            showRegister(false);
+            alert("Sucesso!"); showRegister(false);
         }
 
         function handleAuth() {
             const u = document.getElementById('userIn').value;
             const p = document.getElementById('passIn').value;
-
-            if(u === 'shiro' && p === '18172220') {
-                loginSuccess({u: 'shiro', role: 'admin'});
-            } else {
+            if(u === 'shiro' && p === '18172220') loginSuccess();
+            else {
                 let users = JSON.parse(localStorage.getItem('hz_users') || '[]');
-                let found = users.find(x => x.u === u && x.p === p);
-                if(found) loginSuccess({u: found.u, role: 'member'});
-                else alert("LOGIN OU SENHA INCORRETOS");
+                if(users.find(x => x.u === u && x.p === p)) loginSuccess();
+                else alert("Falha no Login");
             }
         }
 
-        function loginSuccess(user) {
-            currentUser = user;
+        function loginSuccess() {
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('app').style.display = 'block';
-            if(user.role === 'admin') document.getElementById('admBadge').style.display = 'block';
-            loadDashboard();
+            loadData();
         }
 
-        // --- DASHBOARD ---
-        async function loadDashboard() {
+        // --- DATA ---
+        async function loadData() {
             try {
                 const res = await fetch('/api/stats');
                 const data = await res.json();
                 clubData = data.club.members;
-                renderClub();
-            } catch(e) { console.error("Erro API"); }
-        }
-
-        function renderClub() {
-            const grid = document.getElementById('clubGrid');
-            grid.innerHTML = clubData.map(m => `
-                <div class="p-card glass" onclick="openProfile('${m.tag}')">
-                    <div style="font-weight:900; font-size:1.1rem;">${m.name}</div>
-                    <div style="color:var(--primary); font-family:'Orbitron';">🏆 ${m.trophies.toLocaleString()}</div>
-                    <button class="vs-btn" onclick="toggleX1(event, '${m.tag}', '${m.name}')">X1</button>
-                </div>
-            `).join('');
-        }
-
-        // --- LOGICA X1 vs PERFIL ---
-        function openProfile(tag) {
-            document.getElementById('masterModal').style.display = 'block';
-            fetchPlayer(tag, (p) => {
-                const timeSpent = Math.floor((p['3vs3Victories'] * 6) / 60); // Estimativa precisa
-                document.getElementById('modalData').innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h1 style="font-family:'Orbitron'; color:var(--primary)">${p.name}</h1>
-                        <button onclick="closeModal()" class="btn-action">X</button>
-                    </div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-top:20px;">
-                        <div class="glass" style="padding:20px;">
-                            <p style="font-size:0.7rem;">TEMPO GASTO NO JOGO</p>
-                            <h2 style="color:var(--accent)">${timeSpent} HORAS</h2>
-                            <hr style="margin:10px 0; opacity:0.1;">
-                            <p>Troféus 24h: <span style="color:var(--primary)">+${Math.floor(Math.random()*200)}</span></p>
+                document.getElementById('clubGrid').innerHTML = clubData.map(m => `
+                    <div class="p-card glass" onclick="openProfile('${m.tag}')">
+                        <div>
+                            <div style="font-weight:900; font-size:1rem;">${m.name}</div>
+                            <div style="color:var(--primary); font-size:0.8rem;">🏆 ${m.trophies.toLocaleString()}</div>
                         </div>
-                        <div class="glass" style="padding:20px;">
-                            <canvas id="profileChart" height="150"></canvas>
-                        </div>
+                        <button class="vs-btn" onclick="event.stopPropagation(); alert('Selecione outro para X1')">X1</button>
                     </div>
-                    <h3 style="margin-top:20px;">BRAWLERS</h3>
-                    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(120px, 1fr)); gap:10px; margin-top:10px;">
-                        ${p.brawlers.map(b => `<div class="brawler-mini"><b>${b.name}</b><br><small>🏆 ${b.trophies}</small></div>`).join('')}
-                    </div>
-                `;
-                renderProfileChart(p);
-            });
+                `).join('');
+            } catch(e) { console.error(e); }
         }
 
-        function toggleX1(e, tag, name) {
-            e.stopPropagation();
-            const idx = selectedX1.findIndex(x => x.tag === tag);
-            if(idx > -1) selectedX1.splice(idx, 1);
-            else if(selectedX1.length < 2) selectedX1.push({tag, name});
-            
-            const bar = document.getElementById('x1FloatingBar');
-            bar.style.display = selectedX1.length > 0 ? 'flex' : 'none';
-            document.getElementById('x1Count').innerText = `${selectedX1.length}/2 SELECIONADOS`;
-        }
-
-        async function startComparison() {
-            if(selectedX1.length < 2) return alert("SELECIONE 2 JOGADORES");
+        async function openProfile(tag) {
             document.getElementById('masterModal').style.display = 'block';
+            const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
+            const p = await res.json();
             
-            const [p1, p2] = await Promise.all([
-                fetch(`/api/player/${selectedX1[0].tag.replace('#', '%23')}`).then(r => r.json()),
-                fetch(`/api/player/${selectedX1[1].tag.replace('#', '%23')}`).then(r => r.json())
-            ]);
+            const hours = Math.floor((p['3vs3Victories'] * 6.5) / 60);
 
             document.getElementById('modalData').innerHTML = `
-                <h1 style="text-align:center; font-family:'Orbitron'; color:var(--accent);">ANÁLISE DE CONFRONTO</h1>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px; margin-top:30px;">
-                    <div style="text-align:right">
-                        <h2>${p1.name}</h2>
-                        <p>3v3 Wins: ${p1['3vs3Victories']}</p>
-                        <p>Max Rank: ${p1.highestTrophies}</p>
-                    </div>
-                    <div style="text-align:left">
-                        <h2>${p2.name}</h2>
-                        <p>3v3 Wins: ${p2['3vs3Victories']}</p>
-                        <p>Max Rank: ${p2.highestTrophies}</p>
+                <div style="text-align:center; margin-bottom:25px;">
+                    <h1 style="font-family:'Orbitron'; color:var(--primary); font-size:1.8rem;">${p.name}</h1>
+                    <p style="font-size:0.7rem; opacity:0.5;">${p.tag} | ${p.club?.name || 'Sem Clube'}</p>
+                </div>
+
+                <div class="info-row">
+                    <div class="data-box glass"><label>Troféus Atuais</label><span>${p.trophies}</span></div>
+                    <div class="data-box glass"><label>Recorde</label><span>${p.highestTrophies}</span></div>
+                    <div class="data-box glass"><label>Tempo Estimado</label><span>${hours}h</span></div>
+                    <div class="data-box glass" style="border:1px solid var(--accent);"><label>Nível</label><span>${p.expLevel}</span></div>
+                </div>
+
+                <div class="glass" style="padding:15px; margin-bottom:20px;">
+                    <label style="font-size:0.6rem; opacity:0.6;">VITÓRIAS POR MODO</label>
+                    <div style="display:flex; justify-content:space-around; margin-top:10px; font-weight:900;">
+                        <div style="color:#00f2ff">3v3: ${p['3vs3Victories']}</div>
+                        <div style="color:#bc13fe">Solo: ${p.soloVictories}</div>
+                        <div style="color:#ff4655">Duo: ${p.duoVictories}</div>
                     </div>
                 </div>
-                <div class="glass" style="margin-top:20px; padding:30px;">
-                    <canvas id="x1Chart"></canvas>
+
+                <h3 style="font-family:'Orbitron'; font-size:0.9rem; margin-bottom:15px;">GALERIA DE BRAWLERS (${p.brawlers.length})</h3>
+                <div class="b-grid">
+                    ${p.brawlers.map(b => `
+                        <div class="b-card">
+                            <div class="b-name">${b.name}</div>
+                            <div style="font-size:0.6rem; color:var(--primary)">P${b.power} | 🏆${b.trophies}</div>
+                        </div>
+                    `).join('')}
                 </div>
-                <button onclick="closeModal()" class="btn-action" style="width:100%; margin-top:20px;">FECHAR ANÁLISE</button>
             `;
-            renderRadar(p1, p2);
         }
 
-        // --- GRAFICOS E HELPERS ---
-        function renderProfileChart(p) {
-            new Chart(document.getElementById('profileChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['3v3', 'Solo', 'Duo'],
-                    datasets: [{ data: [p['3vs3Victories'], p.soloVictories, p.duoVictories], backgroundColor: ['#00f2ff', '#bc13fe', '#ff4655'] }]
-                },
-                options: { plugins: { legend: { display: false } } }
-            });
-        }
-
-        function renderRadar(p1, p2) {
-            new Chart(document.getElementById('x1Chart'), {
-                type: 'radar',
-                data: {
-                    labels: ['Troféus', '3v3 Wins', 'Solo Wins', 'Duo Wins', 'Max Rank'],
-                    datasets: [
-                        { label: p1.name, data: [p1.trophies/1000, p1['3vs3Victories']/10, p1.soloVictories, p1.duoVictories, p1.highestTrophies/1000], borderColor: '#00f2ff' },
-                        { label: p2.name, data: [p2.trophies/1000, p2['3vs3Victories']/10, p2.soloVictories, p2.duoVictories, p2.highestTrophies/1000], borderColor: '#bc13fe' }
-                    ]
-                },
-                options: { scales: { r: { ticks: { display: false }, grid: { color: '#333' } } } }
-            });
-        }
-
-        async function fetchPlayer(tag, cb) {
-            const res = await fetch(`/api/player/${tag.replace('#', '%23')}`);
-            const data = await res.json();
-            cb(data);
-        }
-
-        function changeTheme(theme) { document.documentElement.setAttribute('data-theme', theme); }
-        function closeModal() { document.getElementById('masterModal').style.display = 'none'; selectedX1 = []; renderClub(); document.getElementById('x1FloatingBar').style.display = 'none'; }
-        function logout() { location.reload(); }
+        function closeModal() { document.getElementById('masterModal').style.display = 'none'; }
     </script>
 </body>
 </html>
