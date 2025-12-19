@@ -3,260 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horizon Command | Ultra Vision</title>
+    <title>Horizon Command | Tactical Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { 
-            --primary: #00f2ff; --accent: #bc13fe; --bg: #020408; 
-            --card: #0d121d; --text: #f8fafc; --success: #00ff88; --danger: #ff4655;
-            --border: rgba(255, 255, 255, 0.1); --glass: rgba(15, 23, 42, 0.8);
+            --primary: #00f2ff; --accent: #bc13fe; --bg: #05070a; 
+            --card: rgba(17, 22, 29, 0.8); --text: #f0f0f0; --success: #00ff88; 
+            --danger: #ff4655; --border: rgba(255, 255, 255, 0.1);
         }
         
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; min-height: 100vh; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-        .bg-glow {
-            position: fixed; inset: 0; z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 20%, rgba(188, 19, 254, 0.15), transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(0, 242, 255, 0.15), transparent 40%);
-        }
+        /* Estilo Glassmorphism */
+        .glass { background: var(--card); backdrop-filter: blur(15px); border: 1px solid var(--border); border-radius: 20px; }
+        
+        /* AUTH SCREEN */
+        #authScreen { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; align-items: center; justify-content: center; }
+        .auth-card { padding: 40px; width: 100%; max-width: 400px; text-align: center; }
 
-        /* TELAS DE AUTH */
-        #authScreen {
-            position: fixed; inset: 0; z-index: 9999; background: var(--bg);
-            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(20px);
-        }
-        .auth-card {
-            background: var(--card); border: 1px solid var(--border); padding: 40px;
-            border-radius: 30px; width: 100%; max-width: 420px; text-align: center;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5); display: none;
-        }
-        .auth-card.active { display: block; animation: fadeIn 0.5s ease; }
+        /* LAYOUT */
+        #mainContent { display: none; padding: 20px; max-width: 1400px; margin: auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
+        /* GRID DE MEMBROS */
+        .members-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .member-card { padding: 20px; cursor: pointer; transition: 0.3s; position: relative; overflow: hidden; }
+        .member-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); }
+        .member-card i { position: absolute; right: -10px; bottom: -10px; font-size: 5rem; opacity: 0.05; }
 
-        .input-cyber {
-            width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
-            padding: 15px; border-radius: 12px; color: #fff; margin-bottom: 15px;
-            font-family: 'Rajdhani'; font-size: 1.1rem; transition: 0.3s;
-        }
-        .input-cyber:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,255,0.2); }
+        /* MODAL E GRÁFICOS */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; padding: 20px; overflow-y: auto; }
+        .modal-content { max-width: 1000px; margin: auto; padding: 30px; }
+        .stats-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
 
-        .btn-main {
-            width: 100%; padding: 15px; border-radius: 12px; border: none;
-            background: linear-gradient(90deg, var(--accent), var(--primary));
-            color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase;
-            letter-spacing: 2px; transition: 0.3s;
-        }
-        .btn-main:hover { transform: scale(1.02); filter: brightness(1.2); }
+        /* BRAWLER SEARCH & LIST */
+        .search-box { width: 100%; padding: 12px; border-radius: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: #fff; margin: 20px 0; }
+        .brawlers-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+        .b-mini-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; text-align: center; font-size: 0.8rem; }
 
-        /* DASHBOARD */
-        #mainContent { display: none; padding: 20px; }
-        header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 20px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 40px;
-        }
-        .logo { font-family: 'Rajdhani'; font-size: 2rem; font-weight: 700; letter-spacing: 5px; color: #fff; }
+        /* PAINEL ADM (OCULTO) */
+        #admSettings { display: none; position: fixed; right: 20px; bottom: 20px; width: 350px; z-index: 2000; }
+        .adm-btn { width: 50px; height: 50px; border-radius: 50%; background: var(--accent); display: none; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 15px var(--accent); }
 
-        .user-nav { display: flex; align-items: center; gap: 15px; position: relative; }
-        .user-name { font-weight: 900; font-size: 0.9rem; color: var(--primary); text-transform: uppercase; }
-        .user-id { font-size: 0.7rem; color: #64748b; cursor: pointer; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 5px; }
-
-        .popup-menu {
-            position: absolute; top: 110%; right: 0; background: var(--card);
-            border: 1px solid var(--border); border-radius: 15px; padding: 10px;
-            width: 200px; display: none; z-index: 100;
-        }
-        .popup-menu.active { display: block; }
-        .menu-item { padding: 12px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 10px; }
-        .menu-item:hover { background: rgba(255,255,255,0.05); color: var(--primary); }
-
-        .grid-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .card-impact { background: var(--card); border-radius: 24px; padding: 25px; border: 1px solid var(--border); }
-
-        .log-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-        .log-table td { padding: 12px 5px; border-bottom: 1px solid rgba(255,255,255,0.02); }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-cyber { background: linear-gradient(90deg, var(--accent), var(--primary)); border: none; padding: 12px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px; }
+        .input-cyber { width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 8px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="bg-glow"></div>
-
     <div id="authScreen">
-        <div class="auth-card active" id="loginBox">
-            <h1 class="logo" style="margin-bottom: 30px;">HORIZON</h1>
-            <input type="text" id="userIn" class="input-cyber" placeholder="NOME DE USUÁRIO">
+        <div class="auth-card glass" id="loginBox">
+            <h1 style="font-family:'Rajdhani'; letter-spacing:10px;">HORIZON</h1>
+            <p style="font-size: 0.7rem; color: var(--primary); margin-bottom: 20px;">SISTEMA DE COMANDO TÁTICO</p>
+            <input type="text" id="userIn" class="input-cyber" placeholder="USUÁRIO">
             <input type="password" id="passIn" class="input-cyber" placeholder="SENHA">
-            <button class="btn-main" onclick="handleLogin()">Acessar Painel</button>
-            <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b;">
-                Não tem conta? <a href="javascript:void(0)" onclick="switchAuth('register')" style="color:var(--primary)">Criar agora</a>
-            </p>
+            <button class="btn-cyber" onclick="handleLogin()">ENTRAR</button>
+            <p onclick="switchAuth('reg')" style="cursor:pointer; font-size:0.8rem; margin-top:15px; opacity:0.6;">Criar Acesso</p>
         </div>
-
-        <div class="auth-card" id="registerBox">
-            <h1 class="logo" style="margin-bottom: 30px;">REGISTRO</h1>
+        <div class="auth-card glass" id="registerBox" style="display:none;">
+            <h1 style="font-family:'Rajdhani';">REGISTRO</h1>
             <input type="text" id="regUser" class="input-cyber" placeholder="ESCOLHA UM NOME">
-            <input type="password" id="regPass" class="input-cyber" placeholder="CRIE UMA SENHA">
-            <button class="btn-main" onclick="handleRegister()">Finalizar Cadastro</button>
-            <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b;">
-                Já tem conta? <a href="javascript:void(0)" onclick="switchAuth('login')" style="color:var(--primary)">Voltar ao Login</a>
-            </p>
+            <input type="password" id="regPass" class="input-cyber" placeholder="SENHA MESTRA">
+            <button class="btn-cyber" onclick="handleRegister()">CADASTRAR</button>
+            <p onclick="switchAuth('login')" style="cursor:pointer; font-size:0.8rem; margin-top:15px; opacity:0.6;">Voltar</p>
         </div>
     </div>
 
     <div id="mainContent">
-        <div class="container">
-            <header>
-                <h1 class="logo">HORIZON</h1>
-                <div class="user-nav">
-                    <div style="text-align: right;">
-                        <div class="user-name" id="displayUsername">USUÁRIO</div>
-                        <div class="user-id" onclick="copyID()">ID: <span id="displayID">------</span> <i class="far fa-copy"></i></div>
-                    </div>
-                    <i class="fas fa-ellipsis-v" style="cursor:pointer; padding:10px;" onclick="toggleMenu()"></i>
-                    <div class="popup-menu" id="perfilMenu">
-                        <div class="menu-item" onclick="logout()" style="color:var(--danger)"><i class="fas fa-sign-out-alt"></i> Sair</div>
-                    </div>
-                </div>
-            </header>
+        <header>
+            <div>
+                <h1 style="font-family:'Rajdhani'; font-size: 1.8rem;">CLUB <span style="color:var(--primary)">DASHBOARD</span></h1>
+                <p id="welcomeMsg" style="font-size:0.8rem; opacity:0.5;"></p>
+            </div>
+            <div id="admIcon" class="adm-btn" onclick="openAdmPanel()"><i class="fas fa-cog"></i></div>
+        </header>
 
-            <div class="grid-stats">
-                <div class="card-impact">
-                    <h3 style="font-family:'Rajdhani'; margin-bottom: 15px; color: var(--primary);">ATIVIDADE RECENTE</h3>
-                    <canvas id="mainChart"></canvas>
+        <div class="members-grid" id="membersGrid">
+            </div>
+    </div>
+
+    <div id="playerModal" class="modal">
+        <div class="modal-content glass">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h2 id="mName" style="font-family:'Rajdhani'; font-size:2rem; color:var(--primary);">NOME</h2>
+                <button onclick="closeModal()" style="background:none; border:none; color:#fff; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            
+            <div class="stats-row">
+                <div class="glass" style="padding:20px;">
+                    <h4 style="margin-bottom:15px; font-size:0.8rem; letter-spacing:2px;">DISTRIBUIÇÃO DE VITÓRIAS</h4>
+                    <canvas id="winChart"></canvas>
                 </div>
-                <div class="card-impact">
-                    <h3 style="font-family:'Rajdhani'; margin-bottom: 15px; color: var(--accent);">LOGS DO SISTEMA</h3>
-                    <div style="max-height: 300px; overflow-y: auto;">
-                        <table class="log-table">
-                            <tbody id="logTableBody"></tbody>
-                        </table>
-                    </div>
+                <div class="glass" style="padding:20px; display:flex; flex-direction:column; justify-content:center; gap:10px;">
+                    <div class="stat-item">🏆 Máximo: <span id="mMax" style="color:var(--success)">0</span></div>
+                    <div class="stat-item">🥊 3v3: <span id="m3v3">0</span></div>
+                    <div class="stat-item">👤 Solo: <span id="mSolo">0</span></div>
                 </div>
             </div>
+
+            <input type="text" id="brawlerSearch" class="search-box" placeholder="Pesquisar brawler do jogador..." onkeyup="filterBrawlers()">
+            <div class="brawlers-list" id="brawlerList"></div>
+        </div>
+    </div>
+
+    <div id="admModal" class="modal" style="z-index:9999;">
+        <div class="modal-content glass" style="max-width:500px;">
+            <h2 style="color:var(--accent); font-family:'Rajdhani';">COMANDO CENTRAL</h2>
+            <div style="margin:20px 0;">
+                <p style="font-size:0.7rem; opacity:0.6; margin-bottom:5px;">PROMOVER POR ID</p>
+                <input type="text" id="promoId" class="input-cyber" placeholder="ID: ABCD12">
+                <button class="btn-cyber" onclick="promoteUser()">ELEGER ADM</button>
+            </div>
+            <p style="font-size:0.7rem; opacity:0.6; margin-bottom:5px;">LOGS DE SISTEMA</p>
+            <div id="sysLogs" style="background:#000; height:150px; overflow-y:auto; padding:10px; font-size:0.7rem; border-radius:10px;"></div>
+            <button class="btn-cyber" style="background:var(--danger); margin-top:20px;" onclick="closeAdm()">FECHAR</button>
         </div>
     </div>
 
     <script>
-        const MASTER_ADMIN = "shiro";
-        const MASTER_PASS = "18172220";
+        let currentUser = null;
+        let brawlersData = []; // Armazena brawlers do jogador atual para o filtro
 
-        // Alternar entre Login e Registro
-        function switchAuth(mode) {
-            document.getElementById('loginBox').classList.remove('active');
-            document.getElementById('registerBox').classList.remove('active');
-            if(mode === 'login') document.getElementById('loginBox').classList.add('active');
-            else document.getElementById('registerBox').classList.add('active');
-        }
-
-        // Lógica de Registro
-        function handleRegister() {
-            const u = document.getElementById('regUser').value.trim();
-            const p = document.getElementById('regPass').value.trim();
-
-            if(!u || !p) return alert("Preencha todos os campos!");
-
-            let accounts = JSON.parse(localStorage.getItem("hz_accounts")) || {};
-            if(accounts[u]) return alert("Este nome já está em uso!");
-
-            const newID = Math.random().toString(36).substring(2, 8).toUpperCase();
-            accounts[u] = { username: u, password: p, id: newID, isAdm: false };
-            
-            localStorage.setItem("hz_accounts", JSON.stringify(accounts));
-            registrarLog("Conta Criada", u);
-            alert("Conta criada com sucesso! Faça login.");
-            switchAuth('login');
-        }
-
-        // Lógica de Login
-        function handleLogin() {
-            const u = document.getElementById('userIn').value.trim();
-            const p = document.getElementById('passIn').value.trim();
-
-            if(u.toLowerCase() === MASTER_ADMIN && p === MASTER_PASS) {
-                return loginSuccess({ username: "Shiro", id: "MASTER-01", isAdm: true });
-            }
-
-            let accounts = JSON.parse(localStorage.getItem("hz_accounts")) || {};
-            if(accounts[u] && accounts[u].password === p) {
-                loginSuccess(accounts[u]);
-            } else {
-                alert("Usuário ou senha incorretos!");
-            }
-        }
-
-        function loginSuccess(userObj) {
-            localStorage.setItem("hz_user", JSON.stringify(userObj));
-            registrarLog("Login", userObj.username);
-            location.reload(); // Recarrega para aplicar a persistência
-        }
-
-        // Logs e Persistência
-        function registrarLog(acao, usuario) {
-            let logs = JSON.parse(localStorage.getItem("hz_logs")) || [];
-            logs.unshift({ usuario, acao, tempo: new Date().toLocaleTimeString() });
-            localStorage.setItem("hz_logs", JSON.stringify(logs.slice(0, 20)));
-        }
-
-        function renderLogs() {
-            const logs = JSON.parse(localStorage.getItem("hz_logs")) || [];
-            document.getElementById('logTableBody').innerHTML = logs.map(l => `
-                <tr>
-                    <td><b>${l.usuario}</b></td>
-                    <td>${l.acao}</td>
-                    <td style="color:#64748b">${l.tempo}</td>
-                </tr>
-            `).join('');
-        }
-
-        function logout() {
-            const user = JSON.parse(localStorage.getItem("hz_user"));
-            if(user) registrarLog("Logout", user.username);
-            localStorage.removeItem("hz_user");
-            location.reload();
-        }
-
-        function copyID() {
-            const id = document.getElementById('displayID').innerText;
-            navigator.clipboard.writeText(id);
-            alert("ID Copiado!");
-        }
-
-        function toggleMenu() { document.getElementById('perfilMenu').classList.toggle('active'); }
-
-        // Inicialização
+        // PERSISTÊNCIA E LOGIN
         window.onload = () => {
-            const user = JSON.parse(localStorage.getItem("hz_user"));
-            if(user) {
-                document.getElementById('authScreen').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                document.getElementById('displayUsername').innerText = user.username;
-                document.getElementById('displayID').innerText = user.id;
-                initChart();
+            const saved = localStorage.getItem('hz_user');
+            if(saved) {
+                currentUser = JSON.parse(saved);
+                startDashboard();
             }
             renderLogs();
         };
 
-        function initChart() {
-            const ctx = document.getElementById('mainChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
+        function switchAuth(mode) {
+            document.getElementById('loginBox').style.display = mode === 'login' ? 'block' : 'none';
+            document.getElementById('registerBox').style.display = mode === 'reg' ? 'block' : 'none';
+        }
+
+        function handleLogin() {
+            const u = document.getElementById('userIn').value;
+            const p = document.getElementById('passIn').value;
+            let accounts = JSON.parse(localStorage.getItem('hz_accounts') || '{}');
+
+            if(u === 'shiro' && p === '18172220') {
+                currentUser = { username: 'Shiro', isAdm: true, id: 'MASTER' };
+            } else if(accounts[u] && accounts[u].password === p) {
+                currentUser = accounts[u];
+            } else {
+                return alert("Dados incorretos");
+            }
+            
+            localStorage.setItem('hz_user', JSON.stringify(currentUser));
+            registrarLog("Login", currentUser.username);
+            startDashboard();
+        }
+
+        function handleRegister() {
+            const u = document.getElementById('regUser').value;
+            const p = document.getElementById('regPass').value;
+            let accounts = JSON.parse(localStorage.getItem('hz_accounts') || '{}');
+            
+            const newId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            accounts[u] = { username: u, password: p, id: newId, isAdm: false };
+            localStorage.setItem('hz_accounts', JSON.stringify(accounts));
+            registrarLog("Nova Conta", u);
+            alert("Conta criada! ID: " + newId);
+            switchAuth('login');
+        }
+
+        // DASHBOARD
+        async function startDashboard() {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            document.getElementById('welcomeMsg').innerText = `ID: ${currentUser.id} | Sessão Ativa`;
+            
+            if(currentUser.isAdm) document.getElementById('admIcon').style.display = 'flex';
+
+            // Simulação de Membros (Aqui você usaria sua API /api/stats)
+            const grid = document.getElementById('membersGrid');
+            const mockMembers = [
+                {name: "Shiro", trophies: 75200, tag: "#8P02V"},
+                {name: "Gale", trophies: 52000, tag: "#99URL"},
+                {name: "Alpha", trophies: 48000, tag: "#LQ22"}
+            ];
+
+            grid.innerHTML = mockMembers.map(m => `
+                <div class="member-card glass" onclick="showPlayer('${m.tag}', '${m.name}')">
+                    <i class="fas fa-shield-alt"></i>
+                    <h3 style="color:var(--primary)">${m.name}</h3>
+                    <p style="font-weight:900;">🏆 ${m.trophies.toLocaleString()}</p>
+                    <div style="width:100%; height:4px; background:rgba(255,255,255,0.1); margin-top:10px; border-radius:2px;">
+                        <div style="width:${(m.trophies/80000)*100}%; height:100%; background:var(--primary);"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // MODAL DO JOGADOR E GRÁFICOS
+        let myChart;
+        async function showPlayer(tag, name) {
+            document.getElementById('playerModal').style.display = 'block';
+            document.getElementById('mName').innerText = name;
+            
+            // Simulação de dados (Trocar pelo seu fetch real da API)
+            document.getElementById('mMax').innerText = "78,500";
+            document.getElementById('m3v3').innerText = "25,000";
+            document.getElementById('mSolo').innerText = "1,500";
+            
+            initChart([25000, 1500, 1200]); // 3v3, Solo, Duo
+            
+            // Mock de Brawlers
+            brawlersData = [
+                {name: "SHELLY", power: 11, trophies: 1250},
+                {name: "COLT", power: 11, trophies: 1000},
+                {name: "MORTIS", power: 11, trophies: 950}
+            ];
+            renderBrawlers(brawlersData);
+        }
+
+        function initChart(data) {
+            const ctx = document.getElementById('winChart').getContext('2d');
+            if(myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
                 data: {
-                    labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex'],
+                    labels: ['3v3', 'Solo', 'Duo'],
                     datasets: [{
-                        label: 'Atividade',
-                        data: [12, 19, 15, 25, 22],
-                        borderColor: '#00f2ff',
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(0, 242, 255, 0.1)'
+                        data: data,
+                        backgroundColor: ['#00f2ff', '#bc13fe', '#ff4655'],
+                        borderWidth: 0
                     }]
                 },
-                options: { plugins: { legend: { display: false } } }
+                options: { plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } } }
             });
+        }
+
+        function renderBrawlers(list) {
+            const container = document.getElementById('brawlerList');
+            container.innerHTML = list.map(b => `
+                <div class="b-mini-card">
+                    <div style="color:var(--primary); font-weight:bold;">${b.name}</div>
+                    <div style="font-size:0.6rem; opacity:0.6;">PWR ${b.power}</div>
+                    <div style="color:var(--success); font-weight:900;">🏆 ${b.trophies}</div>
+                </div>
+            `).join('');
+        }
+
+        function filterBrawlers() {
+            const query = document.getElementById('brawlerSearch').value.toUpperCase();
+            const filtered = brawlersData.filter(b => b.name.includes(query));
+            renderBrawlers(filtered);
+        }
+
+        // PAINEL ADM E LOGS
+        function openAdmPanel() { document.getElementById('admModal').style.display = 'block'; renderLogs(); }
+        function closeAdm() { document.getElementById('admModal').style.display = 'none'; }
+        function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
+
+        function registrarLog(acao, usuario) {
+            let logs = JSON.parse(localStorage.getItem('hz_logs') || '[]');
+            logs.unshift(`[${new Date().toLocaleTimeString()}] ${usuario}: ${acao}`);
+            localStorage.setItem('hz_logs', JSON.stringify(logs.slice(0, 30)));
+        }
+
+        function renderLogs() {
+            const logs = JSON.parse(localStorage.getItem('hz_logs') || '[]');
+            document.getElementById('sysLogs').innerHTML = logs.map(l => `<div>${l}</div>`).join('');
+        }
+
+        function promoteUser() {
+            const id = document.getElementById('promoId').value;
+            let accounts = JSON.parse(localStorage.getItem('hz_accounts') || '{}');
+            let found = false;
+            for(let u in accounts) {
+                if(accounts[u].id === id) {
+                    accounts[u].isAdm = true;
+                    found = true;
+                    registrarLog("Promovido a ADM", u);
+                    break;
+                }
+            }
+            localStorage.setItem('hz_accounts', JSON.stringify(accounts));
+            alert(found ? "Sucesso!" : "ID não encontrado");
         }
     </script>
 </body>
