@@ -27,28 +27,26 @@
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; transition: 0.3s; overflow-x: hidden; }
         
-        /* --- AUTH SYSTEM --- */
         #authWrapper { position: fixed; inset: 0; z-index: 9999; background: var(--bg); display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { width: 100%; max-width: 400px; padding: 30px; border-radius: 24px; background: var(--card-bg); border: 1px solid var(--border); text-align: center; }
         .auth-tabs { display: flex; gap: 10px; margin-bottom: 25px; background: var(--input-bg); padding: 5px; border-radius: 12px; }
         .tab-btn { flex: 1; padding: 10px; border: none; background: none; color: #94a3b8; cursor: pointer; border-radius: 8px; font-weight: 600; transition: 0.3s; }
-        .tab-btn.active { background: var(--bg); color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .tab-btn.active { background: var(--bg); color: var(--primary); }
+        
         .input-group { position: relative; margin-bottom: 15px; }
         .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--primary); }
         input { width: 100%; padding: 14px 14px 14px 45px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; color: #fff; font-size: 1rem; outline: none; }
-        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: #fff; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        
+        .btn-action { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: #fff; font-weight: 700; cursor: pointer; transition: 0.3s; }
 
-        /* --- APP UI --- */
         nav { position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
         .main-container { max-width: 1000px; margin: 90px auto; padding: 0 20px; }
-        .player-card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .player-card { background: var(--card-bg); border: 1px solid var(--border); padding: 20px; border-radius: 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; animation: fadeIn 0.5s ease forwards; }
         
-        .modal { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); overflow-y: auto; }
-        .modal-content { background: var(--bg); width: 100%; min-height: 100vh; padding: 30px 20px; }
-        .stat-box { background: var(--card-bg); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 10px; }
-        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
         .hidden { display: none !important; }
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 12px; background: var(--accent); color: white; z-index: 10000; display: none; font-weight: 700; text-align: center; width: 80%; }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 12px; background: var(--accent); color: white; z-index: 10000; display: none; font-weight: 700; }
         .icon-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--input-bg); cursor: pointer; border: 1px solid var(--border); }
     </style>
 </head>
@@ -89,20 +87,21 @@
         </nav>
         <div class="main-container">
             <h2 style="margin-bottom: 5px;">Database Operatives</h2>
-            <p id="apiStatus" style="color: #64748b; font-size: 0.8rem; margin-bottom: 20px;">Sincronizado com API</p>
-            <div id="clubGrid"></div>
+            <p id="apiStatus" style="color: #64748b; font-size: 0.8rem; margin-bottom: 20px;">Sincronizado com API Oficial</p>
+            <div id="clubGrid">
+                <p style="text-align: center; opacity: 0.5;">Carregando membros...</p>
+            </div>
         </div>
-    </div>
-
-    <div id="playerModal" class="modal">
-        <div id="mContent" class="modal-content"></div>
     </div>
 
     <script>
         AOS.init();
-        const API_BASE = ""; // Adicione sua URL do Proxy aqui se houver
         
-        // --- SISTEMA DE LOGIN E CADASTRO ---
+        // --- CONFIGURAÇÃO DA API (CORRIGIDO) ---
+        // Se você tiver um servidor rodando, coloque a URL dele aqui. 
+        // Exemplo: "https://seu-projeto.railway.app"
+        const API_BASE = ""; 
+        
         function switchTab(mode) {
             const isLogin = mode === 'login';
             document.getElementById('box-login').classList.toggle('hidden', !isLogin);
@@ -115,51 +114,80 @@
             const u = document.getElementById('rUser').value.trim();
             const p = document.getElementById('rPass').value.trim();
             const k = document.getElementById('rKey').value.trim();
-
             if(!u || !p) return showToast("PREENCHA TODOS OS CAMPOS!");
             if(k !== "LOGONTOP") return showToast("CHAVE INCORRETA!");
-
             let users = JSON.parse(localStorage.getItem('hz_users') || '[]');
-            if(users.find(x => x.u === u)) return showToast("ESTE USUÁRIO JÁ EXISTE!");
-
+            if(users.find(x => x.u === u)) return showToast("USUÁRIO JÁ EXISTE!");
             users.push({u, p});
             localStorage.setItem('hz_users', JSON.stringify(users));
-            showToast("CONTA CRIADA! FAÇA LOGIN.");
+            showToast("CONTA CRIADA!");
             switchTab('login');
         }
 
         function doLogin() {
             const u = document.getElementById('lUser').value.trim();
             const p = document.getElementById('lPass').value.trim();
-            
             const users = JSON.parse(localStorage.getItem('hz_users') || '[]');
             const found = users.find(x => x.u === u && x.p === p);
-
             if((u === 'shiro' && p === '18172220') || found) {
                 localStorage.setItem('hz_session', u);
-                document.getElementById('authWrapper').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                loadClub();
+                initApp();
             } else {
                 showToast("DADOS INVÁLIDOS!");
             }
         }
 
-        // --- FUNÇÕES DO APP ---
+        function initApp() {
+            document.getElementById('authWrapper').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            loadClub();
+        }
+
+        // --- INTEGRAÇÃO API (CORRIGIDO) ---
         async function loadClub() {
-            // Se tiver API_BASE configurado, ele busca os dados. Caso contrário, mostra erro amigável.
-            if(!API_BASE) return console.log("Aguardando configuração de API...");
+            const grid = document.getElementById('clubGrid');
+            const status = document.getElementById('apiStatus');
+            
+            // Verificação de URL
+            if(!API_BASE) {
+                grid.innerHTML = `<div class="stat-box" style="text-align:center; color:var(--accent)">
+                    Defina a URL da sua API em <b>const API_BASE</b> no código.
+                </div>`;
+                return;
+            }
+
             try {
+                // Rota padrão geralmente é /api/club ou /api/stats baseada no seu código anterior
                 const res = await fetch(`${API_BASE}/api/stats`);
+                if(!res.ok) throw new Error();
+                
                 const data = await res.json();
-                const members = data.club.members;
-                document.getElementById('clubGrid').innerHTML = members.map(m => `
-                    <div class="player-card" onclick="showToast('Abrindo perfil...')">
-                        <div><b>${m.name}</b><br><small>${m.tag}</small></div>
-                        <div style="color:var(--primary); font-weight:800;">${m.trophies}</div>
-                    </div>
-                `).join('');
-            } catch(e) { document.getElementById('apiStatus').innerText = "Erro ao conectar API"; }
+                
+                // A estrutura esperada é { club: { members: [...] } }
+                const members = data.club.members || data.members;
+
+                if(members && members.length > 0) {
+                    grid.innerHTML = members.map(m => `
+                        <div class="player-card">
+                            <div>
+                                <b style="font-size:1.1rem">${m.name}</b><br>
+                                <small style="color:var(--primary); font-weight:700">${m.tag}</small>
+                            </div>
+                            <div style="text-align:right">
+                                <div style="color:#fbbf24; font-weight:800; font-size:1.2rem">🏆 ${m.trophies}</div>
+                                <small style="opacity:0.5; font-size:0.6rem">${m.role.toUpperCase()}</small>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    grid.innerHTML = `<p style="text-align:center">Nenhum membro encontrado.</p>`;
+                }
+            } catch(e) {
+                status.innerText = "Erro na conexão com o servidor";
+                grid.innerHTML = `<div class="stat-box" style="text-align:center">
+                    Falha ao carregar dados. Verifique se o servidor está online.
+                </div>`;
+            }
         }
 
         function toggleTheme() { document.body.classList.toggle('amoled'); }
@@ -171,11 +199,7 @@
         }
 
         window.onload = () => {
-            if(localStorage.getItem('hz_session')) {
-                document.getElementById('authWrapper').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                loadClub();
-            }
+            if(localStorage.getItem('hz_session')) initApp();
         };
     </script>
 </body>
